@@ -8,7 +8,7 @@
 2. [브레인스토밍과 후보 선별](02-brainstorming-and-shortlist.md)
 3. [자영업 도메인의 초기 문제 가설](03-self-employed-domain.md)
 4. [공동구매 가설](04-group-purchase-hypothesis.md)
-5. [1차 인터뷰와 공동구매 가설 약화](05-round-1-interviews.md)
+5. [인터뷰 초기 분석과 공동구매 가설 약화](05-interviews-and-group-purchase-learning.md)
 6. [정보 비대칭 방향으로의 피벗](06-information-asymmetry-pivot.md)
 
 ## 한 줄 요약

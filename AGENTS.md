@@ -20,6 +20,6 @@
 ## Documentation
 
 - 중요한 방향 변경은 `docs/decisions/`에 ADR로 남긴다.
-- 인터뷰를 추가하면 `docs/interviews/index.md`와 해당 라운드 종합 문서를 함께 갱신한다.
+- 인터뷰 자료를 추가하면 `docs/interviews/index.md`와 전체 인터뷰 종합 문서를 함께 갱신한다.
 - 제품 방향을 설명할 때는 `docs/product/problem-statement.md`와 모순되지 않는지 확인한다.
 - 문서는 기본적으로 한국어로 작성한다.
