@@ -6,6 +6,9 @@ data/raw/
 *.m4a
 *.mp3
 
+# Assignment evidence intentionally committed under this curated path
+!data/interviews/audio/*.m4a
+
 # Generated working files
 tmp/
 outputs/
