@@ -1,0 +1,24 @@
+# Local or sensitive interview material
+private/
+recordings/
+data/raw/
+*.wav
+*.m4a
+*.mp3
+
+# Generated working files
+tmp/
+outputs/
+
+# Local environment
+.env
+.env.*
+!.env.example
+.venv/
+node_modules/
+
+# Editor and OS files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
