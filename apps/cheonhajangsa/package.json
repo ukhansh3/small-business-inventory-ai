@@ -1,0 +1,43 @@
+{
+  "name": "cheonhajangsa-preview",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "scripts": {
+    "dev": "next dev --hostname 127.0.0.1 --port 4310",
+    "build": "next build",
+    "start": "next start --hostname 127.0.0.1 --port 4310",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "build:android:web": "CHEON_ANDROID_EXPORT=1 next build",
+    "build:apk": "pnpm build:android:web && bash android/build-apk.sh",
+    "geocode:address": "node --env-file=.env.local scripts/geocode-address.mjs"
+  },
+  "dependencies": {
+    "next": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "@tanstack/react-query": "latest",
+    "react-hook-form": "latest",
+    "zod": "latest",
+    "@hookform/resolvers": "latest"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.0",
+    "@types/node": "^24",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "tailwindcss": "latest",
+    "@tailwindcss/postcss": "latest",
+    "eslint": "^9.39.1",
+    "eslint-config-next": "latest",
+    "vitest": "latest",
+    "@playwright/test": "latest"
+  },
+  "packageManager": "pnpm@11.25.0",
+  "type": "module"
+}

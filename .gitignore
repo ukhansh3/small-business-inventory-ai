@@ -25,3 +25,16 @@ node_modules/
 .vscode/
 .DS_Store
 Thumbs.db
+
+# App build outputs and signing material
+.next/
+.next-dev/
+.next-android/
+*.tsbuildinfo
+*.apk
+*.aab
+*.keystore
+*.jks
+apps/cheonhajangsa/out/
+apps/cheonhajangsa/android/build/
+apps/cheonhajangsa/android/dist/

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+ <base-config cleartextTrafficPermitted="false"/>
+ <!-- Local URLs are intercepted and served from APK assets; no local HTTP server is opened. -->
+ <domain-config cleartextTrafficPermitted="true"><domain>localhost</domain></domain-config>
+</network-security-config>

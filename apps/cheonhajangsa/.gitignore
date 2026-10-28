@@ -1,0 +1,23 @@
+node_modules/
+.next/
+.env*
+!.env.example
+playwright-report/
+test-results/
+
+.next-dev/
+
+# Android local build outputs
+.next-android/
+out/
+android/build/
+android/dist/
+*.keystore
+*.jks
+
+# Generated caches and distributions
+*.tsbuildinfo
+*.apk
+*.aab
+*.zip
+local.properties
