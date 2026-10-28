@@ -1,0 +1,10 @@
+allowBuilds:
+  unrs-resolver: true
+minimumReleaseAgeExclude:
+  - '@expo/cli@58.1.16'
+  - babel-preset-expo@58.0.21
+  - expo-modules-core@58.0.27
+  - expo@58.0.20
+  - expo-dev-client@58.0.16
+  - expo-dev-launcher@58.0.16
+  - expo-router@58.0.27

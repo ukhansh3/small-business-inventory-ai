@@ -1,3 +1,5 @@
+> 2026-10-28 모바일 전환: 실제 사용자 앱은 `../mobile`입니다. 이 폴더는 기존 웹 프로토타입과 지도·서버 지원용으로 보존합니다. 모바일 화면 스택은 ADR-007과 `../mobile/DEVELOPMENT_GUIDE.md`를 따르며 아래 Next.js 화면 규칙보다 우선합니다.
+
 > 팀원은 먼저 [TEAM_SETUP.md](TEAM_SETUP.md)를 읽으세요. 이 저장소의 `apps/cheonhajangsa`가 공동 작업 기준 경로입니다. 실제 비밀키와 설치 APK는 Git에 포함하지 않습니다.
 
 # 천하장사 로컬 프로토타입

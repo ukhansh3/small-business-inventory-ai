@@ -1,0 +1,39 @@
+{
+  "expo": {
+    "name": "천하장사",
+    "slug": "cheonhajangsa-mobile",
+    "version": "0.1.0",
+    "scheme": "cheonhajangsa",
+    "platforms": [
+      "ios",
+      "android"
+    ],
+    "orientation": "default",
+    "userInterfaceStyle": "light",
+    "icon": "./assets/icon.png",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "kr.co.cheonhajangsa.mobile"
+    },
+    "android": {
+      "package": "kr.co.cheonhajangsa.mobile",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundColor": "#FFF4EC"
+      }
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "주변 업체를 찾기 위해 앱 사용 중 위치를 사용합니다."
+        }
+      ],
+      "expo-font"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

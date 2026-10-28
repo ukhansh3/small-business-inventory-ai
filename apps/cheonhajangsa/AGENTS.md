@@ -1,3 +1,5 @@
+> 2026-10-28 모바일 전환: 실제 사용자 앱은 `../mobile`입니다. 이 폴더는 기존 웹 프로토타입과 지도·서버 지원용으로 보존합니다. 모바일 화면 스택은 ADR-007과 `../mobile/DEVELOPMENT_GUIDE.md`를 따르며 아래 Next.js 화면 규칙보다 우선합니다.
+
 # Repository instructions
 
 이 문서는 천하장사 저장소에서 작업하는 사람과 AI 코딩 에이전트가 항상 지켜야 하는 규칙이다. 제품·기술·팀 역할의 상세 기준은 `DEVELOPMENT_GUIDE.md`, 동작과 수용 기준은 `SPEC.md`, 도메인 의미는 `ontology.yaml`을 따른다.

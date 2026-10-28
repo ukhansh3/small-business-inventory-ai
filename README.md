@@ -1,6 +1,10 @@
 # 지역 자영업자 정보 비대칭 문제 탐색 프로젝트
 
-## 앱 개발 소스와 팀 협업
+## 모바일 앱 개발 기준 (2026-10-28 전환)
+
+실제 사용자 앱은 **`apps/mobile`의 React Native·Expo Android/iOS 앱**입니다. [모바일 실행 안내](apps/mobile/README.md)와 [모바일 개발 가이드](apps/mobile/DEVELOPMENT_GUIDE.md)를 먼저 읽습니다. 기존 `apps/cheonhajangsa`는 웹 프로토타입 보관 및 카카오 지도 전용 페이지·향후 서버 지원 코드입니다. 웹사이트를 APK로 감싼 기존 방식은 새 모바일 개발 기준이 아닙니다. DB는 이번 전환에서 변경하지 않았습니다.
+
+## 기존 웹 프로토타입과 팀 협업
 
 천하장사 앱 소스는 [`apps/cheonhajangsa`](apps/cheonhajangsa)에 있습니다. 현재는 가상 데이터와 실제 카카오 지도, 서버용 주소 변환 모듈을 갖춘 검증용 프로토타입입니다. Supabase 업체·게시글 저장, 인증·권한, 실제 AI 연동은 아직 구현되지 않았으며 정식 MVP 완료를 뜻하지 않습니다.
 
