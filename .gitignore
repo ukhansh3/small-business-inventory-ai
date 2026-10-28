@@ -38,3 +38,6 @@ Thumbs.db
 apps/cheonhajangsa/out/
 apps/cheonhajangsa/android/build/
 apps/cheonhajangsa/android/dist/
+
+# Local pnpm package cache
+.pnpm-store/
