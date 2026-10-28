@@ -6,14 +6,13 @@
 
 - 저장소: https://github.com/ukhansh3/small-business-inventory-ai
 - 앱 경로: `apps/cheonhajangsa`
-- 최초 공유 기준 브랜치: `codex/cheonhajangsa-team-app`
-- `main` 반영 전에는 아래 기준 브랜치에서 시작합니다. PR이 병합된 뒤 새 작업은 최신 `main`에서 시작합니다.
+- 공통 기준 브랜치: `main` (앱 소스 병합 완료). 새 작업은 최신 `main`에서 시작합니다.
 - 원격에 push하려면 저장소 쓰기 권한이 필요합니다. 권한이 없으면 저장소 소유자가 팀원 계정을 초대해야 합니다.
 
 ## 1. 내려받기
 
 ```sh
-git clone --branch codex/cheonhajangsa-team-app https://github.com/ukhansh3/small-business-inventory-ai.git
+git clone --branch main https://github.com/ukhansh3/small-business-inventory-ai.git
 cd small-business-inventory-ai
 ```
 
@@ -21,7 +20,8 @@ cd small-business-inventory-ai
 
 ```sh
 git fetch origin
-git switch codex/cheonhajangsa-team-app
+git switch main
+git pull --ff-only origin main
 ```
 
 ## 2. 자기 브랜치 만들기
@@ -98,7 +98,7 @@ git commit -m "feat: describe your change"
 git push -u origin feat/my-map-ui
 ```
 
-PR의 base는 현재 공동 기준 브랜치(병합 후에는 `main`)로 정합니다. 다른 팀원 최소 1명의 리뷰와 검사를 거친 뒤 병합합니다. main 직접 push·force push는 하지 않습니다.
+PR의 base는 `main`으로 정합니다. 다른 팀원 최소 1명의 리뷰와 검사를 거친 뒤 병합합니다. main 직접 push·force push는 하지 않습니다.
 
 ## 6. 현재 구현 범위
 
