@@ -1,3 +1,4 @@
+import type { PublishedVendor } from "@cheon/vendor-contracts";
 export type Item = {
   id: string;
   name: string;
@@ -16,7 +17,7 @@ export type Vendor = {
   delivery: string;
   checkedAt: string;
   items: Item[];
-  dataKind: "fixture";
+  dataKind: "fixture" | "live";
 };
 export const demoCenter = { latitude: 37.2834, longitude: 127.0465 };
 export const vendors: Vendor[] = [
@@ -136,4 +137,31 @@ export function trustedMapMessageOrigin(
   } catch {
     return false;
   }
+}
+
+export function fromPublishedVendor(v: PublishedVendor): Vendor {
+  return {
+    id: v.id,
+    name: v.name,
+    category: v.category,
+    district: v.address,
+    latitude: v.latitude,
+    longitude: v.longitude,
+    delivery: v.delivery_terms,
+    checkedAt: v.items.map((i) => i.checked_on).sort()[0] ?? "",
+    dataKind: "live",
+    items: v.items.map((i) => ({
+      id: i.id,
+      name: i.name,
+      quantity: i.quantity,
+      unit: i.unit,
+      price: i.price,
+      tax: {
+        included: "부가세 포함",
+        excluded: "부가세 별도",
+        exempt: "면세",
+        "": "세금 확인 필요",
+      }[i.tax],
+    })),
+  };
 }

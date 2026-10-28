@@ -1,3 +1,5 @@
+> 민균 브랜치: [업체 등록 DB 적용 안내](supabase/README.md), [등록 API/DB 계약](docs/contracts/vendor-registration-v1.md). SQL·API·모바일 저장/검토 코드를 구현하며 실제 공유 DB 적용과 구분합니다.
+
 # 지역 자영업자 정보 비대칭 문제 탐색 프로젝트
 
 ## 모바일 앱 개발 기준 (2026-10-28 전환)

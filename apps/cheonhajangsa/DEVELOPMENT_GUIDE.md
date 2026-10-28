@@ -1,3 +1,5 @@
+> 2026-10-28 추가 지시: 사용자가 민균 브랜치에서 DB 규칙 구현을 요청했다. 업체 등록 DB/API 범위는 루트 ADR-008과 `docs/contracts/vendor-registration-v1.md`를 따르며, 이전의 “이번 UI 전환에서 DB 미변경” 문구는 당시 작업 범위의 기록이다. 공유 DB 적용은 별도다.
+
 > 2026-10-28 모바일 전환: 실제 사용자 앱은 `../mobile`입니다. 이 폴더는 기존 웹 프로토타입과 지도·서버 지원용으로 보존합니다. 모바일 화면 스택은 ADR-007과 `../mobile/DEVELOPMENT_GUIDE.md`를 따르며 아래 Next.js 화면 규칙보다 우선합니다.
 
 # 천하장사 MVP Development Guide

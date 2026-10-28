@@ -1,10 +1,23 @@
-# 천하장사 모바일 앱
+# 천하장사 Android·iOS 앱
 
-React Native 0.88 / Expo SDK 58 / TypeScript / Expo Router 기반 Android·iOS 공통 앱입니다. 화면, 탭, 업체 상세, 업체 등록 폼은 네이티브 컴포넌트입니다. 카카오 JavaScript 지도만 제한된 WebView 영역에서 기존 SDK를 사용합니다. 전체 웹사이트를 앱 안에서 실행하지 않습니다.
+React Native 0.88 / Expo SDK 58 / TypeScript / Expo Router 기반 모바일 앱입니다. UI·탭·업체 상세·등록 폼은 네이티브이며, 카카오 지도만 HTTPS 지도 전용 페이지를 제한된 WebView로 표시합니다.
 
-## 실행
+## 현재 구현 범위
 
-Node.js 24.3 이상 24.x, pnpm 11.25.0을 사용합니다.
+- 이메일 회원가입·로그인·로그아웃, Supabase Auth 세션을 기기의 암호화 저장소에 보관
+- 업체 초안과 여러 품목·가격·규격·세금·최소 주문·확인일·배송 조건 저장
+- 사진 선택·비공개 초안 업로드 (JPEG/PNG/WebP, 3MB 이하, 제출본당 최대 10개)
+- 서버 지오코딩 후 운영자 검토 요청·요청 취소·보완 후 재제출
+- 운영자 검토 대기 목록·승인·보완 요청, 자기 업체 셀프 승인 차단
+- 승인된 현재 공개본만 공간 검색·지도·목록·상세에 표시
+- 승인본을 유지하며 새 수정본 작성. 일반 조회와 검토 원본·내부 메모 분리
+- 위치 권한 거부·지도 장애·검색 오류·빈 결과를 구분
+
+**공유 Supabase에는 migration을 자동 적용하지 않았습니다.** 실제 DB 적용과 서버 배포 후 연결 설정이 필요합니다. [DB 적용 안내](../../supabase/README.md), [API/DB 계약](../../docs/contracts/vendor-registration-v1.md)를 먼저 읽습니다. 실제 AI·커뮤니티 글 저장은 아직 샘플 화면입니다.
+
+## 설치·실행
+
+Node.js 24.3 이상 24.x / pnpm 11.25.0. 저장소 전체를 받은 뒤 앱 폴더에서 실행합니다. 공유 계약 패키지 `../../packages/vendor-contracts`도 필요하므로 앱 폴더만 따로 복사하지 않습니다.
 
 ```sh
 cd apps/mobile
@@ -13,42 +26,36 @@ cp .env.example .env.local
 pnpm start --go
 ```
 
-같은 네트워크의 Android·iPhone에서 SDK 58과 호환되는 Expo Go로 QR을 열어 화면을 확인합니다. Expo Go는 테스트 도구이며 배포용 설치 파일이 아닙니다. 네트워크가 격리돼 있으면 개발 서버에 연결할 수 없습니다.
+같은 네트워크의 Android·iPhone에서 SDK 58과 호환되는 Expo Go로 QR을 엽니다. Expo Go는 개발 테스트 도구이며 정식 설치 파일이 아닙니다.
 
-개발용 네이티브 빌드는 `pnpm android` 또는 `pnpm ios`입니다. 해당 플랫폼 SDK/JDK/Xcode가 필요합니다. CLI가 생성하는 android/ios 폴더는 직접 관리하지 않습니다.
+## 샘플 모드와 실제 DB 모드
 
-## 지금 제공하는 화면
-
-- 주황색 브랜드, 네이티브 탭·상세 이동, 안전 영역과 키보드 대응
-- 업체명·취급 품목으로 샘플 업체 탐색, 지도 선택과 상세 연결
-- 사용자 요청 시에만 위치 권한 요청, 거부·오류 시 기본 지역 유지
-- 업체와 여러 품목·필수 가격을 입력하는 등록 폼
-- 운영자 검토 후 공개 흐름 안내
-- 실제 AI가 아닌 샘플 조회 도우미, 가상 커뮤니티, 내 업체 화면
-
-실제 로그인·서버 제출·승인·DB 저장은 연결하지 않았습니다. 등록 폼 입력은 메모리에만 있으며 화면을 닫으면 사라집니다. 폼 검증은 API/DB 계약이 아니라 UI 미리보기 검증입니다. 전체 제출에는 세금·배송·좌표 등 서버 검증도 추가해야 합니다.
-
-## 카카오 지도 연결
-
-기존 지원 프로젝트 `../cheonhajangsa`를 HTTPS로 배포하고, 그 배포 서버에 `NEXT_PUBLIC_KAKAO_MAP_JAVASCRIPT_KEY`를 설정합니다. 카카오 허용 도메인에는 해당 HTTPS origin을 등록합니다.
-
-모바일 `.env.local`에는 아래 공개 주소만 넣습니다.
+`.env.local`에는 공개 값만 설정합니다.
 
 ```dotenv
-EXPO_PUBLIC_KAKAO_MAP_URL=https://본인배포주소/mobile-map
+EXPO_PUBLIC_KAKAO_MAP_URL=https://cheonhajangsa.vercel.app/mobile-map
+EXPO_PUBLIC_SUPABASE_URL=https://프로젝트참조값.supabase.co
+EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY=공개키
+EXPO_PUBLIC_API_BASE_URL=https://민균브랜치서버배포주소
 ```
 
-위 주소는 예시이며 그대로 사용하지 않습니다. 전달받은 실제 배포 주소는 `https://cheonhajangsa.vercel.app`이며 `/mobile-map` 경로 배포를 확인했습니다. 주소 미설정·연결 오류 시 안내와 업체 목록을 유지합니다. 앱 번들 생성 성공이 실제 지도 연결 성공을 뜻하지 않습니다. Vercel 환경 변수는 모바일 앱의 환경 변수로 자동 복사되지 않습니다. 모바일 환경 변수를 변경하면 개발 서버를 재시작하고 배포용 앱은 다시 빌드합니다.
+예시 값은 실제 발급 값과 배포 주소로 바꿉니다. API URL은 origin이며 `/api/v1`을 붙이지 않습니다. 다른 브랜치의 예전 서버를 가리키면 새 API가 없을 수 있습니다.
 
-지도 메시지는 정해진 형식과 현재 표시된 업체 ID만 받습니다. 입력 검색어나 연락처를 지도 페이지로 전달하지 않습니다. 지도 중심 좌표는 지도 표시에 사용되며 앱에서 DB에 저장하지 않습니다.
+Supabase 공개 설정과 API 주소가 없으면 명시적인 샘플 모드를 유지합니다. 등록 화면을 미리 볼 수 있지만 실제 저장·검토 요청·사진 업로드 버튼은 비활성화합니다. 입력은 화면 메모리에만 남고 닫으면 사라집니다.
 
-## 키와 서버 경계
+설정이 준비되면 로그인 사용자만 승인 업체를 조회합니다. 서버/DB 오류가 발생해도 샘플 결과로 바꾸지 않습니다. DB가 미적용이면 API는 `DATABASE_NOT_READY`로 알립니다. 비로그인 공개 여부와 사업자 증빙 방식은 미결정입니다.
 
-`EXPO_PUBLIC_*` 값은 설치 파일에서 읽을 수 있는 공개 값입니다. Supabase service role, Kakao REST, OpenAI 키를 넣지 않습니다. 기존 웹 `.env.local`을 모바일 폴더에 그대로 복사하지 않습니다.
+환경 변수를 바꾸면 Metro를 재시작합니다. 배포용 앱에는 공개 설정도 빌드 시 반영합니다. Vercel의 환경 변수는 모바일 앱으로 자동 복사되지 않습니다. Supabase 관리자·Kakao REST·OpenAI 키를 `EXPO_PUBLIC_*`에 넣지 않습니다.
 
-공개 앱 → HTTPS API 서버 → 권한 검사 → Supabase 순으로 실제 서비스를 연결할 예정입니다. 서버 지오코딩과 운영자 승인은 앱이 대신 처리하지 않습니다. 서버 API는 별도 계약 구현이 필요하며 현재 자동 연결되지 않습니다.
+## 지도·사진·서버 경계
 
-## 검사
+카카오 허용 도메인에 지도 페이지의 HTTPS origin을 등록합니다. 기존 `/phone`은 과거 웹 프레임 미리보기이며 이 네이티브 앱 실행 화면이 아닙니다.
+
+앱의 로그인만 Supabase Auth를 직접 이용합니다. 핵심 업체 데이터는 사용자 Bearer 토큰으로 HTTPS API를 호출하며 DB의 소유권·검토 상태·RLS를 함께 검사합니다. 주소 좌표 확정과 운영자 권한 지정은 앱이 대신하지 않습니다.
+
+사진은 비공개 버킷에 저장합니다. 일반 이용자에게 긴 유효기간의 signed URL을 전달하지 않고, 사용자 권한을 확인하는 사진 API로 표시합니다. 운영자 내부 메모·과거 승인본·미승인 사진은 공개 상세에 포함하지 않습니다. 사진 선택에 카메라·마이크 권한을 요청하지 않습니다.
+
+## 검증
 
 ```sh
 pnpm lint
@@ -57,19 +64,22 @@ pnpm test
 pnpm bundle:android
 pnpm bundle:ios
 pnpm exec expo install --check
+pnpm dlx expo-doctor@latest
 ```
 
-번들 생성은 APK/IPA 컴파일이나 실기기 테스트와 다릅니다. 출시 전 지원 OS와 최소·최신 버전, 작은 화면·큰 화면·태블릿, 글자 확대, 위치 거부, 네트워크 끊김을 실제 기기에서 검증합니다. SDK 58 공식 문서 기준 Android 7+, iOS 16.4+가 지원 대상이며 모든 구형 기종을 보장하지 않습니다. 의존 라이브러리와 실제 빌드 결과에 따라 최종 지원 범위를 확인합니다.
+서버와 DB 테스트는 저장소의 `apps/cheonhajangsa`에서 실행합니다. PGlite PostgreSQL/PostGIS와 테스트 Auth/Storage 스키마를 사용하며 공유 DB를 변경하지 않습니다. 실제 Supabase 서비스·다중 세션 경합·실기기 전체 흐름 검증을 대체하지 않습니다.
 
-## 설치·출시
+## 빌드·출시
 
-`eas.json`에 development / preview / production 빌드 설정이 있습니다. EAS 계정과 프로젝트 연결을 한 뒤 다음 명령을 사용합니다.
+개발 네이티브 빌드: `pnpm android` / `pnpm ios`. 호환되는 JDK·Android SDK 또는 Xcode가 필요합니다. `android/ios` 폴더는 Expo 설정으로 생성하며 수동 관리하지 않습니다.
+
+EAS 연결과 계정·서명을 준비한 뒤:
 
 ```sh
 pnpm dlx eas-cli@latest build --platform android --profile preview
 pnpm dlx eas-cli@latest build --platform all --profile production
 ```
 
-이 명령은 이번 작업에서 실행하지 않았습니다. 클라우드 빌드는 계정·서명 설정과 비용 확인이 필요합니다. iPhone은 APK를 설치할 수 없으며 개발 빌드 기기 등록 또는 TestFlight·App Store 방식으로 배포합니다. 스토어 계정·서명·심사는 아직 진행하지 않았습니다.
+이번 DB 작업에서 새 APK/IPA 빌드·스토어 배포는 수행하지 않았습니다. iPhone은 APK를 설치할 수 없으며 TestFlight·App Store 또는 개발 기기 등록 방식이 필요합니다. 모든 구형 기기 호환을 보장하지 않으며 SDK 지원 OS와 실제 기기 검증 범위를 확인합니다.
 
-공식 참고: https://docs.expo.dev/versions/v58.0.0/ , https://docs.expo.dev/build/setup/ , https://docs.expo.dev/versions/v58.0.0/sdk/webview/
+참고: https://docs.expo.dev/versions/v58.0.0/ , https://supabase.com/docs/guides/auth/quickstarts/react-native , https://docs.expo.dev/versions/v58.0.0/sdk/securestore/

@@ -18,25 +18,29 @@
     "geocode:address": "node --env-file=.env.local scripts/geocode-address.mjs"
   },
   "dependencies": {
+    "@cheon/vendor-contracts": "file:../../packages/vendor-contracts",
+    "@hookform/resolvers": "latest",
+    "@supabase/supabase-js": "^2.118.0",
+    "@tanstack/react-query": "latest",
     "next": "latest",
     "react": "latest",
     "react-dom": "latest",
-    "@tanstack/react-query": "latest",
     "react-hook-form": "latest",
-    "zod": "latest",
-    "@hookform/resolvers": "latest"
+    "zod": "latest"
   },
   "devDependencies": {
-    "typescript": "^6.0.0",
+    "@electric-sql/pglite": "^0.5.12",
+    "@electric-sql/pglite-postgis": "^0.2.12",
+    "@playwright/test": "latest",
+    "@tailwindcss/postcss": "latest",
     "@types/node": "^24",
     "@types/react": "latest",
     "@types/react-dom": "latest",
-    "tailwindcss": "latest",
-    "@tailwindcss/postcss": "latest",
     "eslint": "^9.39.1",
     "eslint-config-next": "latest",
-    "vitest": "latest",
-    "@playwright/test": "latest"
+    "tailwindcss": "latest",
+    "typescript": "^6.0.0",
+    "vitest": "latest"
   },
   "packageManager": "pnpm@11.25.0",
   "type": "module"
