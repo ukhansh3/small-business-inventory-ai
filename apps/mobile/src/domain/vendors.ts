@@ -124,3 +124,16 @@ export function validMapUrl(raw: string | undefined): string | null {
     return null;
   }
 }
+
+// Android may report just the security origin for a bridge message. Main-frame
+// navigation is restricted separately; compare origins without trusting a prefix.
+export function trustedMapMessageOrigin(
+  messageUrl: string,
+  mapUrl: string,
+): boolean {
+  try {
+    return new URL(messageUrl).origin === new URL(mapUrl).origin;
+  } catch {
+    return false;
+  }
+}

@@ -3,6 +3,7 @@ import {
   findVendors,
   parseMapSelection,
   validMapUrl,
+  trustedMapMessageOrigin,
 } from "../src/domain/vendors";
 import { validateRegistration } from "../src/domain/registration";
 const draft = {
@@ -72,4 +73,24 @@ describe("지도와 샘플 목록", () => {
     expect(validMapUrl("https://example.com/mobile-map")).toBe(
       "https://example.com/mobile-map",
     ));
+});
+
+describe("플랫폼별 지도 메시지 origin", () => {
+  it.each(["https://example.com", "https://example.com/mobile-map"])(
+    "Android origin 및 iOS URL %s를 허용한다",
+    (url) =>
+      expect(
+        trustedMapMessageOrigin(url, "https://example.com/mobile-map"),
+      ).toBe(true),
+  );
+  it.each([
+    "https://example.com.evil.test/mobile-map",
+    "http://example.com/mobile-map",
+    "about:blank",
+    "invalid",
+  ])("다른 보안 origin %s를 거부한다", (url) =>
+    expect(trustedMapMessageOrigin(url, "https://example.com/mobile-map")).toBe(
+      false,
+    ),
+  );
 });

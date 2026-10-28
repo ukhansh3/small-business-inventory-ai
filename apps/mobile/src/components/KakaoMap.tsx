@@ -1,7 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 import { WebView } from "react-native-webview";
-import { Vendor, parseMapSelection, validMapUrl } from "../domain/vendors";
+import {
+  Vendor,
+  parseMapSelection,
+  validMapUrl,
+  trustedMapMessageOrigin,
+} from "../domain/vendors";
 import { Action, colors, s } from "./ui";
 export function KakaoMap({
   vendors,
@@ -59,16 +64,36 @@ export function KakaoMap({
           request.url === url + "/"
         }
         onError={() => setFailed(true)}
-        onHttpError={() => setFailed(true)}
+        onHttpError={(event) => {
+          // Android reports subresource HTTP errors too. A missing tile or
+          // favicon must not cover a successfully initialized map.
+          if (
+            event.nativeEvent.url === url ||
+            event.nativeEvent.url === url + "/"
+          ) {
+            setFailed(true);
+          }
+        }}
         onMessage={(event) => {
           if (
             event.nativeEvent.url &&
-            !event.nativeEvent.url.startsWith(origin + "/mobile-map")
+            !trustedMapMessageOrigin(event.nativeEvent.url, url)
           )
             return;
           let ready = false;
           try {
-            ready = JSON.parse(event.nativeEvent.data)?.type === "ready";
+            const message: unknown = JSON.parse(event.nativeEvent.data);
+            if (
+              typeof message === "object" &&
+              message !== null &&
+              "type" in message
+            ) {
+              ready = message.type === "ready";
+              if (message.type === "error") {
+                setFailed(true);
+                return;
+              }
+            }
           } catch {}
           if (ready) {
             setLoaded(true);
