@@ -15,3 +15,7 @@
 - supabase/migrations/202610280001_vendor_registration.sql에 실제 적용 SQL을 둔다.
 - 기존 SPEC/ontology 상단에서 이번 보충 계약을 연결한다. 다른 제품 가설이나 인터뷰 증거를 검증 완료로 바꾸지 않는다.
 - 공유 Supabase 조회·수정·리셋·운영자 계정 생성은 자동 수행하지 않는다. 실제 적용 전 기존 스키마와 권한을 확인해야 한다.
+
+## 2026-10-29 실제 DB 적용
+
+사용자가 실제 Supabase 적용을 명시 요청했다. 기존 테이블 충돌과 Storage RLS를 점검하고 SQL Editor에서 migration 전체를 실행했다. 9개 테이블·13개 RPC·PostGIS·비공개 사진 버킷 및 역할별 권한 확인을 완료했다. 상세 증거는 docs/database/deployments/2026-10-29/README.md에 둔다. 사용자 데이터 생성·운영자 지정·Git main 병합·서버 배포는 수행하지 않았다.
