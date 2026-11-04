@@ -30,7 +30,16 @@
           "locationWhenInUsePermission": "주변 업체를 찾기 위해 앱 사용 중 위치를 사용합니다."
         }
       ],
-      "expo-font"
+      "expo-font",
+      "expo-secure-store",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "업체에 등록할 사진을 선택합니다.",
+          "cameraPermission": false,
+          "microphonePermission": false
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
