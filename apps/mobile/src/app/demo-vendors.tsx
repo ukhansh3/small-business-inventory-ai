@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useDeferredValue, useMemo, useState } from "react";
 import { FlatList, Pressable, ScrollView, Text, View } from "react-native";
 import { router } from "expo-router";
 import { syntheticVendorSearchSchema, type SyntheticVendor } from "@cheon/vendor-contracts";
@@ -30,19 +30,17 @@ function toMapVendor(v: SyntheticVendor): Vendor {
 export default function DemoVendors() {
   const { session } = useAuth();
   const [query, setQuery] = useState("");
-  const [debounced, setDebounced] = useState("");
   const [category, setCategory] = useState("전체");
   const [selected, setSelected] = useState<string | null>(null);
-  useEffect(() => {
-    const timer = setTimeout(() => setDebounced(query), 220);
-    return () => clearTimeout(timer);
-  }, [query]);
-  const path = backendConfigured && session
-    ? "/synthetic-vendors?" + new URLSearchParams({ query: debounced, category: category === "전체" ? "" : category }).toString()
-    : null;
+  const deferredQuery = useDeferredValue(query.trim().toLocaleLowerCase("ko-KR"));
+  const path = backendConfigured && session ? "/synthetic-vendors" : null;
   const resource = useApiResource(path, syntheticVendorSearchSchema);
   const result = resource.data;
-  const rows = result?.vendors ?? noVendors;
+  const allRows = result?.vendors ?? noVendors;
+  const rows = useMemo(() => allRows.filter((vendor) =>
+    (category === "전체" || vendor.category === category) &&
+    (!deferredQuery || [vendor.name, vendor.category, vendor.area, vendor.service].some((value) => value.toLocaleLowerCase("ko-KR").includes(deferredQuery))),
+  ), [allRows, category, deferredQuery]);
   const pins = useMemo(() => rows.map(toMapVendor), [rows]);
   const data = selected ? rows.filter((vendor) => vendor.id === selected) : rows;
   const header = <View style={{ gap: 14 }}>
@@ -54,7 +52,7 @@ export default function DemoVendors() {
         <Text style={{ color: category === item ? colors.white : colors.ink, fontWeight: "700" }}>{item}</Text>
       </Pressable>)}
     </ScrollView>
-    <Text style={s.muted}>{resource.loading ? "목록 갱신 중…" : `${result?.total ?? 0}곳 · 목록은 화면에 보이는 만큼만 그립니다 · 가상 시연 자료`}</Text>
+    <Text style={s.muted}>{resource.loading ? "업체 불러오는 중…" : `${rows.length}곳 · 가상 시연 자료`}</Text>
     {!!resource.error && <Note>{resource.error}</Note>}
     {pins.length > 0 && <KakaoMap vendors={pins} center={demoCenter} onSelect={setSelected} />}
     {selected && <Action secondary label="업체 전체 보기" onPress={() => setSelected(null)} />}

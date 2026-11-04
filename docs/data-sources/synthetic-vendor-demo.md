@@ -16,6 +16,8 @@
 
 2026-11-04 실제 Supabase에서 `fake-0001`~`fake-0200` 200개·12개 업종 저장을 확인했다. 로그인 사용자의 조회 함수는 200개를 반환했고 `후드` 검색은 9개를 반환했다. 비로그인 조회 함수 호출은 차단됐다.
 
+같은 날 Vercel API는 전체 200개·`후드` 9개에 HTTP 200, 비로그인 요청에 HTTP 401을 반환했다. iPhone 15 Pro Max 시뮬레이터에서 DB 200개 표시, `후드` 9개 검색, 폐기물 업종 17개 필터, 지도 확대(축척 32km→16km)를 확인했다. 검색은 처음 받은 200개 안에서 수행하고, 목록은 FlatList로 가상화한다. 실제 기기별 성능 수치는 아직 측정하지 않았다.
+
 1. `supabase/migrations/202611040002_synthetic_demo_vendors.sql`을 해당 Supabase 프로젝트 SQL Editor에서 한 번 실행한다.
 2. 서버 `.env.local`이 있는 상태에서 프로젝트 루트에서 `node --env-file=apps/cheonhajangsa/.env.local scripts/seed-synthetic-vendors.mjs`를 실행한다.
 3. 스크립트는 `fake-0001`부터 `fake-0200`까지 200개를 `demo_code` 기준으로 반복 실행해도 중복 없이 upsert한다.
