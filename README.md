@@ -1,14 +1,14 @@
-> 민균 브랜치: [업체 등록 DB 적용 안내](supabase/README.md), [등록 API/DB 계약](docs/contracts/vendor-registration-v1.md). SQL·API·모바일 저장/검토 코드를 구현하며 실제 공유 DB 적용과 구분합니다.
+> 민균 브랜치: [구현된 기능·미구현 기능 현황](docs/product/implementation-status.md), [업체 등록 DB 적용 안내](supabase/README.md), [등록 API/DB 계약](docs/contracts/vendor-registration-v1.md). SQL·API·모바일 저장/검토 코드를 구현하며 실제 공유 DB 적용과 구분합니다.
 
 # 지역 자영업자 정보 비대칭 문제 탐색 프로젝트
 
 ## 모바일 앱 개발 기준 (2026-10-28 전환)
 
-실제 사용자 앱은 **`apps/mobile`의 React Native·Expo Android/iOS 앱**입니다. [모바일 실행 안내](apps/mobile/README.md)와 [모바일 개발 가이드](apps/mobile/DEVELOPMENT_GUIDE.md)를 먼저 읽습니다. 기존 `apps/cheonhajangsa`는 웹 프로토타입 보관 및 카카오 지도 전용 페이지·향후 서버 지원 코드입니다. 웹사이트를 APK로 감싼 기존 방식은 새 모바일 개발 기준이 아닙니다. DB는 이번 전환에서 변경하지 않았습니다.
+실제 사용자 앱은 **`apps/mobile`의 React Native·Expo Android/iOS 앱**입니다. [모바일 실행 안내](apps/mobile/README.md)와 [모바일 개발 가이드](apps/mobile/DEVELOPMENT_GUIDE.md)를 먼저 읽습니다. 기존 `apps/cheonhajangsa`는 웹 프로토타입 보관 및 카카오 지도 전용 페이지·업체 API 서버 코드입니다. 웹사이트를 APK로 감싼 기존 방식은 새 모바일 개발 기준이 아닙니다. 이후 민균 브랜치에서 업체 등록 DB를 실제 Supabase에 적용하고 가상 업체 조회를 검증했습니다.
 
 ## 기존 웹 프로토타입과 팀 협업
 
-천하장사 앱 소스는 [`apps/cheonhajangsa`](apps/cheonhajangsa)에 있습니다. 현재는 가상 데이터와 실제 카카오 지도, 서버용 주소 변환 모듈을 갖춘 검증용 프로토타입입니다. Supabase 업체·게시글 저장, 인증·권한, 실제 AI 연동은 아직 구현되지 않았으며 정식 MVP 완료를 뜻하지 않습니다.
+천하장사 앱 소스는 [`apps/cheonhajangsa`](apps/cheonhajangsa)에 있습니다. 기존 웹 프로토타입에는 가상 화면이 남아 있습니다. 현재 네이티브 앱에는 Supabase 인증과 업체 등록·검토·검색 코드가 있으며 실제 DB 검색을 검증했습니다. 실제 AI 연동과 커뮤니티 저장은 미구현입니다. 구현 여부와 실연결 검증 범위는 [기능 현황](docs/product/implementation-status.md)을 기준으로 확인합니다.
 
 - [팀원 시작 가이드](apps/cheonhajangsa/TEAM_SETUP.md): 설치·환경변수·브랜치·PR 작업 순서
 - [앱 실행 안내](apps/cheonhajangsa/README.md)

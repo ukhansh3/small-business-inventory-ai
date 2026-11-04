@@ -13,7 +13,7 @@ React Native 0.88 / Expo SDK 58 / TypeScript / Expo Router 기반 모바일 앱�
 - 승인본을 유지하며 새 수정본 작성. 일반 조회와 검토 원본·내부 메모 분리
 - 위치 권한 거부·지도 장애·검색 오류·빈 결과를 구분
 
-**2026-10-29 실제 Supabase에 DB 구조 적용을 완료했습니다.** 서버 배포와 모바일 연결 설정, 실제 계정 흐름 검증은 아직 별도입니다. 같은 DB에 SQL을 다시 실행하지 마세요. [DB 적용 안내](../../supabase/README.md), [API/DB 계약](../../docs/contracts/vendor-registration-v1.md)를 먼저 읽습니다. 실제 AI·커뮤니티 글 저장은 아직 샘플 화면입니다.
+**2026-10-29 실제 Supabase에 DB 구조 적용을 완료했습니다.** 로컬 API·모바일 설정 후 iPhone에서 실제 Supabase 로그인과 가상 업체 3곳의 지도·검색·상세 조회도 검증했습니다. 앱에서 등록부터 운영자 승인까지의 전체 흐름과 팀원 기기 LAN 접속 검증은 남아 있습니다. [구현·미구현 현황](../../docs/product/implementation-status.md)을 확인합니다. 같은 DB에 SQL을 다시 실행하지 마세요. [DB 적용 안내](../../supabase/README.md), [API/DB 계약](../../docs/contracts/vendor-registration-v1.md)를 먼저 읽습니다. 실제 AI·커뮤니티 글 저장은 아직 샘플 화면입니다.
 
 ## 설치·실행
 
