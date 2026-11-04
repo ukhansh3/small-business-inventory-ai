@@ -98,6 +98,7 @@ export default function Explore() {
             ? "로그인을 확인하고 있습니다."
             : "승인된 업체를 보려면 로그인해 주세요. 비로그인 공개 범위는 아직 정하지 않았습니다."}
         </Note>
+        <Action label="가상 업체 200곳 시연 보기" onPress={() => router.push("/demo-vendors")} />
         <Action
           label="로그인"
           disabled={authLoading}
@@ -115,6 +116,7 @@ export default function Explore() {
           : "서버 미연결 · 아래 업체·품목·가격은 가상 샘플입니다. 실제 DB 결과와 섞지 않습니다."}
       </Note>
       {backendConfigured && <Action secondary label="공공 업체 MVP 시연 보기" onPress={() => router.push("/mvp-vendors")} />}
+      {backendConfigured && <Action secondary label="가상 업체 200곳 시연 보기" onPress={() => router.push("/demo-vendors")} />}
       <Field
         label="업체·취급 품목"
         value={query}

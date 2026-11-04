@@ -13,8 +13,9 @@ const payloadSchema = z.object({
     .array(
       coordinate.extend({ id: z.string().max(100), name: z.string().max(150) }),
     )
-    .max(100),
+    .max(200),
 });
+const zoomSchema = z.object({ type: z.literal("zoom"), delta: z.number().int().min(-1).max(1) });
 type Payload = z.infer<typeof payloadSchema>;
 declare global {
   interface Window {
@@ -38,9 +39,8 @@ export default function MobileMap() {
       cleanups = [];
       markers.forEach((m) => m.setMap(null));
       markers = [];
-      map.setCenter(
-        new sdk.LatLng(data.center.latitude, data.center.longitude),
-      );
+      const bounds = new sdk.LatLngBounds();
+      bounds.extend(new sdk.LatLng(data.center.latitude, data.center.longitude));
       for (const vendor of data.vendors) {
         const marker = new sdk.Marker({
           map,
@@ -48,6 +48,7 @@ export default function MobileMap() {
           title: vendor.name,
           clickable: true,
         });
+        bounds.extend(new sdk.LatLng(vendor.latitude, vendor.longitude));
         const select = () => post({ type: "select", vendorId: vendor.id });
         sdk.event.addListener(marker, "click", select);
         const eventSdk = sdk;
@@ -56,14 +57,23 @@ export default function MobileMap() {
         );
         markers.push(marker);
       }
+      if (data.vendors.length) map.setBounds(bounds, 36, 36, 36, 36);
+      else map.setCenter(new sdk.LatLng(data.center.latitude, data.center.longitude));
     };
     const receive = (event: Event) => {
       if (!("data" in event) || typeof event.data !== "string") return;
       try {
-        const result = payloadSchema.safeParse(JSON.parse(event.data));
-        if (!result.success) return;
-        pending = result.data;
-        render(result.data);
+        const value: unknown = JSON.parse(event.data);
+        const zoom = zoomSchema.safeParse(value);
+        if (zoom.success && map) {
+          map.setLevel(Math.max(1, Math.min(14, map.getLevel() + zoom.data.delta)));
+          return;
+        }
+        const result = payloadSchema.safeParse(value);
+        if (result.success) {
+          pending = result.data;
+          render(result.data);
+        }
       } catch {}
     };
     window.addEventListener("message", receive);

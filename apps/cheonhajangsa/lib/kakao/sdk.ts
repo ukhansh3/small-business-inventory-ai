@@ -1,6 +1,6 @@
 // Minimal types for the official Kakao Maps JavaScript SDK used by this app.
 export interface LatLng { getLat():number; getLng():number; }
-export interface MapInstance {setCenter(position:LatLng):void;setBounds(bounds:Bounds,top?:number,right?:number,bottom?:number,left?:number):void;relayout():void;}
+export interface MapInstance {setCenter(position:LatLng):void;setBounds(bounds:Bounds,top?:number,right?:number,bottom?:number,left?:number):void;getLevel():number;setLevel(level:number):void;relayout():void;}
 export interface Bounds {extend(position:LatLng):void;}
 export interface Marker {setMap(map:MapInstance|null):void;setZIndex(zIndex:number):void;}
 export interface Overlay {setMap(map:MapInstance|null):void;setZIndex(zIndex:number):void;}

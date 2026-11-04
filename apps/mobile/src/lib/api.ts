@@ -93,8 +93,12 @@ export function useApiResource<T>(path: string | null, schema: z.ZodType<T>) {
   const refresh = useCallback(() => setTick((t) => t + 1), []);
   const key =
     path && session ? `${path}:${session.access_token}:${tick}` : null;
+  const scopeKey = path && session
+    ? `${path.split("?", 1)[0]}:${session.access_token}`
+    : null;
   const [result, setResult] = useState<{
     key: string;
+    scopeKey: string;
     data: T | null;
     error: string | null;
   } | null>(null);
@@ -108,12 +112,13 @@ export function useApiResource<T>(path: string | null, schema: z.ZodType<T>) {
     let cancelled = false;
     void apiRequest(path, schema)
       .then((data) => {
-        if (!cancelled) setResult({ key, data, error: null });
+        if (!cancelled && scopeKey) setResult({ key, scopeKey, data, error: null });
       })
       .catch((error) => {
         if (!cancelled)
           setResult({
             key,
+            scopeKey: scopeKey ?? "",
             data: null,
             error:
               error instanceof Error
@@ -124,9 +129,11 @@ export function useApiResource<T>(path: string | null, schema: z.ZodType<T>) {
     return () => {
       cancelled = true;
     };
-  }, [key, path, schema]);
+  }, [key, path, schema, scopeKey]);
   return {
-    data: result?.key === key ? result.data : null,
+    // Keep same-route data on screen while a debounced filter refreshes. It
+    // avoids flashing an empty list and repeatedly reloading the map WebView.
+    data: key && result?.scopeKey === scopeKey ? result.data : null,
     error: result?.key === key ? result.error : null,
     loading: !!key && result?.key !== key,
     refresh,

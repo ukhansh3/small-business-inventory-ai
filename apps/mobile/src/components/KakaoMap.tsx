@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Pressable, StyleSheet, Text, View } from "react-native";
 import { WebView } from "react-native-webview";
 import {
   Vendor,
@@ -107,6 +107,10 @@ export function KakaoMap({
           if (selection) onSelect(selection.vendorId);
         }}
       />
+      {loaded && <View style={styles.zoomControls}>
+        <Pressable accessibilityRole="button" accessibilityLabel="지도 확대" style={styles.zoomButton} onPress={() => ref.current?.postMessage(JSON.stringify({ type: "zoom", delta: -1 }))}><Text style={styles.zoomText}>＋</Text></Pressable>
+        <Pressable accessibilityRole="button" accessibilityLabel="지도 축소" style={styles.zoomButton} onPress={() => ref.current?.postMessage(JSON.stringify({ type: "zoom", delta: 1 }))}><Text style={styles.zoomText}>−</Text></Pressable>
+      </View>}
       {!loaded && !failed && (
         <View style={styles.overlay}>
           <ActivityIndicator color={colors.orange} />
@@ -159,4 +163,7 @@ const styles = StyleSheet.create({
     padding: 24,
     gap: 14,
   },
+  zoomControls: { position: "absolute", right: 12, top: 12, gap: 8 },
+  zoomButton: { width: 42, height: 42, borderRadius: 12, backgroundColor: colors.white, alignItems: "center", justifyContent: "center", elevation: 4 },
+  zoomText: { color: colors.ink, fontSize: 26, fontWeight: "700", lineHeight: 30 },
 });

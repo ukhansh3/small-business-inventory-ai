@@ -273,3 +273,30 @@ export const mvpSearchQuerySchema = z.object({
   category: z.string().max(500).default(""),
   offset: z.coerce.number().int().min(0).max(10000).default(0),
 }).strict();
+export const syntheticVendorSchema = z.object({
+  id: uuid,
+  demo_code: z.string().regex(/^fake-\d{4}$/),
+  name: z.string(),
+  category: z.string(),
+  area: z.string(),
+  latitude: z.number().min(-90).max(90),
+  longitude: z.number().min(-180).max(180),
+  service: z.string(),
+  price: z.number().int().positive().max(1000000000000),
+  unit: z.string(),
+  terms: z.string(),
+  demo_notice: z.literal("가상 시연 데이터 · 실제 업체·위치·가격·거래 조건이 아닙니다."),
+  data_kind: z.literal("synthetic_demo"),
+});
+export type SyntheticVendor = z.infer<typeof syntheticVendorSchema>;
+export const syntheticVendorSearchSchema = z.object({
+  vendors: z.array(syntheticVendorSchema),
+  total: z.number().int().nonnegative(),
+  limit: z.literal(200),
+  data_kind: z.literal("synthetic_demo"),
+});
+export type SyntheticVendorSearch = z.infer<typeof syntheticVendorSearchSchema>;
+export const syntheticVendorQuerySchema = z.object({
+  query: z.string().trim().max(100).default(""),
+  category: z.string().max(100).default(""),
+}).strict();
