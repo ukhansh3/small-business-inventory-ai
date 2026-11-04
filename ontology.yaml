@@ -1,221 +1,345 @@
-# 지역 자영업자 거래 정보 커뮤니티 — 온톨로지 검토 초안
-# 제출 예정 경로: docs/ontology.yaml
-# AI 보조 작성본. 대표어·경계·근거는 팀이 검토하고 확정해야 한다.
-version: '0.1'
-status: draft_pending_team_review
+version: '0.2'
+status: team_review_draft
 language: ko
-updated_at: '2026-10-07'
-product: 지역 자영업자 지도 기반 거래 정보 커뮤니티
+updated_at: '2026-11-04'
+domain: 소규모 외식업 점주의 낯선 품목·공급업체 탐색과 판단
+
+purpose: >-
+  인터뷰에서 관찰한 공급업체 탐색과 판단 과정을 개념·속성·관계로 정리한다.
+  지도, 커뮤니티, AI, API 요청 구조는 문제 도메인의 관찰 사실이 아니므로
+  solution_mapping에 별도로 기록한다.
 
 evidence_policy:
-  description: >-
-    evidence의 키는 아래 sources를 참조한다. interview_summary는 공개된
-    인터뷰 분석표의 요약 근거이며 원문 인용이 아니다. product_proposal은
-    기능 설계 제안일 뿐 인터뷰로 확인된 수요가 아니다. 미검증 항목을
-    인터뷰 근거로 위장하지 않는다. 강의 제출 전에 원문 로그와 관찰 기록을
-    대조하고 근거가 부족한 항목은 삭제·축소하거나 가설로 분리한다.
-  repository: https://github.com/ukhansh3/small-business-inventory-ai
-  evidence_matrix: https://github.com/ukhansh3/small-business-inventory-ai/blob/main/docs/interviews/synthesis/current-evidence-matrix.md
-  analyzed_interviews: [I01, I02, I03, I04, I05, I06, I09, I10]
-  excluded_from_claim_counts: [I07, I08, I11]
+  observation: 인터뷰 로그에 기록된 과거 행동만 관찰 근거로 사용한다.
+  interpretation: 팀의 해석은 관찰과 분리한다.
+  unknown: 질문하지 않았거나 원음에서 확인하지 못한 값은 unknown으로 둔다.
+  quote_rule: 직접 인용은 원음 대조 후 익명화한 경우에만 사용한다.
+  analyzed_interviews: [I01, I02, I03, I04, I05, I06, I09, I10, I12]
+  pending_structure: [I07, I08, I11]
   limitations:
-    - 개별 인터뷰 원문과 관찰 기록은 이번 초안에서 대조하지 못했다.
-    - 지도·공개 커뮤니티·AI 채팅의 효과와 자발적 공유 참여는 미검증이다.
-    - 대학가 요식업 표본을 전체 자영업자로 일반화하지 않는다.
+    - 아주대 인근 외식업 표본에 집중돼 다른 지역과 업종으로 일반화할 수 없다.
+    - 수정 전 인터뷰에서 묻지 않은 정보 비대칭 항목은 반대 근거가 아니다.
+    - 직접 인용과 일부 수치는 원음 대조가 남아 있다.
 
 sources:
-  I01: {kind: interview_summary, summary: '소량 구매와 신선도·근거리 배송·관계를 중시한 사례'}
-  I02: {kind: interview_summary, summary: '주변 점주에게 폐유 가격 차이를 듣고 업체를 변경하고 수리업체를 탐색한 사례'}
-  I03: {kind: interview_summary, summary: '가격 비교와 함께 배송·운반 편의를 고려한 사례'}
-  I05: {kind: interview_summary, summary: '인맥과 경험으로 거래처를 찾고 품질을 고려해 변경한 사례'}
-  I09: {kind: interview_summary, summary: '기존 연락처로 빠르게 해결하고 경쟁 점주와 공개 공유를 꺼린 반대 사례'}
-  I10: {kind: interview_summary, summary: '가족 소개·가격 비교와 디지털 사용 부담이 나타난 사례'}
-  D01: {kind: product_proposal, summary: '사용자가 제안한 지도형 품목·업체 정보 탐색과 점주 커뮤니티'}
-  D02: {kind: product_proposal, summary: '사용자가 제안한 자연어 AI 검색 보조. 편의성은 별도 검증'}
-  D03: {kind: product_proposal, summary: '비교 가능한 규격·수량·가격 조건과 출처를 보존하는 설계 제안'}
-  D04: {kind: product_proposal, summary: '초대·운영자 확인 방식의 제한된 점주 파일럿과 개인정보 최소화 제안'}
-  D05: {kind: product_proposal, summary: 'ID·권한·노출 상태·결정적 정렬·불명확 입력 처리에 필요한 구현 계약 제안'}
-  D06: {kind: product_proposal, summary: '외부 입력은 명령이 아닌 데이터로 취급하고 AI 사실 응답에 근거를 연결하는 안전 설계'}
+  I01:
+    kind: interview_log
+    path: docs/interviews/logs/I01.md
+    summary: 소량 구매와 신선도·근거리 배송·관계를 중시한 사례
+  I02:
+    kind: interview_log
+    path: docs/interviews/logs/I02.md
+    summary: 폐유 가격 차이를 알고 업체를 변경하고 수리업체를 탐색한 사례
+  I03:
+    kind: interview_log
+    path: docs/interviews/logs/I03.md
+    summary: 네 개 구매 경로와 가격 알림을 쓰며 배송·운반 편의를 함께 고려한 사례
+  I04:
+    kind: interview_log
+    path: docs/interviews/logs/I04.md
+    summary: 기존 거래처를 편의성 때문에 유지하고 최근 변경 사건이 없는 반대 사례
+  I05:
+    kind: interview_log
+    path: docs/interviews/logs/I05.md
+    summary: 지인과 과거 경험으로 거래처를 찾고 품질을 기준으로 변경한 사례
+  I06:
+    kind: interview_log
+    path: docs/interviews/logs/I06.md
+    summary: 빈번한 직접 구매가 있었으나 거래처 탐색 문제는 확인하지 못한 사례
+  I07:
+    kind: interview_audio_pending_structure
+    path: docs/interviews/logs/I07.md
+    summary: 원음 구조화 전이므로 개념 주장에 사용하지 않음
+  I08:
+    kind: interview_audio_pending_structure
+    path: docs/interviews/logs/I08.md
+    summary: 원음 구조화 전이므로 개념 주장에 사용하지 않음
+  I09:
+    kind: interview_log
+    path: docs/interviews/logs/I09.md
+    summary: 경험과 저장 연락처로 하루 안에 변경하고 경쟁 점주와 공유를 꺼린 사례
+  I10:
+    kind: interview_log
+    path: docs/interviews/logs/I10.md
+    summary: 가족 소개·가격 비교·운반과 디지털 부담이 함께 나타난 사례
+  I11:
+    kind: interview_audio_pending_structure
+    path: docs/interviews/logs/I11.md
+    summary: 원음 구조화 전이므로 개념 주장에 사용하지 않음
+  I12:
+    kind: interview_log
+    path: docs/interviews/logs/I12.md
+    summary: 창업 초기에 약 10곳을 방문하고 경험이 쌓인 뒤 탐색 빈도가 감소한 사례
 
 terminology:
-  Owner: '점주, 사장님, 이용자. 한 계정당 대표 사업장 하나만 파일럿에 등록한다.'
-  Vendor: '공급업체, 판매처, 거래처. Owner의 사업장과 별개이며 자동 공개하지 않는다.'
-  Item: '품목의 비교 단위. name이 같아도 specification이 다르면 다른 Item이다.'
-  Category: 'Item의 품목 분류. Owner의 업종 및 Vendor의 업종과 혼용하지 않는다.'
-  PriceInfo: '특정 Vendor·Item의 과거 확인 가격 및 거래 조건. 실시간 가격·재고 보증이 아니다.'
-  CommunityPost: '질문·가격 제보·거래 경험. 기존 관계도 보완안의 Review는 trade_experience 유형으로 통합한다.'
-  SearchRequest: '구조화된 검색 조건. AI와 일반 검색이 같은 계약을 사용한다.'
+  BusinessOwner: 품목·공급업체 선택을 실제로 담당하는 점주
+  Store: BusinessOwner가 운영하는 음식점 또는 매장
+  Vendor: 품목 또는 외부 서비스를 공급하는 업체
+  SupplierCandidate: 한 SearchEpisode에서 비교 대상으로 고려된 Vendor
+  Offer: 특정 시점 Vendor가 제공하는 품목·규격·가격·거래 조건 묶음
+  SearchEpisode: 하나의 실제 필요에서 시작해 후보 탐색과 비교를 거쳐 끝나는 사건
+  PriceRecord: 특정 시점에 확인한 가격 기록이며 실시간 가격 보증이 아님
+  TradeExperience: 실제 거래에 대한 자기보고이며 검증 완료 리뷰와 같지 않음
 
 classes:
-  Owner:
-    description: '거래 정보를 검색하고 글을 작성하는 점주 계정. 실명·개인 연락처는 공개 필드로 두지 않는다.'
-    evidence: [I02, I05, I09, D04]
+  BusinessOwner:
+    definition: 품목·공급업체 선택을 직접 담당하는 자영업자
+    evidence: [I02, I03, I05, I09, I10, I12]
     attributes:
-      owner_id: {type: string, key: true, evidence: [D05]}
-      display_name: {type: string, evidence: [D04]}
-      store_name: {type: string, nullable: true, visibility: private, evidence: [D04]}
-      store_type: {type: string, nullable: true, visibility: private, evidence: [D04]}
-      verification_status: {type: enum, values: [pending, verified, rejected], evidence: [D04]}
-      role: {type: enum, values: [owner, moderator], evidence: [D05]}
-    relations:
-      - {name: creates, target: SearchRequest, cardinality: '1:N', evidence: [D01, D02]}
-      - {name: writes, target: CommunityPost, cardinality: '1:N', evidence: [D01]}
+      experience_years:
+        type: number
+        nullable: true
+        evidence: [I03, I04, I05, I09, I10, I12]
+      category_experience:
+        type: string
+        nullable: true
+        note: 업력과 별개인 해당 품목·업체 범주의 경험
+        evidence: [I05, I09, I12]
+      saved_contacts_available:
+        type: boolean
+        nullable: true
+        evidence: [I09]
+
+  ProcurementNeed:
+    definition: 새 품목 또는 공급업체를 알아봐야 하는 계기
+    evidence: [I02, I05, I09, I12]
+    attributes:
+      need_type:
+        type: enum
+        values: [new_item, supplier_failure, price_concern, startup, repair_or_service, unknown]
+        evidence: [I02, I05, I09, I12]
+      occurred_at:
+        type: datetime
+        nullable: true
+        note: 원음에서 확인하지 못하면 unknown 처리
+        evidence: [I09]
+
+  SearchEpisode:
+    definition: 필요 발생부터 후보 탐색·비교·선택까지의 실제 사건
+    evidence: [I02, I03, I05, I09, I10, I12]
+    attributes:
+      contacted_vendor_count:
+        type: integer
+        nullable: true
+        min: 0
+        evidence: [I03, I05, I12]
+      elapsed_time:
+        type: string
+        nullable: true
+        evidence: [I02, I09, I12]
+      monetary_cost:
+        type: integer
+        nullable: true
+        min: 0
+        currency: KRW
+        note: 금액을 확인하지 못한 손실은 null
+        evidence: [I09]
+      frequency:
+        type: string
+        nullable: true
+        note: 주기 또는 최근 기간 내 발생 횟수. 추정 금지
+        evidence: [I03, I10, I12]
+
+  InformationSource:
+    definition: 후보와 조건을 알기 위해 실제 사용한 정보 경로
+    evidence: [I02, I03, I05, I09, I10, I12]
+    attributes:
+      source_type:
+        type: enum
+        values: [search, salesperson, saved_contact, acquaintance, nearby_owner, flyer, direct_visit, prior_experience, unknown]
+        evidence: [I02, I03, I05, I09, I10, I12]
+      public_or_private:
+        type: enum
+        values: [public, private_network, first_party, unknown]
+        evidence: [I02, I05, I09, I10, I12]
 
   Vendor:
-    description: '첫 버전의 식재료·소모품 판매처. 수리·폐유 수거 등 서비스업체는 별도 확장 검토.'
-    evidence: [I01, I03, I05, D01]
+    definition: 품목 또는 외부 서비스를 공급하는 업체
+    evidence: [I01, I02, I03, I04, I05, I09, I10, I12]
     attributes:
-      vendor_id: {type: string, key: true, evidence: [D05]}
-      name: {type: string, evidence: [I05, D01]}
-      phone: {type: string, nullable: true, note: '공개 사업용 연락처만 사용', evidence: [D04]}
-      website_url: {type: string, nullable: true, evidence: [D01]}
-      service_area: {type: string, nullable: true, note: '설명용 배송 지역. 자동 배송 가능 판정에 사용하지 않음', evidence: [I03, D03]}
-      source: {type: string, note: '공개 출처 또는 확인 기록 ID', evidence: [D03]}
-      checked_at: {type: datetime, nullable: true, evidence: [D03]}
-      status: {type: enum, values: [active, hidden], evidence: [D05]}
-    relations:
-      - {name: located_at, target: Location, cardinality: 'N:0..1', evidence: [D01]}
-      - {name: offers, target: Item, cardinality: 'N:M', evidence: [I01, I03, D01]}
-      - {name: has_price_record, target: PriceInfo, cardinality: '1:N', evidence: [D03]}
+      vendor_category:
+        type: string
+        nullable: true
+        evidence: [I02, I05, I09, I12]
+      relationship_status:
+        type: enum
+        values: [candidate, active, replaced, former, unknown]
+        evidence: [I02, I04, I05, I09, I12]
 
-  Item:
-    description: '구매 대상 품목과 규격. 예시: 양파 / 국내산·등급 미확인. 예시는 실제 상품 자료가 아니다.'
-    evidence: [I01, I03, D03]
+  Offer:
+    definition: 비교 시점의 품목·규격·가격·배송·최소 주문 등 조건 묶음
+    evidence: [I02, I03, I05, I09, I10, I12]
     attributes:
-      item_id: {type: string, key: true, evidence: [D05]}
-      name: {type: string, evidence: [I01, I03]}
-      aliases: {type: 'list[string]', note: '팀이 승인한 동의어만 사용', evidence: [D05]}
-      specification: {type: string, nullable: true, note: '원산지·등급·크기 등. 모르면 null', evidence: [D03]}
-      base_unit: {type: enum, values: [kg, L, ea], note: '환산은 명시된 중량·용량·개수에만 적용', evidence: [D03]}
-    relations:
-      - {name: classified_as, target: Category, cardinality: 'N:1', evidence: [D01]}
+      item_or_service:
+        type: string
+        nullable: true
+        evidence: [I02, I03, I05, I09, I12]
+      amount:
+        type: integer
+        nullable: true
+        min: 0
+        currency: KRW
+        note: 미확인 가격을 0으로 저장하지 않음
+        evidence: [I02, I03, I09, I10, I12]
+      specification:
+        type: string
+        nullable: true
+        evidence: [I03, I05, I12]
+      fulfillment:
+        type: enum
+        values: [pickup, delivery, both, unknown]
+        evidence: [I01, I03, I09]
+      minimum_order:
+        type: string
+        nullable: true
+        evidence: [I01, I03]
 
-  Category:
-    description: '품목 탐색을 위한 분류. 식재료·소모품 등 초기 분류표는 팀이 확정한다.'
-    evidence: [D01]
+  DecisionCriterion:
+    definition: 후보를 선택·유지·교체할 때 적용한 기준
+    evidence: [I01, I03, I04, I05, I09, I10, I12]
     attributes:
-      category_id: {type: string, key: true, evidence: [D05]}
-      name: {type: string, evidence: [D01]}
-      description: {type: string, nullable: true, evidence: [D01]}
-    relations:
-      - {name: parent_category, target: Category, cardinality: 'N:0..1', note: '순환 참조 금지', evidence: [D05]}
+      criterion_type:
+        type: enum
+        values: [price, quality, freshness, delivery_speed, delivery_reliability, carrying_convenience, relationship, vendor_stability, distance, unknown]
+        evidence: [I01, I03, I04, I05, I09, I10, I12]
+      priority:
+        type: integer
+        nullable: true
+        min: 1
+        note: 인터뷰이가 순서를 명시한 경우만 사용
+        evidence: [I05, I09, I12]
 
-  Location:
-    description: '업체 소재지 또는 검색 기준점. 검색 위치를 점주의 공개 위치로 전환하지 않는다.'
-    evidence: [D01, D04]
+  SupplierDecision:
+    definition: 비교 후 내린 선택·유지·교체·보류 결정
+    evidence: [I02, I04, I05, I09, I12]
     attributes:
-      location_id: {type: string, key: true, evidence: [D05]}
-      address: {type: string, nullable: true, evidence: [D01]}
-      latitude: {type: number, nullable: true, range: [-90, 90], evidence: [D01]}
-      longitude: {type: number, nullable: true, range: [-180, 180], evidence: [D01]}
-    constraints:
-      - 좌표는 둘 다 유효한 값이거나 둘 다 null이다.
-      - 지도에 노출할 공개 업체 위치와 비공개 검색 기준점을 같은 공개 목록에 담지 않는다.
-    relations: []
+      action:
+        type: enum
+        values: [select, keep, replace, postpone, no_choice]
+        evidence: [I02, I04, I05, I09, I12]
+      decided_at:
+        type: datetime
+        nullable: true
+        evidence: [I09]
 
-  PriceInfo:
-    description: '한 업체가 한 규격의 품목을 특정 수량 단위로 판매한 가격·거래 조건 기록. 새 제보는 새 기록으로 보존.'
-    evidence: [I02, I03, D03]
+  Outcome:
+    definition: 선택 이후 관찰한 만족·손실·재탐색·복귀 행동
+    evidence: [I02, I09, I12]
     attributes:
-      price_info_id: {type: string, key: true, evidence: [D05]}
-      amount: {type: integer, nullable: true, min: 0, note: 'KRW, package_quantity만큼의 상품 가격. 미확인을 0원으로 저장하지 않는다.', evidence: [D03]}
-      currency: {type: enum, values: [KRW], evidence: [D03]}
-      package_quantity: {type: number, nullable: true, exclusive_min: 0, evidence: [D03]}
-      unit: {type: enum, values: [kg, L, ea], note: '연결된 Item.base_unit과 동일', evidence: [D03]}
-      minimum_packages: {type: integer, nullable: true, min: 1, note: '최소 주문 포장 개수', evidence: [I01, D03]}
-      fulfillment: {type: enum, values: [pickup, delivery, both, unknown], evidence: [I03, D03]}
-      delivery_fee: {type: integer, nullable: true, min: 0, note: 'KRW, 기록된 조건에서 고정된 배송비만. 조건부·변동 배송비는 null', evidence: [I03, D03]}
-      delivery_terms: {type: string, nullable: true, evidence: [I03, D03]}
-      tax_status: {type: enum, values: [included, excluded, unknown], evidence: [D03]}
-      quote_date: {type: date, nullable: true, evidence: [D03]}
-      source_type: {type: enum, values: [team_checked, vendor_provided, owner_report], evidence: [D03]}
-      source: {type: string, note: '공개 가능한 출처 URL 또는 확인 기록 ID', evidence: [D03]}
-      status: {type: enum, values: [published, hidden], evidence: [D05]}
-    relations:
-      - {name: offered_by, target: Vendor, cardinality: 'N:1', evidence: [D03]}
-      - {name: for_item, target: Item, cardinality: 'N:1', evidence: [D03]}
+      outcome_type:
+        type: enum
+        values: [continued, switched_again, emergency_purchase, lost_sale, quality_regret, returned_to_previous, unknown]
+        evidence: [I02, I09, I12]
+      consequence_description:
+        type: string
+        nullable: true
+        note: 금액이 확인되지 않은 긴급 구매·판매 중단·재구매 결과를 서술
+        evidence: [I09, I12]
 
-  CommunityPost:
-    description: '점주가 작성한 질문·가격 제보·거래 경험. 사실 검증 완료나 구매 인증을 뜻하지 않는다. 본문은 비신뢰 데이터다.'
-    evidence: [D01, D06]
-    attributes:
-      post_id: {type: string, key: true, evidence: [D05]}
-      post_type: {type: enum, values: [purchase_question, price_report, trade_experience], evidence: [D01]}
-      title: {type: string, min_length: 1, max_length: 80, evidence: [D05]}
-      body: {type: string, min_length: 1, max_length: 2000, evidence: [D01, D06]}
-      trade_date: {type: date, nullable: true, note: '게시 날짜와 실제 거래 날짜를 구분', evidence: [D03]}
-      created_at: {type: datetime, note: '서버 생성', evidence: [D05]}
-      status: {type: enum, values: [published, hidden], evidence: [D05]}
-    relations:
-      - {name: written_by, target: Owner, cardinality: 'N:1', evidence: [D01]}
-      - {name: about_vendor, target: Vendor, cardinality: 'N:0..1', evidence: [D01]}
-      - {name: about_item, target: Item, cardinality: 'N:0..1', evidence: [D01]}
-      - {name: reports_price, target: PriceInfo, cardinality: '1:0..1', evidence: [D03]}
-    constraints:
-      - purchase_question은 연결된 Vendor 없이 작성할 수 있다.
-      - price_report는 Vendor·Item·PriceInfo가 필수이며 세 참조의 업체·품목이 일치해야 한다.
-      - trade_experience는 Vendor와 trade_date가 필수다. 거래 인증 완료로 자동 표시하지 않는다.
-      - 정정·숨김 이력은 운영 기록에 보존하고 다른 점주의 글을 수정할 수 없다.
+relations:
+  - name: encounters
+    from: BusinessOwner
+    to: ProcurementNeed
+    cardinality: '1:N'
+    evidence: [I02, I05, I09, I12]
+  - name: performs
+    from: BusinessOwner
+    to: SearchEpisode
+    cardinality: '1:N'
+    evidence: [I02, I03, I05, I09, I10, I12]
+  - name: triggered_by
+    from: SearchEpisode
+    to: ProcurementNeed
+    cardinality: 'N:1'
+    evidence: [I02, I09, I12]
+  - name: consults
+    from: SearchEpisode
+    to: InformationSource
+    cardinality: 'N:M'
+    evidence: [I02, I03, I05, I09, I10, I12]
+  - name: considers
+    from: SearchEpisode
+    to: Vendor
+    role_name: SupplierCandidate
+    cardinality: 'N:M'
+    evidence: [I02, I03, I05, I09, I12]
+  - name: compares
+    from: SearchEpisode
+    to: Offer
+    cardinality: 'N:M'
+    evidence: [I02, I03, I05, I09, I10, I12]
+  - name: offered_by
+    from: Offer
+    to: Vendor
+    cardinality: 'N:1'
+    evidence: [I02, I03, I05, I09, I12]
+  - name: applies
+    from: SearchEpisode
+    to: DecisionCriterion
+    cardinality: 'N:M'
+    evidence: [I01, I03, I04, I05, I09, I10, I12]
+  - name: produces
+    from: SearchEpisode
+    to: SupplierDecision
+    cardinality: '1:0..1'
+    evidence: [I02, I04, I05, I09, I12]
+  - name: selects
+    from: SupplierDecision
+    to: Vendor
+    cardinality: 'N:0..1'
+    evidence: [I02, I04, I05, I09, I12]
+  - name: results_in
+    from: SupplierDecision
+    to: Outcome
+    cardinality: '1:0..N'
+    evidence: [I02, I09, I12]
 
-  SearchRequest:
-    description: '일반 검색과 AI 검색이 공유하는 요청. 파서가 모르는 필드는 null로 두며 검색 실행 전에 검증한다.'
-    evidence: [D01, D02, D05]
-    attributes:
-      request_id: {type: string, key: true, evidence: [D05]}
-      query: {type: string, nullable: true, max_length: 1000, evidence: [D02, D05]}
-      item_id: {type: string, nullable: true, reference: Item, evidence: [D01]}
-      category_id: {type: string, nullable: true, reference: Category, evidence: [D01]}
-      radius_m: {type: integer, nullable: true, range: [100, 20000], note: 'UI 제안 기본값 3000, 단위 m', evidence: [D05]}
-      fulfillment: {type: enum, values: [any, pickup, delivery], note: '미언급 시 any. delivery는 배송 지원 여부이지 해당 주소 배송 보증이 아니다.', evidence: [I03, D05]}
-      sort_option: {type: enum, values: [distance, latest], note: '초기 가격순·AI 종합 점수 정렬은 제외', evidence: [D05]}
-    relations:
-      - {name: created_by, target: Owner, cardinality: 'N:1', evidence: [D04]}
-      - {name: centered_at, target: Location, cardinality: 'N:0..1', evidence: [D01]}
-      - {name: matches, target: Vendor, cardinality: 'N:M', note: '조건 검증 후 계산한 결과이며 영구 소유 관계가 아니다.', evidence: [D01, D05]}
+core_flow:
+  - BusinessOwner encounters ProcurementNeed
+  - BusinessOwner performs SearchEpisode
+  - SearchEpisode consults InformationSource
+  - SearchEpisode considers Vendor and compares Offer
+  - SearchEpisode applies DecisionCriterion
+  - SearchEpisode produces SupplierDecision
+  - SupplierDecision results_in Outcome
 
-scope:
-  in:
-    - 제한된 지역의 식재료·매장 소모품 업체 지도 탐색
-    - 품목과 규격에 연결된 가격 기록 및 배송 조건 조회
-    - 질문·가격 제보·거래 경험 작성과 조회
-    - 등록 자료를 근거로 하는 AI 검색 보조
-    - 제한된 점주 파일럿 접근과 신고·숨김
-  out:
-    - 수리·폐유 등 서비스 가격의 자동 비교
-    - 개인 채팅·댓글·저장 목록과 알림의 첫 버전 구현
-    - 남는 식재료 거래·중고거래·공동구매
-    - 결제·주문·배송 중개 및 업체 자동 연락
-    - POS·실시간 재고·자동 발주
-    - 전국 최저가 또는 실시간 가격 보장
-    - 사업자등록증 자동 인증과 공개 원본 증빙 보관
-  core_flow:
-    - Owner가 SearchRequest를 작성한다.
-    - 위치와 품목 조건을 검증하여 Vendor 및 연결된 Item·PriceInfo를 찾는다.
-    - 지도·목록·AI가 같은 조회 결과와 출처를 제시한다.
-    - Owner가 업체 정보를 확인하고 CommunityPost로 질문·거래 경험·가격을 공유한다.
+problem_boundaries:
+  includes:
+    - 실제 공급업체 탐색 경로
+    - 가격·품질·배송·관계 판단 기준
+    - 탐색 시간·접촉 수·금전 손실
+    - 선택 이후 유지·교체·재탐색 행동
+  excludes:
+    - 지도 UI
+    - 커뮤니티 게시물
+    - AI 프롬프트와 검색 요청 DTO
+    - 인증·권한·revision 상태
+    - 공공데이터 수집 스키마
 
-approval_required:
-  - '본 초안의 설계 항목을 수요 검증 완료로 취급하지 않는다.'
-  - 'Category 초기 목록, Item 규격, 비교 가능한 단위를 실제 자료로 확정한다.'
-  - '범위·거리 한도·정렬·파일럿 접근 방식은 SPEC.md의 제안 계약이며 팀 승인이 필요하다.'
-  - '원본 로그를 확인해 evidence를 보완하고 교수님의 사람 작성 기준에 맞게 재검토한다.'
+solution_mapping:
+  status: implementation_model_not_interview_evidence
+  specification: SPEC.md
+  contract: packages/vendor-contracts/index.ts
+  mappings:
+    Vendor: publishedVendorSchema
+    Offer: publishedItemSchema
+    SearchEpisode: searchQuerySchema
+    SupplierDecision: 사용자 테스트에서 선택 행동으로 측정하며 현재 DB 개체는 없음
+  implementation_only_entities:
+    - VendorRevision
+    - VendorMembership
+    - ModerationDecision
+    - SearchRequestDTO
+    - CommunityPost
+    - MvpPublicVendor
 
-# 사용자 요청으로 추가한 등록 흐름. 기존 탐색 가설 전체를 승인하지 않는다.
-vendor_registration_v1:
-  contract: docs/contracts/vendor-registration-v1.md
-  decision: docs/decisions/ADR-008-implement-vendor-registration-db.md
-  SupplierAccount: 'Supabase Auth 로그인 계정. 운영자 여부를 직접 지정하지 않는다.'
-  VendorMembership: '공급업체를 관리할 권한. 음식점의 실제 거래 관계와 다르다.'
-  VendorRevision: '작성·검토·승인되는 업체 정보 제출본. 승인본은 불변이다.'
-  VendorItemRevision: '특정 업체·제출본의 품목과 해당 규격 가격. 양수 원화 가격 필수 공개.'
-  Publication: '현재 승인본 포인터와 업체 숨김 상태를 함께 검사한다. 현재 조회는 로그인 필수.'
-  ReviewEvent: '운영 조치와 당시 스냅샷. 내부 메모는 운영자만 조회한다.'
+open_questions:
+  - I07, I08, I11 구조화 후 새 개념 또는 반대 근거가 생기는가?
+  - 접촉 업체 수·소요 시간·손실 금액을 몇 건에서 수치로 확인할 수 있는가?
+  - Offer를 동일 규격으로 비교할 수 있는 데이터가 반복 확보되는가?
+  - 공개 정보와 사적 인맥 정보의 경계는 무엇인가?
 
-# 2026-11-04 사용자 승인: ADR-009, 공공 업체 시연 전용 개체.
-public_vendor_mvp_contract:
-  identity: 공공 원문 업체명·주소·업종·기준일·출처
-  synthetic: demo_service·demo_price·demo_unit·demo_terms
-  data_kind: mvp_demo
-  vendor_verified: false
-  owner_registration: false
-  approved_vendor: false
+approval:
+  required_reviewers: [김민균, 차승호, 송민혁]
+  approved_by: []
+  approved_commit: null

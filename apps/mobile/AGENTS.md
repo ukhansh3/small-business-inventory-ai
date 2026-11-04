@@ -1,47 +1,34 @@
-> 2026-10-28 추가 지시: 사용자가 민균 브랜치에서 DB 규칙 구현을 요청했다. 업체 등록 DB/API 범위는 루트 ADR-008과 `docs/contracts/vendor-registration-v1.md`를 따르며, 이전의 “이번 UI 전환에서 DB 미변경” 문구는 당시 작업 범위의 기록이다. 공유 DB 적용은 별도다.
+# 모바일 앱 추가 규칙
 
-# 천하장사 모바일 개발 기준
+루트 `AGENTS.md`, `DEVELOPMENT_GUIDE.md`, `SPEC.md`가 우선합니다. 이 파일은 `apps/mobile`에만 적용되는 추가 규칙입니다.
 
-사용자 앱은 이 폴더의 Android/iOS React Native 앱이다. 작업 전에 DEVELOPMENT_GUIDE.md와 루트 AGENTS.md를 읽는다. DB와 API 계약은 이번 UI 전환에서 확정하지 않는다. 기존 웹 화면 고정 규칙은 ADR-007로 대체한다.
+## 역할
 
-This is an Expo/React Native mobile application. Prioritize mobile-first patterns, performance, and cross-platform compatibility.
+- 실제 Android·iOS 사용자 앱은 이 폴더의 Expo·React Native 앱입니다.
+- 라우트는 `src/app/`, 공용 UI는 `src/components/`, API·세션은 `src/lib/`, 표시 규칙은 `src/domain/`에 둡니다.
+- `apps/cheonhajangsa/android`의 과거 WebView APK를 현재 앱 기준으로 사용하지 않습니다.
 
-## Expo has changed — do not trust your training data
+## 계약
 
-Expo ships breaking changes every SDK release. APIs you remember are likely renamed, moved, or removed. Before writing any code that touches an Expo, EAS, or React Native API:
+- API 응답을 화면에서 임의 추론하지 말고 `packages/vendor-contracts`와 서버 응답을 따릅니다.
+- `live`, `mvp_demo`, 로컬 샘플을 시각적으로 구분합니다.
+- 실제 API 오류를 샘플 성공 화면으로 바꾸지 않습니다.
+- null 가격·배송비·확인일을 0원·무료·최신으로 표시하지 않습니다.
+- 지도와 목록은 같은 vendor ID 집합을 사용합니다.
+- 서버 비밀키를 `EXPO_PUBLIC_*` 변수나 앱 번들에 넣지 않습니다.
 
-1. Read the major version of the `expo` package in `package.json`.
-2. Fetch the matching versioned docs: `https://docs.expo.dev/versions/v<major>.0.0/`
-3. For anything else, fetch https://docs.expo.dev/llms.txt — an index of all Expo docs with corrections to common LLM misconceptions. Follow its links to the specific page you need; never answer from memory.
+## Expo 확인
 
-## Commands
+Expo·React Native API를 변경하기 전에 `package.json`의 Expo major를 확인하고 해당 버전 공식 문서를 사용합니다. 새 native module은 `npx expo install`로 SDK 호환 버전을 설치하며, 추가 후 development build 필요 여부를 확인합니다.
 
-Use `bunx` instead of `npx` if the project uses bun (`bun.lock` present).
+## 검증
 
 ```bash
-npx expo install <package>  # ALWAYS use instead of npm/yarn/pnpm/bun add — resolves SDK-compatible versions
-npx expo start              # start the dev server
-npx expo lint               # lint
-npx tsc --noEmit            # typecheck
-npx expo-doctor             # diagnose dependency and config issues
-npx expo install --fix      # fix incompatible package versions
+pnpm test
+pnpm typecheck
+pnpm lint
+pnpm bundle:android
+pnpm bundle:ios
 ```
 
-Run lint and typecheck before declaring any task done.
-
-## Navigation & Routing
-
-- Use **Expo Router** for all navigation. Routes live in `src/app/` — every file there is a screen, `_layout.tsx` files define navigators. Keep non-route code (components, hooks, utils) outside `src/app/`.
-- Import `Link`, `router`, and `useLocalSearchParams` from `expo-router`.
-- Docs: https://docs.expo.dev/router/introduction.md
-
-## Building with EAS
-
-Use EAS to build, sign, and submit the app in the cloud (`eas build`, `eas submit`) and to ship over-the-air updates (`eas update`) — no local Xcode or Android Studio required. Run EAS CLI as `bunx eas-cli <command>` in Bun projects, or `npx eas-cli@latest <command>` otherwise; substitute that for bare `eas` in docs examples.
-Docs: https://docs.expo.dev/eas/index.md
-
-## Rules
-
-- If `ios/` and `android/` directories do not exist, they are generated (Continuous Native Generation). Never create or edit them by hand — configure native behavior in `app.json` and config plugins.
-- Expo Go only includes its bundled native modules. After adding a library with native code, the app needs a development build: `npx expo run:ios|android` locally, or `eas build --profile development`.
-- Prefer recommended Expo modules over third-party libraries, and check your available skills before adding dependencies. Docs: https://docs.expo.dev/versions/latest/index.md
+화면 흐름 변경은 Android·iOS 중 실행한 환경과 미검증 환경을 PR에 구분합니다. 인증·위치·사진 권한은 거부·재시도·설정 없음 상태를 함께 확인합니다.
