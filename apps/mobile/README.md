@@ -36,7 +36,7 @@ pnpm start --go
 EXPO_PUBLIC_KAKAO_MAP_URL=https://cheonhajangsa.vercel.app/mobile-map
 EXPO_PUBLIC_SUPABASE_URL=https://프로젝트참조값.supabase.co
 EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY=공개키
-EXPO_PUBLIC_API_BASE_URL=https://민균브랜치서버배포주소
+EXPO_PUBLIC_API_BASE_URL=https://cheonhajangsa.vercel.app
 ```
 
 예시 값은 실제 발급 값과 배포 주소로 바꿉니다. API URL은 origin이며 `/api/v1`을 붙이지 않습니다. 다른 브랜치의 예전 서버를 가리키면 새 API가 없을 수 있습니다.

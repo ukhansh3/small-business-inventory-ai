@@ -10,3 +10,5 @@
 - [ADR-008: 업체 등록 DB 규칙 구현](ADR-008-implement-vendor-registration-db.md)
 
 ADR은 당시 이용 가능한 증거로 내린 결정을 기록합니다. 새로운 인터뷰 결과가 나오면 기존 파일을 지우지 않고 새 ADR에서 변경 이유를 남깁니다.
+
+- [ADR-009 공공 업체 원문과 가상 거래 정보의 MVP 분리](ADR-009-public-vendor-mvp.md)

@@ -237,3 +237,39 @@ export function draftFromRevision(revision: Revision): VendorDraft {
     ),
   });
 }
+
+// Public identity fields and synthetic offers never masquerade as vendor-provided prices.
+export const mvpVendorSchema = z.object({
+  id: uuid,
+  source_key: z.string().length(64),
+  name: z.string(),
+  category: z.string(),
+  address: z.string(),
+  source_dataset: z.string(),
+  source_url: z.string().regex(/^https:\/\/www\.data\.go\.kr\/data\/\d+\/fileData\.do$/),
+  source_date: dateSchema,
+  source_license: z.string(),
+  source_sha256: z.string().length(64),
+  latitude: z.number().min(-90).max(90).nullable(),
+  longitude: z.number().min(-180).max(180).nullable(),
+  coordinate_source: z.literal("kakao_address").nullable(),
+  vendor_verified: z.literal(false),
+  data_kind: z.literal("mvp_demo"),
+  demo_notice: z.literal("MVP 시연용 가상 정보 · 업체가 등록하거나 확인한 가격·조건이 아닙니다. 실제 견적·거래에 사용할 수 없습니다."),
+  demo_service: z.string().startsWith("[시연]"),
+  demo_price: z.number().int().positive().max(1000000000000),
+  demo_unit: z.string(),
+  demo_terms: z.string().startsWith("[시연]"),
+});
+export type MvpVendor = z.infer<typeof mvpVendorSchema>;
+export const mvpVendorSearchSchema = z.object({
+  vendors: z.array(mvpVendorSchema),
+  offset: z.number().int().nonnegative(),
+  limit: z.literal(20),
+  data_kind: z.literal("mvp_demo"),
+});
+export const mvpSearchQuerySchema = z.object({
+  query: z.string().trim().max(100).default(""),
+  category: z.string().max(500).default(""),
+  offset: z.coerce.number().int().min(0).max(10000).default(0),
+}).strict();

@@ -210,3 +210,12 @@ vendor_registration_v1:
   VendorItemRevision: '특정 업체·제출본의 품목과 해당 규격 가격. 양수 원화 가격 필수 공개.'
   Publication: '현재 승인본 포인터와 업체 숨김 상태를 함께 검사한다. 현재 조회는 로그인 필수.'
   ReviewEvent: '운영 조치와 당시 스냅샷. 내부 메모는 운영자만 조회한다.'
+
+# 2026-11-04 사용자 승인: ADR-009, 공공 업체 시연 전용 개체.
+public_vendor_mvp_contract:
+  identity: 공공 원문 업체명·주소·업종·기준일·출처
+  synthetic: demo_service·demo_price·demo_unit·demo_terms
+  data_kind: mvp_demo
+  vendor_verified: false
+  owner_registration: false
+  approved_vendor: false

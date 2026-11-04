@@ -1,3 +1,5 @@
+> 2026-11-04 사용자 승인 시연 범위: 공공 업체 원문 + 별도 가상 가격·조건은 [ADR-009](docs/decisions/ADR-009-public-vendor-mvp.md)와 [시연 데이터 계약](docs/data-sources/public-vendor-mvp.md)을 따른다. 기존 승인 업체 DTO와 혼합하지 않는다.
+
 > 2026-10-28 구현 보충: 업체 직접 등록·필수 품목/가격·운영자 검토 흐름은 [등록 계약 v1](docs/contracts/vendor-registration-v1.md) 및 ADR-008을 따른다. 아래 기존 초안 전체가 승인되거나 실제 DB에 적용되었다는 의미는 아니다.
 
 # 지역 자영업자 거래 정보 커뮤니티 — SPEC v0.1

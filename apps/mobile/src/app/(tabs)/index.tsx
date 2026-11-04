@@ -114,6 +114,7 @@ export default function Explore() {
           ? "운영자가 승인한 현재 공개본만 표시합니다. 가격은 업체 제공 정보이며 주문 전 확인이 필요합니다."
           : "서버 미연결 · 아래 업체·품목·가격은 가상 샘플입니다. 실제 DB 결과와 섞지 않습니다."}
       </Note>
+      {backendConfigured && <Action secondary label="공공 업체 MVP 시연 보기" onPress={() => router.push("/mvp-vendors")} />}
       <Field
         label="업체·취급 품목"
         value={query}
