@@ -1,0 +1,1911 @@
+openapi: 3.1.0
+info:
+  title: 천하장사 데모 API — 목표 인터페이스 (제안)
+  version: 3.0.0-draft
+  description: v2.4 기능 명세 + v3.0 통합 설계에서 제시한 API 목표안. 기존 main 구현은 vendors GET 2개만 확인; 신규 route/DTO는 PROPOSED이며
+    실제 Zod/DB와 자동 동기화된 것이 아님. 각 endpoint의 해제 상태 및 저장 DTO는 v2.4 개별 명세와 일치하도록 보정했지만 구현 계약은 아님.
+servers:
+- url: https://example.invalid
+  description: 미배포 문서 placeholder — 실제 서버가 아님
+tags:
+- name: vendors
+- name: map
+- name: ai
+- name: community
+- name: saved
+- name: demo
+security:
+- bearerAuth: []
+paths:
+  /api/v1/ai/messages:
+    post:
+      tags:
+      - ai
+      summary: post messages — 제안
+      description: 제품 UX를 근거로 작성한 기술 제안이며 아직 main에는 구현되지 않음.
+      x-implementation-status: PROPOSED
+      x-spec-doc: docs/api/ai-assistant/post-messages.md
+      security:
+      - bearerAuth: []
+      responses:
+        '401': &id001
+          description: 표준 API 오류
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403': *id001
+        '404': *id001
+        '422': *id001
+        '429': *id001
+        '503': *id001
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AIReply'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+              - clientMessageId
+              - message
+              - context
+              properties:
+                threadId:
+                  oneOf:
+                  - type: string
+                    format: uuid
+                  - type: 'null'
+                clientMessageId:
+                  type: string
+                  format: uuid
+                message:
+                  type: string
+                  maxLength: 2000
+                context:
+                  type: object
+                  additionalProperties: false
+                  required: &id002 []
+                  properties:
+                    appliedMapBounds:
+                      type: object
+                      required:
+                      - south
+                      - west
+                      - north
+                      - east
+                      properties:
+                        south:
+                          type: number
+                          minimum: -90
+                          maximum: 90
+                        west:
+                          type: number
+                          minimum: -180
+                          maximum: 180
+                        north:
+                          type: number
+                          minimum: -90
+                          maximum: 90
+                        east:
+                          type: number
+                          minimum: -180
+                          maximum: 180
+                    mapQuery:
+                      type: string
+                    mapFilters:
+                      type: object
+  /api/v1/ai/threads/{threadId}:
+    delete:
+      tags:
+      - ai
+      summary: delete thread — 제안
+      description: 제품 UX를 근거로 작성한 기술 제안이며 아직 main에는 구현되지 않음.
+      x-implementation-status: PROPOSED
+      x-spec-doc: docs/api/ai-assistant/delete-thread.md
+      security:
+      - bearerAuth: []
+      responses:
+        '401': *id001
+        '403': *id001
+        '404': *id001
+        '422': *id001
+        '429': *id001
+        '503': *id001
+        '204':
+          description: 삭제 성공, 본문 없음
+      parameters:
+      - in: path
+        name: threadId
+        required: true
+        schema:
+          type: string
+          format: uuid
+  /api/v1/ai/threads/{threadId}/messages:
+    get:
+      tags:
+      - ai
+      summary: get thread messages — 제안
+      description: 제품 UX를 근거로 작성한 기술 제안이며 아직 main에는 구현되지 않음.
+      x-implementation-status: PROPOSED
+      x-spec-doc: docs/api/ai-assistant/get-thread-messages.md
+      security:
+      - bearerAuth: []
+      responses:
+        '401': *id001
+        '403': *id001
+        '404': *id001
+        '422': *id001
+        '429': *id001
+        '503': *id001
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ThreadMessages'
+      parameters:
+      - in: path
+        name: threadId
+        required: true
+        schema:
+          type: string
+          format: uuid
+      - in: query
+        name: cursor
+        required: false
+        schema:
+          type: string
+  /api/v1/community/comments/{commentId}:
+    delete:
+      tags:
+      - community
+      summary: delete comment — 제안
+      description: 제품 UX를 근거로 작성한 기술 제안이며 아직 main에는 구현되지 않음.
+      x-implementation-status: PROPOSED
+      x-spec-doc: docs/api/community/comments/delete-comment.md
+      security:
+      - bearerAuth: []
+      responses:
+        '401': *id001
+        '403': *id001
+        '404': *id001
+        '422': *id001
+        '429': *id001
+        '503': *id001
+        '204':
+          description: 삭제 성공
+      parameters:
+      - in: path
+        name: commentId
+        required: true
+        schema:
+          type: string
+          format: uuid
+    patch:
+      tags:
+      - community
+      summary: patch comment — 제안
+      description: 제품 UX를 근거로 작성한 기술 제안이며 아직 main에는 구현되지 않음.
+      x-implementation-status: PROPOSED
+      x-spec-doc: docs/api/community/comments/patch-comment.md
+      security:
+      - bearerAuth: []
+      responses:
+        '401': *id001
+        '403': *id001
+        '404': *id001
+        '422': *id001
+        '429': *id001
+        '503': *id001
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommunityComment'
+      parameters:
+      - in: path
+        name: commentId
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+              - body
+              properties:
+                body:
+                  type: string
+                  maxLength: 1000
+  /api/v1/community/moderation/reports:
+    get:
+      tags:
+      - community
+      summary: get reports — 제안
+      description: 제품 UX를 근거로 작성한 기술 제안이며 아직 main에는 구현되지 않음.
+      x-implementation-status: PROPOSED
+      x-spec-doc: docs/api/community/moderation/get-reports.md
+      security:
+      - bearerAuth: []
+      responses:
+        '401': *id001
+        '403': *id001
+        '404': *id001
+        '422': *id001
+        '429': *id001
+        '503': *id001
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required:
+                - items
+                - next_cursor
+                properties:
+                  items:
+                    type: array
+                    items:
+                      type: object
+                  next_cursor:
+                    oneOf:
+                    - type: string
+                    - type: 'null'
+  /api/v1/community/moderation/reports/{reportId}/decision:
+    post:
+      tags:
+      - community
+      summary: post decision — 제안
+      description: 제품 UX를 근거로 작성한 기술 제안이며 아직 main에는 구현되지 않음.
+      x-implementation-status: PROPOSED
+      x-spec-doc: docs/api/community/moderation/post-decision.md
+      security:
+      - bearerAuth: []
+      responses:
+        '401': *id001
+        '403': *id001
+        '404': *id001
+        '422': *id001
+        '429': *id001
+        '503': *id001
+        '200':
+          description: 신고 처리 결과
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - report_id
+                - post_id
+                - report_status
+                - post_visibility
+                - moderated_at
+                properties:
+                  report_id:
+                    type: string
+                    format: uuid
+                  post_id:
+                    type: string
+                    format: uuid
+                  report_status:
+                    type: string
+                  post_visibility:
+                    type: string
+                  moderated_at:
+                    type: string
+                    format: date-time
+      parameters:
+      - in: path
+        name: reportId
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+              - action
+              properties:
+                action:
+                  type: string
+                  enum:
+                  - hide
+                  - delete
+                  - dismiss
+                reason:
+                  type: string
+  /api/v1/community/posts:
+    get:
+      tags:
+      - community
+      summary: get posts — 제안
+      description: 제품 UX를 근거로 작성한 기술 제안이며 아직 main에는 구현되지 않음.
+      x-implementation-status: PROPOSED
+      x-spec-doc: docs/api/community/posts/get-posts.md
+      security:
+      - bearerAuth: []
+      responses:
+        '401': *id001
+        '403': *id001
+        '404': *id001
+        '422': *id001
+        '429': *id001
+        '503': *id001
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommunityPostPage'
+      parameters:
+      - in: query
+        name: category
+        required: false
+        schema:
+          type: string
+          enum:
+          - all
+          - purchase_question
+          - price_report
+          - trade_experience
+      - in: query
+        name: cursor
+        required: false
+        schema:
+          type: string
+    post:
+      tags:
+      - community
+      summary: post post — 제안
+      description: 제품 UX를 근거로 작성한 기술 제안이며 아직 main에는 구현되지 않음.
+      x-implementation-status: PROPOSED
+      x-spec-doc: docs/api/community/posts/post-post.md
+      security:
+      - bearerAuth: []
+      responses:
+        '401': *id001
+        '403': *id001
+        '404': *id001
+        '422': *id001
+        '429': *id001
+        '503': *id001
+        '201':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommunityPost'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+              - category
+              - title
+              - body
+              properties:
+                category:
+                  type: string
+                  enum:
+                  - purchase_question
+                  - price_report
+                  - trade_experience
+                title:
+                  type: string
+                  maxLength: 100
+                body:
+                  type: string
+                  maxLength: 5000
+                image_ids:
+                  type: array
+                  items:
+                    type: string
+                client_request_id:
+                  type: string
+                  format: uuid
+  /api/v1/community/posts/images:
+    post:
+      tags:
+      - community
+      summary: post post image — 제안
+      description: 제품 UX를 근거로 작성한 기술 제안이며 아직 main에는 구현되지 않음.
+      x-implementation-status: PROPOSED
+      x-spec-doc: docs/api/community/posts/post-post-image.md
+      security:
+      - bearerAuth: []
+      responses:
+        '401': *id001
+        '403': *id001
+        '404': *id001
+        '422': *id001
+        '429': *id001
+        '503': *id001
+        '201':
+          description: 시연 업로드 생성
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - image_id
+                - preview_url
+                properties:
+                  image_id:
+                    type: string
+                    format: uuid
+                  preview_url:
+                    type: string
+                    format: uri
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+              - image
+              properties:
+                image:
+                  type: string
+                  format: binary
+  /api/v1/community/posts/{postId}:
+    delete:
+      tags:
+      - community
+      summary: delete post — 제안
+      description: 제품 UX를 근거로 작성한 기술 제안이며 아직 main에는 구현되지 않음.
+      x-implementation-status: PROPOSED
+      x-spec-doc: docs/api/community/posts/delete-post.md
+      security:
+      - bearerAuth: []
+      responses:
+        '401': *id001
+        '403': *id001
+        '404': *id001
+        '422': *id001
+        '429': *id001
+        '503': *id001
+        '204':
+          description: 삭제 성공, 본문 없음
+      parameters:
+      - in: path
+        name: postId
+        required: true
+        schema:
+          type: string
+          format: uuid
+    get:
+      tags:
+      - community
+      summary: get post — 제안
+      description: 제품 UX를 근거로 작성한 기술 제안이며 아직 main에는 구현되지 않음.
+      x-implementation-status: PROPOSED
+      x-spec-doc: docs/api/community/posts/get-post.md
+      security:
+      - bearerAuth: []
+      responses:
+        '401': *id001
+        '403': *id001
+        '404': *id001
+        '422': *id001
+        '429': *id001
+        '503': *id001
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommunityPost'
+      parameters:
+      - in: path
+        name: postId
+        required: true
+        schema:
+          type: string
+          format: uuid
+    patch:
+      tags:
+      - community
+      summary: patch post — 제안
+      description: 제품 UX를 근거로 작성한 기술 제안이며 아직 main에는 구현되지 않음.
+      x-implementation-status: PROPOSED
+      x-spec-doc: docs/api/community/posts/patch-post.md
+      security:
+      - bearerAuth: []
+      responses:
+        '401': *id001
+        '403': *id001
+        '404': *id001
+        '422': *id001
+        '429': *id001
+        '503': *id001
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommunityPost'
+      parameters:
+      - in: path
+        name: postId
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: *id002
+              properties:
+                title:
+                  type: string
+                  maxLength: 100
+                body:
+                  type: string
+                  maxLength: 5000
+  /api/v1/community/posts/{postId}/comments:
+    get:
+      tags:
+      - community
+      summary: get comments — 제안
+      description: 제품 UX를 근거로 작성한 기술 제안이며 아직 main에는 구현되지 않음.
+      x-implementation-status: PROPOSED
+      x-spec-doc: docs/api/community/comments/get-comments.md
+      security:
+      - bearerAuth: []
+      responses:
+        '401': *id001
+        '403': *id001
+        '404': *id001
+        '422': *id001
+        '429': *id001
+        '503': *id001
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommunityCommentPage'
+      parameters:
+      - in: path
+        name: postId
+        required: true
+        schema:
+          type: string
+          format: uuid
+    post:
+      tags:
+      - community
+      summary: post comment — 제안
+      description: 제품 UX를 근거로 작성한 기술 제안이며 아직 main에는 구현되지 않음.
+      x-implementation-status: PROPOSED
+      x-spec-doc: docs/api/community/comments/post-comment.md
+      security:
+      - bearerAuth: []
+      responses:
+        '401': *id001
+        '403': *id001
+        '404': *id001
+        '422': *id001
+        '429': *id001
+        '503': *id001
+        '201':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommunityComment'
+      parameters:
+      - in: path
+        name: postId
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+              - body
+              properties:
+                body:
+                  type: string
+                  maxLength: 1000
+  /api/v1/community/posts/{postId}/like:
+    delete:
+      tags:
+      - community
+      summary: delete like — 제안
+      description: 제품 UX를 근거로 작성한 기술 제안이며 아직 main에는 구현되지 않음.
+      x-implementation-status: PROPOSED
+      x-spec-doc: docs/api/community/interactions/delete-like.md
+      security:
+      - bearerAuth: []
+      responses:
+        '401': *id001
+        '403': *id001
+        '404': *id001
+        '422': *id001
+        '429': *id001
+        '503': *id001
+        '200':
+          description: 멱등 해제 후 현재 상태
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReactionState'
+      parameters:
+      - in: path
+        name: postId
+        required: true
+        schema:
+          type: string
+          format: uuid
+    put:
+      tags:
+      - community
+      summary: put like — 제안
+      description: 제품 UX를 근거로 작성한 기술 제안이며 아직 main에는 구현되지 않음.
+      x-implementation-status: PROPOSED
+      x-spec-doc: docs/api/community/interactions/put-like.md
+      security:
+      - bearerAuth: []
+      responses:
+        '401': *id001
+        '403': *id001
+        '404': *id001
+        '422': *id001
+        '429': *id001
+        '503': *id001
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReactionState'
+      parameters:
+      - in: path
+        name: postId
+        required: true
+        schema:
+          type: string
+          format: uuid
+  /api/v1/community/posts/{postId}/reports:
+    post:
+      tags:
+      - community
+      summary: post report — 제안
+      description: 제품 UX를 근거로 작성한 기술 제안이며 아직 main에는 구현되지 않음.
+      x-implementation-status: PROPOSED
+      x-spec-doc: docs/api/community/moderation/post-report.md
+      security:
+      - bearerAuth: []
+      responses:
+        '401': *id001
+        '403': *id001
+        '404': *id001
+        '422': *id001
+        '429': *id001
+        '503': *id001
+        '201':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: false
+                required:
+                - id
+                - status
+                properties:
+                  id:
+                    type: string
+                  status:
+                    type: string
+      parameters:
+      - in: path
+        name: postId
+        required: true
+        schema:
+          type: string
+          format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required:
+              - reason
+              properties:
+                reason:
+                  type: string
+                  maxLength: 1000
+  /api/v1/community/posts/{postId}/save:
+    delete:
+      tags:
+      - community
+      summary: delete save — 제안
+      description: 제품 UX를 근거로 작성한 기술 제안이며 아직 main에는 구현되지 않음.
+      x-implementation-status: PROPOSED
+      x-spec-doc: docs/api/community/interactions/delete-save.md
+      security:
+      - bearerAuth: []
+      responses:
+        '401': *id001
+        '403': *id001
+        '404': *id001
+        '422': *id001
+        '429': *id001
+        '503': *id001
+        '200':
+          description: 멱등 해제 후 현재 상태
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReactionState'
+      parameters:
+      - in: path
+        name: postId
+        required: true
+        schema:
+          type: string
+          format: uuid
+    put:
+      tags:
+      - community
+      summary: put save — 제안
+      description: 제품 UX를 근거로 작성한 기술 제안이며 아직 main에는 구현되지 않음.
+      x-implementation-status: PROPOSED
+      x-spec-doc: docs/api/community/interactions/put-save.md
+      security:
+      - bearerAuth: []
+      responses:
+        '401': *id001
+        '403': *id001
+        '404': *id001
+        '422': *id001
+        '429': *id001
+        '503': *id001
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReactionState'
+      parameters:
+      - in: path
+        name: postId
+        required: true
+        schema:
+          type: string
+          format: uuid
+  /api/v1/demo/session:
+    get:
+      tags:
+      - demo
+      summary: get current — 제안
+      description: 제품 UX를 근거로 작성한 기술 제안이며 아직 main에는 구현되지 않음.
+      x-implementation-status: PROPOSED
+      x-spec-doc: docs/api/demo-session/get-current.md
+      security:
+      - bearerAuth: []
+      responses:
+        '401': *id001
+        '403': *id001
+        '404': *id001
+        '422': *id001
+        '429': *id001
+        '503': *id001
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DemoSession'
+  /api/v1/demo/session/start:
+    post:
+      tags:
+      - demo
+      summary: post start — 제안
+      description: 제품 UX를 근거로 작성한 기술 제안이며 아직 main에는 구현되지 않음.
+      x-implementation-status: PROPOSED
+      x-spec-doc: docs/api/demo-session/post-start.md
+      security:
+      - bearerAuth: []
+      responses:
+        '401': *id001
+        '403': *id001
+        '404': *id001
+        '422': *id001
+        '429': *id001
+        '503': *id001
+        '201':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DemoSession'
+  /api/v1/map/markers:
+    get:
+      tags:
+      - map
+      summary: get map markers — 제안
+      description: 제품 UX를 근거로 작성한 기술 제안이며 아직 main에는 구현되지 않음.
+      x-implementation-status: PROPOSED
+      x-spec-doc: docs/api/vendor-search/get-map-markers.md
+      security:
+      - bearerAuth: []
+      responses:
+        '401': *id001
+        '403': *id001
+        '404': *id001
+        '422': *id001
+        '429': *id001
+        '503': *id001
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MapMarkersResponse'
+      parameters:
+      - in: query
+        name: south
+        required: true
+        schema:
+          type: number
+          minimum: -90
+          maximum: 90
+      - in: query
+        name: west
+        required: true
+        schema:
+          type: number
+          minimum: -180
+          maximum: 180
+      - in: query
+        name: north
+        required: true
+        schema:
+          type: number
+          minimum: -90
+          maximum: 90
+      - in: query
+        name: east
+        required: true
+        schema:
+          type: number
+          minimum: -180
+          maximum: 180
+      - in: query
+        name: query
+        required: false
+        schema:
+          type: string
+          maxLength: 100
+      - in: query
+        name: category
+        required: false
+        schema:
+          type: string
+          maxLength: 60
+      - in: query
+        name: item
+        required: false
+        schema:
+          type: string
+          maxLength: 100
+      - in: query
+        name: delivery
+        required: false
+        schema:
+          type: boolean
+      - in: query
+        name: cursor
+        required: false
+        schema:
+          type: string
+  /api/v1/map/vendors:
+    get:
+      tags:
+      - map
+      summary: get map list — 제안
+      description: 제품 UX를 근거로 작성한 기술 제안이며 아직 main에는 구현되지 않음.
+      x-implementation-status: PROPOSED
+      x-spec-doc: docs/api/vendor-search/get-map-list.md
+      security:
+      - bearerAuth: []
+      responses:
+        '401': *id001
+        '403': *id001
+        '404': *id001
+        '422': *id001
+        '429': *id001
+        '503': *id001
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MapVendorPage'
+      parameters:
+      - in: query
+        name: south
+        required: true
+        schema:
+          type: number
+          minimum: -90
+          maximum: 90
+      - in: query
+        name: west
+        required: true
+        schema:
+          type: number
+          minimum: -180
+          maximum: 180
+      - in: query
+        name: north
+        required: true
+        schema:
+          type: number
+          minimum: -90
+          maximum: 90
+      - in: query
+        name: east
+        required: true
+        schema:
+          type: number
+          minimum: -180
+          maximum: 180
+      - in: query
+        name: query
+        required: false
+        schema:
+          type: string
+          maxLength: 100
+      - in: query
+        name: category
+        required: false
+        schema:
+          type: string
+          maxLength: 60
+      - in: query
+        name: item
+        required: false
+        schema:
+          type: string
+          maxLength: 100
+      - in: query
+        name: delivery
+        required: false
+        schema:
+          type: boolean
+      - in: query
+        name: cursor
+        required: false
+        schema:
+          type: string
+      - in: query
+        name: sort
+        required: false
+        schema:
+          type: string
+          enum:
+          - distance
+          - price
+          default: distance
+      - in: query
+        name: limit
+        required: false
+        schema:
+          type: integer
+          const: 20
+  /api/v1/saved:
+    get:
+      tags:
+      - saved
+      summary: get saved — 제안
+      description: 제품 UX를 근거로 작성한 기술 제안이며 아직 main에는 구현되지 않음.
+      x-implementation-status: PROPOSED
+      x-spec-doc: docs/api/saved/get-saved.md
+      security:
+      - bearerAuth: []
+      responses:
+        '401': *id001
+        '403': *id001
+        '404': *id001
+        '422': *id001
+        '429': *id001
+        '503': *id001
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SavedPage'
+      parameters:
+      - in: query
+        name: type
+        required: false
+        schema:
+          type: string
+          enum:
+          - all
+          - vendor
+          - post
+          default: all
+      - in: query
+        name: cursor
+        required: false
+        schema:
+          type: string
+  /api/v1/saved/vendors/{vendorId}:
+    delete:
+      tags:
+      - saved
+      summary: delete vendor save — 제안
+      description: 제품 UX를 근거로 작성한 기술 제안이며 아직 main에는 구현되지 않음.
+      x-implementation-status: PROPOSED
+      x-spec-doc: docs/api/saved/delete-vendor-save.md
+      security:
+      - bearerAuth: []
+      responses:
+        '401': *id001
+        '403': *id001
+        '404': *id001
+        '422': *id001
+        '429': *id001
+        '503': *id001
+        '200':
+          description: 업체 저장 해제
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - vendor_id
+                - is_saved
+                properties:
+                  vendor_id:
+                    type: string
+                    format: uuid
+                  is_saved:
+                    const: false
+      parameters:
+      - in: path
+        name: vendorId
+        required: true
+        schema:
+          type: string
+          format: uuid
+    put:
+      tags:
+      - saved
+      summary: put vendor save — 제안
+      description: 제품 UX를 근거로 작성한 기술 제안이며 아직 main에는 구현되지 않음.
+      x-implementation-status: PROPOSED
+      x-spec-doc: docs/api/saved/put-vendor-save.md
+      security:
+      - bearerAuth: []
+      responses:
+        '401': *id001
+        '403': *id001
+        '404': *id001
+        '422': *id001
+        '429': *id001
+        '503': *id001
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VendorSaveState'
+      parameters:
+      - in: path
+        name: vendorId
+        required: true
+        schema:
+          type: string
+          format: uuid
+  /api/v1/vendors:
+    get:
+      tags:
+      - vendors
+      summary: get vendors — 현재 구현
+      description: main 기준 확인된 GET 계약. 신규 로그인 없는 시연과 bounds 기능은 별도 변경 필요.
+      x-implementation-status: EXISTING_MAIN
+      x-spec-doc: docs/api/vendor-search/get-vendors.md
+      security:
+      - bearerAuth: []
+      responses:
+        '401': *id001
+        '403': *id001
+        '404': *id001
+        '422': *id001
+        '429': *id001
+        '503': *id001
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublishedSearch'
+      parameters:
+      - in: query
+        name: latitude
+        required: true
+        schema:
+          type: number
+          minimum: -90
+          maximum: 90
+      - in: query
+        name: longitude
+        required: true
+        schema:
+          type: number
+          minimum: -180
+          maximum: 180
+      - in: query
+        name: radius
+        required: false
+        schema:
+          type: integer
+          minimum: 100
+          maximum: 20000
+          default: 3000
+      - in: query
+        name: query
+        required: false
+        schema:
+          type: string
+          maxLength: 100
+          default: ''
+      - in: query
+        name: category
+        required: false
+        schema:
+          type: string
+          maxLength: 60
+          default: ''
+      - in: query
+        name: offset
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 100000
+          default: 0
+  /api/v1/vendors/{id}:
+    get:
+      tags:
+      - vendors
+      summary: get vendor detail — 현재 구현
+      description: main 기준 확인된 GET 계약. 신규 로그인 없는 시연과 bounds 기능은 별도 변경 필요.
+      x-implementation-status: EXISTING_MAIN
+      x-spec-doc: docs/api/vendor-search/get-vendor-detail.md
+      security:
+      - bearerAuth: []
+      responses:
+        '401': *id001
+        '403': *id001
+        '404': *id001
+        '422': *id001
+        '429': *id001
+        '503': *id001
+        '200':
+          description: 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PublishedVendor'
+      parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+          format: uuid
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: Supabase JWT (내부 비대화형 세션; 발급 방식 검증 필요)
+  schemas:
+    Error:
+      type: object
+      additionalProperties: false
+      required:
+      - error
+      properties:
+        error:
+          type: object
+          additionalProperties: false
+          required:
+          - code
+          - message
+          - requestId
+          properties:
+            code:
+              type: string
+            message:
+              type: string
+            requestId:
+              type: string
+            fieldErrors:
+              type: array
+              items:
+                type: object
+                additionalProperties: false
+                required: *id002
+                properties:
+                  path:
+                    type: string
+                  message:
+                    type: string
+    PublishedItem:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - name
+      - specification
+      - quantity
+      - unit
+      - price
+      - currency
+      - tax
+      - minimum_packages
+      - delivery_fee
+      - delivery_fee_basis
+      - checked_on
+      - source_type
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        specification:
+          type: string
+        quantity:
+          type: number
+          exclusiveMinimum: 0
+        unit:
+          type: string
+        price:
+          type: integer
+          minimum: 1
+        currency:
+          const: KRW
+        tax:
+          type: string
+          enum:
+          - ''
+          - included
+          - excluded
+          - exempt
+        minimum_packages:
+          type: integer
+          minimum: 1
+        delivery_fee:
+          oneOf:
+          - type: integer
+            minimum: 0
+          - type: 'null'
+        delivery_fee_basis:
+          type: string
+        checked_on:
+          type: string
+          format: date
+        source_type:
+          const: vendor_provided
+    PublishedVendor:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - revision_id
+      - name
+      - description
+      - category
+      - contact
+      - address
+      - latitude
+      - longitude
+      - opening_hours
+      - fulfillment
+      - delivery_terms
+      - items
+      - image_ids
+      - data_kind
+      properties:
+        id:
+          type: string
+          format: uuid
+        revision_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+        contact:
+          type: string
+        address:
+          type: string
+        latitude:
+          type: number
+          minimum: -90
+          maximum: 90
+        longitude:
+          type: number
+          minimum: -180
+          maximum: 180
+        opening_hours:
+          type: string
+        fulfillment:
+          type: string
+          enum:
+          - pickup
+          - delivery
+          - both
+        delivery_terms:
+          type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublishedItem'
+        image_ids:
+          type: array
+          items:
+            type: string
+            format: uuid
+        distance_m:
+          type: number
+          minimum: 0
+        data_kind:
+          const: live
+    PublishedSearch:
+      type: object
+      additionalProperties: false
+      required:
+      - vendors
+      - offset
+      - limit
+      - data_kind
+      properties:
+        vendors:
+          type: array
+          items:
+            $ref: '#/components/schemas/PublishedVendor'
+        offset:
+          type: integer
+        limit:
+          type: integer
+        data_kind:
+          const: live
+    DemoSession:
+      type: object
+      additionalProperties: false
+      required:
+      - sessionId
+      - displayName
+      - startedAt
+      properties:
+        sessionId:
+          type: string
+          format: uuid
+        displayName:
+          type: string
+        startedAt:
+          type: string
+          format: date-time
+    MapMarker:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - source
+      - latitude
+      - longitude
+      - name
+      - matchingItems
+      properties:
+        id:
+          type: string
+        source:
+          type: string
+          enum:
+          - live
+          - synthetic_demo
+        latitude:
+          type: number
+          minimum: -90
+          maximum: 90
+        longitude:
+          type: number
+          minimum: -180
+          maximum: 180
+        name:
+          type: string
+        matchingItems:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            required:
+            - itemId
+            - name
+            - specification
+            - priceKrw
+            properties:
+              itemId:
+                type: string
+              name:
+                type: string
+              specification:
+                type: string
+              priceKrw:
+                oneOf:
+                - type: integer
+                  minimum: 1
+                - type: 'null'
+    MapMarkersResponse:
+      type: object
+      additionalProperties: false
+      required:
+      - markers
+      - totalVendors
+      - nextCursor
+      properties:
+        markers:
+          type: array
+          items:
+            $ref: '#/components/schemas/MapMarker'
+        totalVendors:
+          type: integer
+          minimum: 0
+        nextCursor:
+          oneOf:
+          - type: string
+          - type: 'null'
+    MapVendorSummary:
+      type: object
+      additionalProperties: false
+      required:
+      - vendorId
+      - source
+      - name
+      - category
+      - address
+      - distanceM
+      properties:
+        vendorId:
+          type: string
+        source:
+          type: string
+          enum:
+          - live
+          - synthetic_demo
+        name:
+          type: string
+        category:
+          type: string
+        address:
+          type: string
+        distanceM:
+          type: number
+          minimum: 0
+        displayItem:
+          oneOf:
+          - $ref: '#/components/schemas/MapMarker'
+          - type: 'null'
+    MapVendorPage:
+      type: object
+      additionalProperties: false
+      required:
+      - items
+      - totalVendors
+      - nextCursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/MapVendorSummary'
+        totalVendors:
+          type: integer
+        nextCursor:
+          oneOf:
+          - type: string
+          - type: 'null'
+    CommunityAuthor:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - display_name
+      properties:
+        id:
+          type: string
+        display_name:
+          type: string
+    CommunityPost:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - category
+      - title
+      - author
+      - created_at
+      - updated_at
+      properties:
+        id:
+          type: string
+        category:
+          type: string
+          enum:
+          - purchase_question
+          - price_report
+          - trade_experience
+        title:
+          type: string
+        excerpt:
+          type: string
+        body:
+          type: string
+        author:
+          $ref: '#/components/schemas/CommunityAuthor'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        cover_image_id:
+          oneOf:
+          - type: string
+          - type: 'null'
+        comment_count:
+          type: integer
+          minimum: 0
+        like_count:
+          type: integer
+          minimum: 0
+        is_liked:
+          type: boolean
+        is_saved:
+          type: boolean
+    CommunityPostPage:
+      type: object
+      additionalProperties: false
+      required:
+      - items
+      - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CommunityPost'
+        next_cursor:
+          oneOf:
+          - type: string
+          - type: 'null'
+    CommunityComment:
+      type: object
+      additionalProperties: false
+      required:
+      - id
+      - post_id
+      - body
+      - author
+      - created_at
+      - updated_at
+      - can_edit
+      - can_delete
+      properties:
+        id:
+          type: string
+        post_id:
+          type: string
+        body:
+          type: string
+        author:
+          $ref: '#/components/schemas/CommunityAuthor'
+        created_at:
+          type: string
+        updated_at:
+          type: string
+        can_edit:
+          type: boolean
+        can_delete:
+          type: boolean
+    CommunityCommentPage:
+      type: object
+      additionalProperties: false
+      required:
+      - items
+      - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CommunityComment'
+        next_cursor:
+          oneOf:
+          - type: string
+          - type: 'null'
+    ReactionState:
+      type: object
+      additionalProperties: false
+      required:
+      - post_id
+      - is_liked
+      - like_count
+      - is_saved
+      properties:
+        post_id:
+          type: string
+        is_liked:
+          type: boolean
+        like_count:
+          type: integer
+        is_saved:
+          type: boolean
+    AIResult:
+      type: object
+      additionalProperties: false
+      required:
+      - vendorId
+      - dataKind
+      - vendorName
+      - itemName
+      - priceKrw
+      - source
+      properties:
+        vendorId:
+          type: string
+        dataKind:
+          type: string
+          enum:
+          - live
+          - synthetic_demo
+        vendorName:
+          type: string
+        itemId:
+          type: string
+        itemName:
+          type: string
+        specification:
+          type: string
+        priceKrw:
+          oneOf:
+          - type: integer
+            minimum: 0
+          - type: 'null'
+        tax:
+          type: string
+        deliveryFeeKrw:
+          oneOf:
+          - type: integer
+            minimum: 0
+          - type: 'null'
+        deliveryTerms:
+          type: string
+        checkedOn:
+          oneOf:
+          - type: string
+            format: date
+          - type: 'null'
+        latitude:
+          type: number
+          minimum: -90
+          maximum: 90
+        longitude:
+          type: number
+          minimum: -180
+          maximum: 180
+        source:
+          type: string
+    AIReply:
+      type: object
+      additionalProperties: false
+      required:
+      - threadId
+      - messageId
+      - answer
+      - searchStatus
+      - results
+      properties:
+        threadId:
+          type: string
+        messageId:
+          type: string
+        answer:
+          type: string
+        searchStatus:
+          type: string
+          enum:
+          - results
+          - no_results
+          - clarification_needed
+        matchedIntent:
+          type: object
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/AIResult'
+    ThreadMessages:
+      type: object
+      additionalProperties: false
+      required:
+      - threadId
+      - messages
+      - nextCursor
+      properties:
+        threadId:
+          type: string
+        messages:
+          type: array
+          items:
+            type: object
+            additionalProperties: false
+            required:
+            - id
+            - role
+            - content
+            - createdAt
+            properties:
+              id:
+                type: string
+              role:
+                type: string
+                enum:
+                - user
+                - assistant
+              content:
+                type: string
+              createdAt:
+                type: string
+        nextCursor:
+          oneOf:
+          - type: string
+          - type: 'null'
+    SavedItem:
+      type: object
+      additionalProperties: false
+      required:
+      - kind
+      - id
+      - saved_at
+      - available
+      - vendor
+      - post
+      properties:
+        kind:
+          type: string
+          enum:
+          - vendor
+          - post
+        id:
+          type: string
+          format: uuid
+        saved_at:
+          type: string
+          format: date-time
+        available:
+          type: boolean
+        vendor:
+          oneOf:
+          - type: object
+            additionalProperties: false
+            properties:
+              name:
+                type: string
+              category:
+                type: string
+              address:
+                type: string
+              checked_on:
+                oneOf:
+                - type: string
+                  format: date
+                - type: 'null'
+              data_kind:
+                type: string
+                enum:
+                - live
+                - synthetic_demo
+            required:
+            - name
+            - category
+            - address
+            - checked_on
+            - data_kind
+          - type: 'null'
+        post:
+          oneOf:
+          - type: object
+            additionalProperties: false
+            properties:
+              title:
+                type: string
+              category:
+                type: string
+              author_name:
+                type: string
+              created_at:
+                type: string
+                format: date-time
+            required:
+            - title
+            - category
+            - author_name
+            - created_at
+          - type: 'null'
+    SavedPage:
+      type: object
+      additionalProperties: false
+      required:
+      - items
+      - next_cursor
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/SavedItem'
+        next_cursor:
+          oneOf:
+          - type: string
+          - type: 'null'
+    VendorSaveState:
+      type: object
+      additionalProperties: false
+      required:
+      - vendor_id
+      - is_saved
+      - saved_at
+      properties:
+        vendor_id:
+          type: string
+        is_saved:
+          type: boolean
+        saved_at:
+          type: string
+x-caution: DO NOT RUN AS DEPLOYED API CONTRACT; proposed endpoints must be reviewed, implemented, and synchronized
+  with packages/vendor-contracts Zod + RLS.

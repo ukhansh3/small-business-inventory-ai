@@ -1,26 +1,55 @@
-# Repository instructions
+# 천하장사 — Repository AGENTS.md (병합 제안, 저장소 미적용)
 
-## Project phase
+> 기준: `main` 루트 AGENTS.md의 개인정보·증거 규칙을 아래에 보존하며, 이번 **사용자 승인 시연 UX**를 추가한 개발용 제안본. 이 ZIP을 배포했다고 저장소 규칙이 자동 변경되는 것은 아니다. 팀원과 병합 검토 후만 적용.
 
+## 0. 기존 main 지침 보존
+
+### Project phase
 이 저장소는 아직 문제 탐색 단계다. 사용자가 명시적으로 결정하지 않은 기능이나 기술을 확정된 요구사항처럼 작성하지 않는다.
 
-## Evidence rules
-
+### Evidence rules
 - 인터뷰에서 확인한 과거 행동만 `관찰 사실`로 기록한다.
 - 팀의 해석은 `해석`, 검증되지 않은 주장은 `가설`, 제품 기능은 `해결책 후보`로 구분한다.
 - 인터뷰 수, 기간, 금액, 인용을 임의로 만들지 않는다.
 - 새로운 증거가 기존 아이디어를 반박하면 아이디어를 방어하지 말고 의사결정 기록을 갱신한다.
 
-## Privacy
-
+### Privacy
 - 실명, 전화번호, 정확한 매장 주소, 동의서 원본과 전체 전사본은 커밋하지 않는다.
 - 과제 수행 증빙용 음성은 팀이 공개하기로 정한 `data/interviews/audio/` 경로에만 익명 파일명으로 커밋한다.
 - 인터뷰와 매장은 전체 진행 순서에 따라 `I01`, `I02` 같은 코드로 익명화한다.
 - 직접 인용과 분석 문서에는 개인을 식별할 수 있는 내용을 제거한다.
 
-## Documentation
-
+### Documentation
 - 중요한 방향 변경은 `docs/decisions/`에 ADR로 남긴다.
 - 인터뷰 자료를 추가하면 `docs/interviews/index.md`와 전체 인터뷰 종합 문서를 함께 갱신한다.
 - 제품 방향을 설명할 때는 `docs/product/problem-statement.md`와 모순되지 않는지 확인한다.
 - 문서는 기본적으로 한국어로 작성한다.
+
+## 1. 이번 데모의 승인된 작업 범위
+- 사용자에게 로그인 화면 표시 금지. **내부 세션·인증·권한 확인을 생략하라는 뜻이 아님.**
+- 구현: 지도 탐색/업체 상세, 서버 업체 데이터에 근거한 실제 LLM AI, 커뮤니티, 업체·게시글 저장.
+- UI 전용: `내 정보·업체 관리`. 기존 등록/승인 코드는 삭제 금지. 이번 데모에서 신규 등록/심사 백엔드 구현 금지.
+- 탭 `지도 / AI 도우미 / 커뮤니티 / 저장 / 내 정보`. 기본 텍스트 검정, 주황 강조, 흰 배경.
+- 시연 작성 자료의 다른 방문자·운영 데이터 접근 금지, 새 시연 시작 시 해당 세션 자료만 초기화.
+- 주문·결제·실시간 재고·업체 데이터의 진실성 보증 금지.
+
+## 2. 권한·변경 보호 (최우선)
+1. 사용자 승인 UX는 `DECISIONS.md`와 `docs/decisions/approved-ux.md`를 따름. 기존 `SPEC.md`/ADR의 **이전 연구·팀 미승인 주장**과 혼동 금지. 팀 문서와 충돌하면 `docs/reviews/CONFLICTS.md` 기록 후 소유자에게 보고.
+2. 기능 요구사항 정본 `docs/features/*`, API/DB 기술 **제안** `docs/api/*`, `docs/database/*`. **실제 구현 계약 정본은** 코드 `packages/vendor-contracts/index.ts`, 서버 Route/RPC, 적용된 migration. 새 명세가 자동으로 실제 구현 사실이 되지 않음.
+3. 모르는 사실이나 제품 정책·데이터 소유권·서비스 키·외부 데이터 사용 허락이 불명확하면 **절대 임의 결정하지 말고 사용자에게 질문**. 질문이 어려우면 `BLOCKED: OWNER_DECISION_REQUIRED`로 중단, 대안/근거/영향을 묶어 제시.
+4. 팀원 브랜치·협업 문서·운영 DB 임의 변경/강제 push/rebase/마이그레이션 덮어쓰기 금지. **먼저 diff·영향 분석**, PR로 제안 후 사람 리뷰.
+5. 이미 적용된 migration 수정 금지. 추가 migration은 이름 고유성·롤백 계획·RLS·테스트를 포함하고 사전 승인 필수.
+6. `service_role`, LLM API key, 개인정보, OAuth/DB 비밀을 모바일 앱·클라이언트·Git·로그에 유출하지 않는다. 권한 검증은 서버와 DB에서도 반드시 수행.
+7. 가짜 업체/가격은 **시연용 표시 필수**. 현실 운영 데이터와 구분하고, AI는 공개 DB 근거 밖 가격·배송·업체명을 생성해서는 안 됨.
+8. 실행하지 않은 테스트/배포/시뮬레이션을 성공했다고 주장하지 않는다. 문서 작성 상태와 코드 구현 상태를 분리한다.
+
+## 3. 위임 전에 확인할 문서
+- `README.md` → `docs/reviews/CONFLICTS.md` → `docs/decisions/approved-ux.md`
+- `docs/architecture/{system-overview,demo-boundary,data-flow}.md`
+- 담당 폴더의 `AGENTS.md`, 기능/화면/엔드포인트 문서, DB/RLS 매트릭스
+- `docs/handoff/agent-work-packages.md`, `docs/handoff/definition-of-done.md`
+
+## 4. 검증 게이트
+- DB/API 스키마 검증 + 단위/통합/권한 경계 + 실제 Android 시뮬레이터 시연 + 모든 5탭 플로우 검증.
+- API 버전·오류·nullable 값/시연 출처를 실제 계약과 맞출 것.
+- PR에는 변경 파일, 수용 기준 ID, 검증 명령/실제 결과, 미확정 결정, 위험·롤백 절차 명시.
