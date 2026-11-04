@@ -2,7 +2,7 @@
 
 # 지역 자영업자 정보 비대칭 문제 탐색 프로젝트
 
-> 데이터 구분: [공공 업체 8곳 + 가상 시연 가격](docs/data-sources/public-vendor-mvp.md), [아주대 주변 가상 업체 200곳](docs/data-sources/synthetic-vendor-demo.md). 가상 업체는 실제 업체 DB와 분리된 시연 테이블을 사용합니다.
+> 시연 데이터: [아주대 반경 8km 가상 업체 200곳](docs/data-sources/synthetic-vendor-demo.md). 실제 업체 DB와 분리된 `mvp_synthetic_vendors` 테이블을 사용합니다.
 
 ## 지금까지 구현한 것과 아직 안 한 것 (2026-11-04)
 

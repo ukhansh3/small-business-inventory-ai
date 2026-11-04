@@ -14,7 +14,6 @@ export default function RootLayout() {
             contentStyle: { backgroundColor: "#FFF" },
           }}
         >
-          <Stack.Screen name="mvp-vendors" options={{ title: "공공 업체 MVP 시연" }} />
           <Stack.Screen name="demo-vendors" options={{ title: "가상 업체 시연" }} />
           <Stack.Screen name="login" options={{ title: "로그인" }} />
           <Stack.Screen name="moderation" options={{ title: "업체 검토" }} />

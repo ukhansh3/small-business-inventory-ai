@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { router } from "expo-router";
 import { Text, View } from "react-native";
-import * as Location from "expo-location";
 import { publishedSearchSchema } from "@cheon/vendor-contracts";
 import {
   Action,
@@ -15,7 +14,6 @@ import {
 } from "../../components/ui";
 import { KakaoMap } from "../../components/KakaoMap";
 import {
-  demoCenter,
   findVendors,
   fromPublishedVendor,
   won,
@@ -23,14 +21,13 @@ import {
 import { useAuth } from "../../auth/provider";
 import { useApiResource } from "../../lib/api";
 import { backendConfigured } from "../../lib/supabase";
+import { useMapLocation } from "../../lib/use-map-location";
 export default function Explore() {
   const [query, setQuery] = useState("");
   const [debounced, setDebounced] = useState("");
   const [category, setCategory] = useState("전체");
-  const [center, setCenter] = useState(demoCenter);
+  const { center, current, locating, locate, recenterKey, message: hint } = useMapLocation();
   const [offset, setOffset] = useState(0);
-  const [hint, setHint] = useState("");
-  const [locating, setLocating] = useState(false);
   const { session, loading: authLoading } = useAuth();
   useEffect(() => {
     const timer = setTimeout(() => setDebounced(query), 300);
@@ -56,38 +53,6 @@ export default function Explore() {
   const found = backendConfigured
     ? (live.data?.vendors.map(fromPublishedVendor) ?? [])
     : demo;
-  async function locate() {
-    setLocating(true);
-    try {
-      const result = await Location.requestForegroundPermissionsAsync();
-      if (result.status !== "granted") {
-        setHint("위치 권한 없이 기본 지역을 사용할 수 있습니다.");
-        return;
-      }
-      const position = await Promise.race([
-        Location.getCurrentPositionAsync({
-          accuracy: Location.Accuracy.Balanced,
-        }),
-        new Promise<never>((_, reject) =>
-          setTimeout(() => reject(new Error("timeout")), 12000),
-        ),
-      ]);
-      setCenter({
-        latitude: position.coords.latitude,
-        longitude: position.coords.longitude,
-      });
-      setOffset(0);
-      setHint(
-        backendConfigured
-          ? "현재 위치 반경 3km의 승인 업체를 조회합니다."
-          : "지도 중심만 이동했습니다. 현재 목록은 가상 샘플입니다.",
-      );
-    } catch {
-      setHint("위치를 확인하지 못했습니다. 기본 지역으로 이용해 주세요.");
-    } finally {
-      setLocating(false);
-    }
-  }
   if (backendConfigured && !session)
     return (
       <Screen>
@@ -115,7 +80,6 @@ export default function Explore() {
           ? "운영자가 승인한 현재 공개본만 표시합니다. 가격은 업체 제공 정보이며 주문 전 확인이 필요합니다."
           : "서버 미연결 · 아래 업체·품목·가격은 가상 샘플입니다. 실제 DB 결과와 섞지 않습니다."}
       </Note>
-      {backendConfigured && <Action secondary label="공공 업체 MVP 시연 보기" onPress={() => router.push("/mvp-vendors")} />}
       {backendConfigured && <Action secondary label="가상 업체 200곳 시연 보기" onPress={() => router.push("/demo-vendors")} />}
       <Field
         label="업체·취급 품목"
@@ -144,6 +108,8 @@ export default function Explore() {
       <KakaoMap
         vendors={found}
         center={center}
+        currentLocation={current}
+        recenterKey={recenterKey}
         onSelect={(id) =>
           router.push({ pathname: "/vendor/[id]", params: { id } })
         }
@@ -152,7 +118,7 @@ export default function Explore() {
         label={locating ? "위치 확인 중…" : "현재 위치로 지도 이동"}
         disabled={locating}
         secondary
-        onPress={() => void locate()}
+        onPress={() => { setOffset(0); void locate(); }}
       />
       {!!hint && (
         <Text accessibilityLiveRegion="polite" style={s.muted}>
