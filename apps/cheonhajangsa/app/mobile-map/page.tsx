@@ -9,6 +9,8 @@ const coordinate = z.object({
 const payloadSchema = z.object({
   type: z.literal("vendors"),
   center: coordinate,
+  currentLocation: z.boolean().default(false),
+  recenterKey: z.number().int().nonnegative().default(0),
   vendors: z
     .array(
       coordinate.extend({ id: z.string().max(100), name: z.string().max(150) }),
@@ -31,6 +33,8 @@ export default function MobileMap() {
     let pending: Payload | null = null;
     let markers: InstanceType<KakaoMaps["Marker"]>[] = [];
     let cleanups: (() => void)[] = [];
+    let originOverlay: InstanceType<KakaoMaps["CustomOverlay"]> | null = null;
+    let lastCenter = "";
     const post = (value: unknown) =>
       window.ReactNativeWebView?.postMessage(JSON.stringify(value));
     const render = (data: Payload) => {
@@ -39,8 +43,14 @@ export default function MobileMap() {
       cleanups = [];
       markers.forEach((m) => m.setMap(null));
       markers = [];
-      const bounds = new sdk.LatLngBounds();
-      bounds.extend(new sdk.LatLng(data.center.latitude, data.center.longitude));
+      const origin = new sdk.LatLng(data.center.latitude, data.center.longitude);
+      const centerKey = `${data.center.latitude},${data.center.longitude},${data.recenterKey}`;
+      if (lastCenter !== centerKey) { map.setCenter(origin); lastCenter = centerKey; }
+      originOverlay?.setMap(null);
+      const label = document.createElement("div");
+      label.textContent = data.currentLocation ? "● 내 위치" : "● 지도 기준점";
+      label.style.cssText = "background:white;color:#f04b24;border:2px solid #f04b24;border-radius:16px;padding:5px 9px;font:700 12px sans-serif;white-space:nowrap;box-shadow:0 2px 6px #0002";
+      originOverlay = new sdk.CustomOverlay({ map, position: origin, content: label, yAnchor: 0, zIndex: 20 });
       for (const vendor of data.vendors) {
         const marker = new sdk.Marker({
           map,
@@ -48,7 +58,6 @@ export default function MobileMap() {
           title: vendor.name,
           clickable: true,
         });
-        bounds.extend(new sdk.LatLng(vendor.latitude, vendor.longitude));
         const select = () => post({ type: "select", vendorId: vendor.id });
         sdk.event.addListener(marker, "click", select);
         const eventSdk = sdk;
@@ -57,8 +66,6 @@ export default function MobileMap() {
         );
         markers.push(marker);
       }
-      if (data.vendors.length) map.setBounds(bounds, 36, 36, 36, 36);
-      else map.setCenter(new sdk.LatLng(data.center.latitude, data.center.longitude));
     };
     const receive = (event: Event) => {
       if (!("data" in event) || typeof event.data !== "string") return;
@@ -105,6 +112,7 @@ export default function MobileMap() {
       observer.disconnect();
       cleanups.forEach((f) => f());
       markers.forEach((m) => m.setMap(null));
+      originOverlay?.setMap(null);
     };
   }, []);
   return (

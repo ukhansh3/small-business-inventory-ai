@@ -11,10 +11,14 @@ import { Action, colors, s } from "./ui";
 export function KakaoMap({
   vendors,
   center,
+  currentLocation = false,
+  recenterKey = 0,
   onSelect,
 }: {
   vendors: Vendor[];
   center: { latitude: number; longitude: number };
+  currentLocation?: boolean;
+  recenterKey?: number;
   onSelect: (id: string) => void;
 }) {
   const url = validMapUrl(process.env.EXPO_PUBLIC_KAKAO_MAP_URL);
@@ -25,9 +29,9 @@ export function KakaoMap({
   useEffect(() => {
     if (!loaded) return;
     ref.current?.postMessage(
-      JSON.stringify({ type: "vendors", vendors, center }),
+      JSON.stringify({ type: "vendors", vendors, center, currentLocation, recenterKey }),
     );
-  }, [vendors, center, loaded]);
+  }, [vendors, center, currentLocation, recenterKey, loaded]);
   useEffect(() => {
     if (loaded || !url) return;
     const timer = setTimeout(() => setFailed(true), 20000);

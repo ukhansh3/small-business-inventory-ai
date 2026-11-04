@@ -2,14 +2,6 @@ import { createClient } from "../apps/cheonhajangsa/node_modules/@supabase/supab
 import fs from "node:fs";
 
 const notice = "가상 시연 데이터 · 실제 업체·위치·가격·거래 조건이 아닙니다.";
-const cities = [
-  ["수원시 영통구", 37.2834, 127.0465], ["용인시 기흥구", 37.241, 127.177],
-  ["화성시 동탄", 37.201, 127.073], ["오산시", 37.149, 127.077],
-  ["안양시 동안구", 37.394, 126.956], ["군포시", 37.361, 126.935],
-  ["성남시 분당구", 37.378, 127.112], ["평택시", 36.992, 127.112],
-  ["안성시", 37.008, 127.27], ["광주시", 37.429, 127.255],
-  ["이천시", 37.279, 127.435], ["남양주시", 37.636, 127.214],
-];
 const prefixes = ["든든한", "바른", "새벽", "초록", "맑은", "온기", "반듯한", "한결", "빠른", "정다운", "산뜻한", "착한", "빛나는", "튼튼한", "시원한", "안심", "꼼꼼한", "참좋은", "마음", "오래가는"];
 const suffixes = ["파트너스", "상회", "마켓", "솔루션", "케어", "공방", "기술", "서비스", "연구소", "협동소", "플러스", "전문점"];
 const catalog = [
@@ -36,18 +28,17 @@ const terms = [
 const rows = Array.from({ length: 200 }, (_, index) => {
   const n = index + 1;
   const [category, services, prices, units] = catalog[index % catalog.length];
-  const [city, baseLat, baseLng] = cities[(index * 5 + Math.floor(index / cities.length)) % cities.length];
   const angle = n * 2.399963229728653;
-  const radius = 0.002 + (n % 7) * 0.001;
+  const radiusKm = 0.1 + 7.6 * (n / 200) ** 2;
   const brand = `${prefixes[(n * 7 + Math.floor(n / prefixes.length)) % prefixes.length]}${suffixes[(n * 11 + Math.floor(n / suffixes.length)) % suffixes.length]}`;
   const base = index % services.length;
   return {
     demo_code: `fake-${String(n).padStart(4, "0")}`,
     name: `가상 ${brand} ${String(n).padStart(3, "0")}`,
     category,
-    area: `${city} (가상 위치)` ,
-    latitude: Number((baseLat + Math.cos(angle) * radius).toFixed(6)),
-    longitude: Number((baseLng + Math.sin(angle) * radius * 1.15).toFixed(6)),
+    area: "아주대 반경 8km (가상 위치)",
+    latitude: Number((37.2834 + Math.cos(angle) * radiusKm / 111.32).toFixed(6)),
+    longitude: Number((127.0465 + Math.sin(angle) * radiusKm / 88.8).toFixed(6)),
     service: services[(base + Math.floor(n / 12)) % services.length],
     price: prices[(base + Math.floor(n / 9)) % prices.length] + (n % 9) * (category.includes("도매") ? 700 : 5000),
     unit: units[(base + Math.floor(n / 12)) % units.length],
@@ -88,4 +79,4 @@ for (let i = 0; i < rows.length; i += 50) {
 }
 const { count, error } = await db.from("mvp_synthetic_vendors").select("id", { count: "exact", head: true });
 if (error) throw new Error(`등록 수 확인 실패: ${error.message}`);
-console.log(JSON.stringify({ upserted: rows.length, tableTotal: count, area: "아주대 중심 약 50km 이내", categories: [...new Set(rows.map((v) => v.category))].length, warning: notice }));
+console.log(JSON.stringify({ upserted: rows.length, tableTotal: count, area: "아주대 중심 8km 이내", categories: [...new Set(rows.map((v) => v.category))].length, warning: notice }));

@@ -13,3 +13,4 @@ ADR은 당시 이용 가능한 증거로 내린 결정을 기록합니다. 새�
 
 - [ADR-009 공공 업체 원문과 가상 거래 정보의 MVP 분리](ADR-009-public-vendor-mvp.md)
 - [ADR-010 가상 업체 200곳을 별도 시연 테이블로 관리](ADR-010-synthetic-vendor-demo.md)
+- [ADR-011 아주대 반경 8km 시연 및 현재 위치 지도](ADR-011-ajou-demo-radius-and-location.md)
