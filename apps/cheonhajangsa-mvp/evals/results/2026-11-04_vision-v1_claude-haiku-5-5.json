@@ -1,0 +1,370 @@
+{
+  "summary": {
+    "run_at": "2026-11-04T15:35:17.048Z",
+    "model": "claude-haiku-5-5",
+    "prompt_version": "vision-v1",
+    "cases_version": "v1",
+    "cases": 11,
+    "lettuce_accuracy": 1,
+    "fabricated": 0,
+    "receipt_accuracy": 1,
+    "latency_ms": {
+      "median": 2202,
+      "max": 2686
+    }
+  },
+  "target": {
+    "lettuceAccuracy": 0.9,
+    "fabricated": 0,
+    "receiptAccuracy": 1
+  },
+  "ok": true,
+  "rows": [
+    {
+      "id": "r01",
+      "file": "r01_paper_lettuce.png",
+      "ms": 2267,
+      "receiptOk": true,
+      "matched": 1,
+      "expected": 1,
+      "fabricated": 0,
+      "notes": [],
+      "got": {
+        "doc_type": "paper_receipt",
+        "seller_type": "local_store",
+        "purchased_on": "2026-11-03",
+        "delivery_fee_won": null,
+        "lines": [
+          {
+            "raw_name": "적상추 2kg",
+            "item_id": "item_lettuce",
+            "weight_kg_total": 2,
+            "amount_won": 10000
+          },
+          {
+            "raw_name": "대파 1단",
+            "item_id": "item_green_onion",
+            "weight_kg_total": null,
+            "amount_won": 2500
+          },
+          {
+            "raw_name": "깻잎 100g",
+            "item_id": "item_perilla_leaf",
+            "weight_kg_total": 0.2,
+            "amount_won": 2000
+          }
+        ]
+      }
+    },
+    {
+      "id": "r02",
+      "file": "r02_paper_bag.png",
+      "ms": 1636,
+      "receiptOk": true,
+      "matched": 1,
+      "expected": 1,
+      "fabricated": 0,
+      "notes": [],
+      "got": {
+        "doc_type": "paper_receipt",
+        "seller_type": "local_store",
+        "purchased_on": "2026-11-03",
+        "delivery_fee_won": null,
+        "lines": [
+          {
+            "raw_name": "청상추 1봉",
+            "item_id": "item_lettuce",
+            "weight_kg_total": null,
+            "amount_won": 6000
+          },
+          {
+            "raw_name": "양파 1망",
+            "item_id": "item_onion",
+            "weight_kg_total": null,
+            "amount_won": 5000
+          }
+        ]
+      }
+    },
+    {
+      "id": "r03",
+      "file": "r03_platform.png",
+      "ms": 1933,
+      "receiptOk": true,
+      "matched": 1,
+      "expected": 1,
+      "fabricated": 0,
+      "notes": [],
+      "got": {
+        "doc_type": "platform_order",
+        "seller_type": "online_platform",
+        "purchased_on": "2026-11-02",
+        "delivery_fee_won": 3000,
+        "lines": [
+          {
+            "raw_name": "국내산 적상추 4kg 박스 (업소용)",
+            "item_id": "item_lettuce",
+            "weight_kg_total": 4,
+            "amount_won": 14900
+          },
+          {
+            "raw_name": "청양고추 1kg",
+            "item_id": "item_chili",
+            "weight_kg_total": 1,
+            "amount_won": 8900
+          }
+        ]
+      }
+    },
+    {
+      "id": "r04",
+      "file": "r04_not_receipt.png",
+      "ms": 1782,
+      "receiptOk": true,
+      "matched": 0,
+      "expected": 0,
+      "fabricated": 0,
+      "notes": [],
+      "got": {
+        "doc_type": "not_receipt",
+        "seller_type": "unknown",
+        "purchased_on": null,
+        "delivery_fee_won": null,
+        "lines": []
+      }
+    },
+    {
+      "id": "r05",
+      "file": "r05_mobile.png",
+      "ms": 2522,
+      "receiptOk": true,
+      "matched": 1,
+      "expected": 1,
+      "fabricated": 0,
+      "notes": [],
+      "got": {
+        "doc_type": "mobile_receipt",
+        "seller_type": "food_mart",
+        "purchased_on": "2026-11-04",
+        "delivery_fee_won": null,
+        "lines": [
+          {
+            "raw_name": "꽃상추 1kg",
+            "item_id": "item_lettuce",
+            "weight_kg_total": 1,
+            "amount_won": 4500
+          },
+          {
+            "raw_name": "양파 3kg",
+            "item_id": "item_onion",
+            "weight_kg_total": 3,
+            "amount_won": 6900
+          },
+          {
+            "raw_name": "두부",
+            "item_id": null,
+            "weight_kg_total": null,
+            "amount_won": 1500
+          }
+        ]
+      }
+    },
+    {
+      "id": "r06",
+      "file": "r06_invoice.png",
+      "ms": 2392,
+      "receiptOk": true,
+      "matched": 1,
+      "expected": 1,
+      "fabricated": 0,
+      "notes": [],
+      "got": {
+        "doc_type": "invoice",
+        "seller_type": "local_store",
+        "purchased_on": "2026-11-01",
+        "delivery_fee_won": null,
+        "lines": [
+          {
+            "raw_name": "적상추",
+            "item_id": "item_lettuce",
+            "weight_kg_total": 8,
+            "amount_won": 30000
+          },
+          {
+            "raw_name": "대파",
+            "item_id": "item_green_onion",
+            "weight_kg_total": 3,
+            "amount_won": 9000
+          },
+          {
+            "raw_name": "깻잎",
+            "item_id": "item_perilla_leaf",
+            "weight_kg_total": 1,
+            "amount_won": 8000
+          }
+        ]
+      }
+    },
+    {
+      "id": "r07",
+      "file": "r07_product.png",
+      "ms": 1710,
+      "receiptOk": true,
+      "matched": 1,
+      "expected": 1,
+      "fabricated": 0,
+      "notes": [],
+      "got": {
+        "doc_type": "product_page",
+        "seller_type": "online_platform",
+        "purchased_on": null,
+        "delivery_fee_won": null,
+        "lines": [
+          {
+            "raw_name": "[로켓프레시] 국내산 청상추 2kg",
+            "item_id": "item_lettuce",
+            "weight_kg_total": 2,
+            "amount_won": 9900
+          }
+        ]
+      }
+    },
+    {
+      "id": "r08",
+      "file": "r08_paper_grams.png",
+      "ms": 2202,
+      "receiptOk": true,
+      "matched": 1,
+      "expected": 1,
+      "fabricated": 0,
+      "notes": [],
+      "got": {
+        "doc_type": "paper_receipt",
+        "seller_type": "local_store",
+        "purchased_on": "2026-11-03",
+        "delivery_fee_won": null,
+        "lines": [
+          {
+            "raw_name": "상추 500g",
+            "item_id": "item_lettuce",
+            "weight_kg_total": 1,
+            "amount_won": 5000
+          },
+          {
+            "raw_name": "고추 200g",
+            "item_id": "item_chili",
+            "weight_kg_total": 0.2,
+            "amount_won": 2000
+          }
+        ]
+      }
+    },
+    {
+      "id": "r09",
+      "file": "r09_paper_mixed.png",
+      "ms": 2412,
+      "receiptOk": true,
+      "matched": 2,
+      "expected": 2,
+      "fabricated": 0,
+      "notes": [],
+      "got": {
+        "doc_type": "paper_receipt",
+        "seller_type": "food_mart",
+        "purchased_on": "2026-11-03",
+        "delivery_fee_won": null,
+        "lines": [
+          {
+            "raw_name": "적상추 1kg",
+            "item_id": "item_lettuce",
+            "weight_kg_total": 1,
+            "amount_won": 4200
+          },
+          {
+            "raw_name": "청상추 3kg",
+            "item_id": "item_lettuce",
+            "weight_kg_total": 3,
+            "amount_won": 11400
+          },
+          {
+            "raw_name": "마늘 1kg",
+            "item_id": null,
+            "weight_kg_total": 1,
+            "amount_won": 9000
+          }
+        ]
+      }
+    },
+    {
+      "id": "r10",
+      "file": "r10_mobile_many.png",
+      "ms": 2686,
+      "receiptOk": true,
+      "matched": 1,
+      "expected": 1,
+      "fabricated": 0,
+      "notes": [],
+      "got": {
+        "doc_type": "mobile_receipt",
+        "seller_type": "food_mart",
+        "purchased_on": "2026-11-04",
+        "delivery_fee_won": null,
+        "lines": [
+          {
+            "raw_name": "라면 5입",
+            "item_id": null,
+            "weight_kg_total": null,
+            "amount_won": 4300
+          },
+          {
+            "raw_name": "계란 30구",
+            "item_id": null,
+            "weight_kg_total": null,
+            "amount_won": 8900
+          },
+          {
+            "raw_name": "상추 4kg",
+            "item_id": "item_lettuce",
+            "weight_kg_total": 4,
+            "amount_won": 13200
+          },
+          {
+            "raw_name": "식용유 1.8L",
+            "item_id": null,
+            "weight_kg_total": null,
+            "amount_won": 7500
+          },
+          {
+            "raw_name": "고추장 1kg",
+            "item_id": null,
+            "weight_kg_total": 1,
+            "amount_won": 6200
+          },
+          {
+            "raw_name": "휴지 30롤",
+            "item_id": null,
+            "weight_kg_total": null,
+            "amount_won": 12900
+          }
+        ]
+      }
+    },
+    {
+      "id": "r11",
+      "file": "r11_signboard.png",
+      "ms": 1621,
+      "receiptOk": true,
+      "matched": 0,
+      "expected": 0,
+      "fabricated": 0,
+      "notes": [],
+      "got": {
+        "doc_type": "not_receipt",
+        "seller_type": "unknown",
+        "purchased_on": null,
+        "delivery_fee_won": null,
+        "lines": []
+      }
+    }
+  ]
+}

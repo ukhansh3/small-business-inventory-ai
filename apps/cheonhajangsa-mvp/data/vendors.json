@@ -1,0 +1,406 @@
+[
+  {
+    "id": "v_001",
+    "name": "원천 새벽채소",
+    "kind": "채소가게",
+    "address": "경기 수원시 원천동 예시 주소 1",
+    "dong": "원천동",
+    "lat": 37.2803,
+    "lng": 127.0452,
+    "phone": "000-0000-0001",
+    "opening_hours": {
+      "mon": {
+        "open": "06:30",
+        "close": "20:00"
+      },
+      "tue": {
+        "open": "06:30",
+        "close": "20:00"
+      },
+      "wed": {
+        "open": "06:30",
+        "close": "20:00"
+      },
+      "thu": {
+        "open": "06:30",
+        "close": "20:00"
+      },
+      "fri": {
+        "open": "06:30",
+        "close": "20:00"
+      },
+      "sat": {
+        "open": "06:30",
+        "close": "18:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": true,
+    "delivery_dongs": [
+      "원천동",
+      "우만동"
+    ],
+    "delivery_note": "2만 원 이상",
+    "data_status": "예시",
+    "checked_on": null
+  },
+  {
+    "id": "v_002",
+    "name": "우만 시장 채소전",
+    "kind": "시장점포",
+    "address": "경기 수원시 우만동 예시 주소 2",
+    "dong": "우만동",
+    "lat": 37.2771,
+    "lng": 127.0395,
+    "phone": "000-0000-0002",
+    "opening_hours": {
+      "mon": {
+        "open": "08:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "08:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "08:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "08:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "08:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "08:00",
+        "close": "19:00"
+      },
+      "sun": {
+        "open": "09:00",
+        "close": "15:00"
+      }
+    },
+    "delivery_available": false,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "예시",
+    "checked_on": null
+  },
+  {
+    "id": "v_003",
+    "name": "아주 식자재마트",
+    "kind": "식자재마트",
+    "address": "경기 수원시 원천동 예시 주소 3",
+    "dong": "원천동",
+    "lat": 37.2823,
+    "lng": 127.0474,
+    "phone": "000-0000-0003",
+    "opening_hours": {
+      "mon": {
+        "open": "09:00",
+        "close": "22:00"
+      },
+      "tue": {
+        "open": "09:00",
+        "close": "22:00"
+      },
+      "wed": {
+        "open": "09:00",
+        "close": "22:00"
+      },
+      "thu": {
+        "open": "09:00",
+        "close": "22:00"
+      },
+      "fri": {
+        "open": "09:00",
+        "close": "22:00"
+      },
+      "sat": {
+        "open": "09:00",
+        "close": "22:00"
+      },
+      "sun": {
+        "open": "09:00",
+        "close": "22:00"
+      }
+    },
+    "delivery_available": true,
+    "delivery_dongs": [
+      "원천동",
+      "우만동",
+      "매탄동",
+      "광교동"
+    ],
+    "delivery_note": "5만 원 이상",
+    "data_status": "예시",
+    "checked_on": null
+  },
+  {
+    "id": "v_004",
+    "name": "매탄 푸른채소",
+    "kind": "채소가게",
+    "address": "경기 수원시 매탄동 예시 주소 4",
+    "dong": "매탄동",
+    "lat": 37.2698,
+    "lng": 127.0459,
+    "phone": "000-0000-0004",
+    "opening_hours": {
+      "mon": {
+        "open": "07:00",
+        "close": "21:00"
+      },
+      "tue": {
+        "open": "07:00",
+        "close": "21:00"
+      },
+      "wed": {
+        "open": "07:00",
+        "close": "21:00"
+      },
+      "thu": {
+        "open": "07:00",
+        "close": "21:00"
+      },
+      "fri": {
+        "open": "07:00",
+        "close": "21:00"
+      },
+      "sat": {
+        "open": "07:00",
+        "close": "21:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": true,
+    "delivery_dongs": [
+      "매탄동"
+    ],
+    "delivery_note": null,
+    "data_status": "예시",
+    "checked_on": null
+  },
+  {
+    "id": "v_005",
+    "name": "삼거리 야채가게",
+    "kind": "채소가게",
+    "address": "경기 수원시 우만동 예시 주소 5",
+    "dong": "우만동",
+    "lat": 37.2762,
+    "lng": 127.0418,
+    "phone": "000-0000-0005",
+    "opening_hours": {
+      "mon": {
+        "open": "10:00",
+        "close": "20:00"
+      },
+      "tue": {
+        "open": "10:00",
+        "close": "20:00"
+      },
+      "wed": {
+        "open": "10:00",
+        "close": "20:00"
+      },
+      "thu": {
+        "open": "10:00",
+        "close": "20:00"
+      },
+      "fri": {
+        "open": "10:00",
+        "close": "20:00"
+      },
+      "sat": {
+        "open": "10:00",
+        "close": "20:00"
+      },
+      "sun": {
+        "open": "10:00",
+        "close": "18:00"
+      }
+    },
+    "delivery_available": false,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "예시",
+    "checked_on": null
+  },
+  {
+    "id": "v_006",
+    "name": "인계 도매 식자재",
+    "kind": "식자재마트",
+    "address": "경기 수원시 인계동 예시 주소 6",
+    "dong": "인계동",
+    "lat": 37.2655,
+    "lng": 127.033,
+    "phone": "000-0000-0006",
+    "opening_hours": {
+      "mon": {
+        "open": "05:00",
+        "close": "14:00"
+      },
+      "tue": {
+        "open": "05:00",
+        "close": "14:00"
+      },
+      "wed": {
+        "open": "05:00",
+        "close": "14:00"
+      },
+      "thu": {
+        "open": "05:00",
+        "close": "14:00"
+      },
+      "fri": {
+        "open": "05:00",
+        "close": "14:00"
+      },
+      "sat": {
+        "open": "05:00",
+        "close": "14:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": true,
+    "delivery_dongs": [
+      "인계동",
+      "매탄동",
+      "원천동"
+    ],
+    "delivery_note": "오전 배달만",
+    "data_status": "예시",
+    "checked_on": null
+  },
+  {
+    "id": "v_007",
+    "name": "광교 산들채소",
+    "kind": "채소가게",
+    "address": "경기 수원시 광교동 예시 주소 7",
+    "dong": "광교동",
+    "lat": 37.288,
+    "lng": 127.05,
+    "phone": "000-0000-0007",
+    "opening_hours": {
+      "mon": {
+        "open": "08:00",
+        "close": "20:00"
+      },
+      "tue": {
+        "open": "08:00",
+        "close": "20:00"
+      },
+      "wed": {
+        "open": "08:00",
+        "close": "20:00"
+      },
+      "thu": {
+        "open": "08:00",
+        "close": "20:00"
+      },
+      "fri": {
+        "open": "08:00",
+        "close": "20:00"
+      },
+      "sat": "closed",
+      "sun": "closed"
+    },
+    "delivery_available": false,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "예시",
+    "checked_on": null
+  },
+  {
+    "id": "v_008",
+    "name": "월드컵 시장 쌈채소",
+    "kind": "시장점포",
+    "address": "경기 수원시 우만동 예시 주소 8",
+    "dong": "우만동",
+    "lat": 37.2745,
+    "lng": 127.0372,
+    "phone": "000-0000-0008",
+    "opening_hours": {
+      "mon": {
+        "open": "07:00",
+        "close": "18:00"
+      },
+      "tue": {
+        "open": "07:00",
+        "close": "18:00"
+      },
+      "wed": {
+        "open": "07:00",
+        "close": "18:00"
+      },
+      "thu": {
+        "open": "07:00",
+        "close": "18:00"
+      },
+      "fri": {
+        "open": "07:00",
+        "close": "18:00"
+      },
+      "sat": {
+        "open": "07:00",
+        "close": "18:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": false,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "예시",
+    "checked_on": null
+  },
+  {
+    "id": "v_009",
+    "name": "영통 알뜰 식자재",
+    "kind": "식자재마트",
+    "address": "경기 수원시 영통동 예시 주소 9",
+    "dong": "영통동",
+    "lat": 37.2512,
+    "lng": 127.056,
+    "phone": "000-0000-0009",
+    "opening_hours": {
+      "mon": {
+        "open": "09:00",
+        "close": "21:00"
+      },
+      "tue": {
+        "open": "09:00",
+        "close": "21:00"
+      },
+      "wed": {
+        "open": "09:00",
+        "close": "21:00"
+      },
+      "thu": {
+        "open": "09:00",
+        "close": "21:00"
+      },
+      "fri": {
+        "open": "09:00",
+        "close": "21:00"
+      },
+      "sat": {
+        "open": "09:00",
+        "close": "21:00"
+      },
+      "sun": {
+        "open": "09:00",
+        "close": "21:00"
+      }
+    },
+    "delivery_available": true,
+    "delivery_dongs": [
+      "영통동",
+      "매탄동"
+    ],
+    "delivery_note": "3만 원 이상",
+    "data_status": "예시",
+    "checked_on": null
+  }
+]

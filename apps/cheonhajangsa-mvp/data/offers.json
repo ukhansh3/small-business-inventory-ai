@@ -1,0 +1,184 @@
+[
+  {
+    "vendor_id": "v_001",
+    "item_id": "item_lettuce",
+    "price": 4000,
+    "price_unit_label": "1kg",
+    "unit_kg": 1,
+    "price_source": "예시",
+    "price_checked_on": "2026-11-03",
+    "min_sale_kg": 1,
+    "restock_days": [
+      "mon",
+      "tue",
+      "wed",
+      "thu",
+      "fri",
+      "sat"
+    ],
+    "restock_time": "06:30",
+    "last_restocked_on": "2026-11-11",
+    "available": true
+  },
+  {
+    "vendor_id": "v_002",
+    "item_id": "item_lettuce",
+    "price": 3500,
+    "price_unit_label": "1kg",
+    "unit_kg": 1,
+    "price_source": "예시",
+    "price_checked_on": "2026-11-02",
+    "min_sale_kg": null,
+    "restock_days": [
+      "mon",
+      "tue",
+      "wed",
+      "thu",
+      "fri",
+      "sat",
+      "sun"
+    ],
+    "restock_time": "08:00",
+    "last_restocked_on": null,
+    "available": true
+  },
+  {
+    "vendor_id": "v_003",
+    "item_id": "item_lettuce",
+    "price": 14000,
+    "price_unit_label": "1박스(4kg)",
+    "unit_kg": 4,
+    "price_source": "예시",
+    "price_checked_on": "2026-11-03",
+    "min_sale_kg": 4,
+    "restock_days": [
+      "mon",
+      "tue",
+      "wed",
+      "thu",
+      "fri",
+      "sat",
+      "sun"
+    ],
+    "restock_time": "10:00",
+    "last_restocked_on": null,
+    "available": true
+  },
+  {
+    "vendor_id": "v_004",
+    "item_id": "item_lettuce",
+    "price": 4200,
+    "price_unit_label": "1kg",
+    "unit_kg": 1,
+    "price_source": "예시",
+    "price_checked_on": "2026-10-28",
+    "min_sale_kg": 0.5,
+    "restock_days": [
+      "mon",
+      "tue",
+      "wed",
+      "thu",
+      "fri",
+      "sat"
+    ],
+    "restock_time": "07:00",
+    "last_restocked_on": "2026-11-11",
+    "available": true
+  },
+  {
+    "vendor_id": "v_005",
+    "item_id": "item_lettuce",
+    "price": 3000,
+    "price_unit_label": "1소쿠리",
+    "unit_kg": null,
+    "price_source": "예시",
+    "price_checked_on": "2026-11-01",
+    "min_sale_kg": null,
+    "restock_days": [
+      "mon",
+      "wed",
+      "fri"
+    ],
+    "restock_time": "11:00",
+    "last_restocked_on": null,
+    "available": true
+  },
+  {
+    "vendor_id": "v_006",
+    "item_id": "item_lettuce",
+    "price": 12000,
+    "price_unit_label": "1박스(4kg)",
+    "unit_kg": 4,
+    "price_source": "예시",
+    "price_checked_on": "2026-11-03",
+    "min_sale_kg": 4,
+    "restock_days": [
+      "mon",
+      "tue",
+      "wed",
+      "thu",
+      "fri",
+      "sat"
+    ],
+    "restock_time": "05:00",
+    "last_restocked_on": "2026-11-11",
+    "available": true
+  },
+  {
+    "vendor_id": "v_007",
+    "item_id": "item_lettuce",
+    "price": null,
+    "price_unit_label": null,
+    "unit_kg": null,
+    "price_source": null,
+    "price_checked_on": null,
+    "min_sale_kg": null,
+    "restock_days": null,
+    "restock_time": null,
+    "last_restocked_on": null,
+    "available": true
+  },
+  {
+    "vendor_id": "v_008",
+    "item_id": "item_lettuce",
+    "price": 3800,
+    "price_unit_label": "1kg",
+    "unit_kg": 1,
+    "price_source": "예시",
+    "price_checked_on": "2026-11-03",
+    "min_sale_kg": 2,
+    "restock_days": [
+      "mon",
+      "tue",
+      "wed",
+      "thu",
+      "fri",
+      "sat"
+    ],
+    "restock_time": "07:00",
+    "last_restocked_on": null,
+    "available": true
+  },
+  {
+    "vendor_id": "v_009",
+    "item_id": "item_lettuce",
+    "price": 15000,
+    "price_unit_label": "1박스(4kg)",
+    "unit_kg": 4,
+    "price_source": "예시",
+    "price_checked_on": "2026-11-02",
+    "min_sale_kg": 4,
+    "restock_days": [
+      "mon",
+      "tue",
+      "wed",
+      "thu",
+      "fri",
+      "sat",
+      "sun"
+    ],
+    "restock_time": "09:00",
+    "last_restocked_on": null,
+    "available": true
+  }
+]

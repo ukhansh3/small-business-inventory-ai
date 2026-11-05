@@ -1,0 +1,322 @@
+{
+  "version": "v2",
+  "note": "AI 입력 해석 evals(P2-3). 기대값은 server/ai/prompt.ts의 규칙(키로=kg, 1박스=4, 지금·급해·바로=now, 오늘=today, 내일=tomorrow, 배달·갖다줘=delivery, 가지러·직접·사러=pickup, 문장에 없으면 null)을 따른다. v2에서 가격 한 줄(check_price) 6건 추가. 목표: 조건 정확도 90% 이상, 지어낸 값 0건, 범위 판별 100%(개발기획서 9절).",
+  "cases": [
+    {
+      "id": "s01",
+      "text": "상추",
+      "expect": {
+        "type": "search",
+        "item_id": "item_lettuce",
+        "qty_kg": null,
+        "urgency": null,
+        "fulfillment": null
+      }
+    },
+    {
+      "id": "s02",
+      "text": "상추 2키로",
+      "expect": {
+        "type": "search",
+        "item_id": "item_lettuce",
+        "qty_kg": 2,
+        "urgency": null,
+        "fulfillment": null
+      }
+    },
+    {
+      "id": "s03",
+      "text": "상추 2키로 급해요",
+      "expect": {
+        "type": "search",
+        "item_id": "item_lettuce",
+        "qty_kg": 2,
+        "urgency": "now",
+        "fulfillment": null
+      }
+    },
+    {
+      "id": "s04",
+      "text": "상추 5키로 오늘 배달",
+      "expect": {
+        "type": "search",
+        "item_id": "item_lettuce",
+        "qty_kg": 5,
+        "urgency": "today",
+        "fulfillment": "delivery"
+      }
+    },
+    {
+      "id": "s05",
+      "text": "적상추 1박스 내일까지",
+      "expect": {
+        "type": "search",
+        "item_id": "item_lettuce",
+        "qty_kg": 4,
+        "urgency": "tomorrow",
+        "fulfillment": null
+      }
+    },
+    {
+      "id": "s06",
+      "text": "상치 3kg 지금 가지러 갈게요",
+      "expect": {
+        "type": "search",
+        "item_id": "item_lettuce",
+        "qty_kg": 3,
+        "urgency": "now",
+        "fulfillment": "pickup"
+      }
+    },
+    {
+      "id": "s07",
+      "text": "청상추 좀 갖다줄 수 있어요?",
+      "expect": {
+        "type": "search",
+        "item_id": "item_lettuce",
+        "qty_kg": null,
+        "urgency": null,
+        "fulfillment": "delivery"
+      }
+    },
+    {
+      "id": "s08",
+      "text": "상추 10킬로 내일 배달해 주세요",
+      "expect": {
+        "type": "search",
+        "item_id": "item_lettuce",
+        "qty_kg": 10,
+        "urgency": "tomorrow",
+        "fulfillment": "delivery"
+      }
+    },
+    {
+      "id": "s09",
+      "text": "꽃상추 바로 필요해요",
+      "expect": {
+        "type": "search",
+        "item_id": "item_lettuce",
+        "qty_kg": null,
+        "urgency": "now",
+        "fulfillment": null
+      }
+    },
+    {
+      "id": "s10",
+      "text": "상추 직접 사러 갈게요",
+      "expect": {
+        "type": "search",
+        "item_id": "item_lettuce",
+        "qty_kg": null,
+        "urgency": null,
+        "fulfillment": "pickup"
+      }
+    },
+    {
+      "id": "s11",
+      "text": "상추 다 떨어졌어요 오늘 안에 구해야 돼요",
+      "expect": {
+        "type": "search",
+        "item_id": "item_lettuce",
+        "qty_kg": null,
+        "urgency": "today",
+        "fulfillment": null
+      }
+    },
+    {
+      "id": "s12",
+      "text": "상추 1키로만",
+      "expect": {
+        "type": "search",
+        "item_id": "item_lettuce",
+        "qty_kg": 1,
+        "urgency": null,
+        "fulfillment": null
+      }
+    },
+    {
+      "id": "s13",
+      "text": "상추 반 키로 직접 갈게요",
+      "expect": {
+        "type": "search",
+        "item_id": "item_lettuce",
+        "qty_kg": 0.5,
+        "urgency": null,
+        "fulfillment": "pickup"
+      }
+    },
+    {
+      "id": "s14",
+      "text": "상추 4kg 내일",
+      "expect": {
+        "type": "search",
+        "item_id": "item_lettuce",
+        "qty_kg": 4,
+        "urgency": "tomorrow",
+        "fulfillment": null
+      }
+    },
+    {
+      "id": "s15",
+      "text": "상추요",
+      "expect": {
+        "type": "search",
+        "item_id": "item_lettuce",
+        "qty_kg": null,
+        "urgency": null,
+        "fulfillment": null
+      }
+    },
+    {
+      "id": "s16",
+      "text": "상추 3키로 배달 되나요",
+      "expect": {
+        "type": "search",
+        "item_id": "item_lettuce",
+        "qty_kg": 3,
+        "urgency": null,
+        "fulfillment": "delivery"
+      }
+    },
+    {
+      "id": "o01",
+      "text": "대파 있어요?",
+      "expect": {
+        "type": "notice",
+        "kind": "out_of_scope_item"
+      }
+    },
+    {
+      "id": "o02",
+      "text": "깐양파 2키로",
+      "expect": {
+        "type": "notice",
+        "kind": "out_of_scope_item"
+      }
+    },
+    {
+      "id": "o03",
+      "text": "청양고추 급해요",
+      "expect": {
+        "type": "notice",
+        "kind": "out_of_scope_item"
+      }
+    },
+    {
+      "id": "o04",
+      "text": "깻잎 1박스",
+      "expect": {
+        "type": "notice",
+        "kind": "out_of_scope_item"
+      }
+    },
+    {
+      "id": "o05",
+      "text": "고수 있나요?",
+      "expect": {
+        "type": "notice",
+        "kind": "out_of_scope_item"
+      }
+    },
+    {
+      "id": "o06",
+      "text": "배추 5키로 배달",
+      "expect": {
+        "type": "notice",
+        "kind": "out_of_scope_item"
+      }
+    },
+    {
+      "id": "t01",
+      "text": "오늘 날씨 어때",
+      "expect": {
+        "type": "notice",
+        "kind": "off_topic"
+      }
+    },
+    {
+      "id": "t02",
+      "text": "안녕하세요",
+      "expect": {
+        "type": "notice",
+        "kind": "off_topic"
+      }
+    },
+    {
+      "id": "t03",
+      "text": "이 앱 누가 만들었어요?",
+      "expect": {
+        "type": "notice",
+        "kind": "off_topic"
+      }
+    },
+    {
+      "id": "t04",
+      "text": "가게 매출 올리는 법 알려줘",
+      "expect": {
+        "type": "notice",
+        "kind": "off_topic"
+      }
+    },
+    {
+      "id": "p01",
+      "text": "상추 2키로 만원 부르던데",
+      "expect": {
+        "type": "price",
+        "item_id": "item_lettuce",
+        "qty_kg": 2,
+        "amount_won": 10000
+      }
+    },
+    {
+      "id": "p02",
+      "text": "상추 4kg에 15000원 샀어요",
+      "expect": {
+        "type": "price",
+        "item_id": "item_lettuce",
+        "qty_kg": 4,
+        "amount_won": 15000
+      }
+    },
+    {
+      "id": "p03",
+      "text": "적상추 1박스 만오천원이면 괜찮은 거예요?",
+      "expect": {
+        "type": "price",
+        "item_id": "item_lettuce",
+        "qty_kg": 4,
+        "amount_won": 15000
+      }
+    },
+    {
+      "id": "p04",
+      "text": "상추 500g에 3천원 비싼가요",
+      "expect": {
+        "type": "price",
+        "item_id": "item_lettuce",
+        "qty_kg": 0.5,
+        "amount_won": 3000
+      }
+    },
+    {
+      "id": "p05",
+      "text": "상추 만원이면 싼 거예요?",
+      "expect": {
+        "type": "price",
+        "item_id": "item_lettuce",
+        "qty_kg": null,
+        "amount_won": 10000
+      }
+    },
+    {
+      "id": "p06",
+      "text": "상추 3키로 얼마가 적당해요",
+      "expect": {
+        "type": "price",
+        "item_id": "item_lettuce",
+        "qty_kg": 3,
+        "amount_won": null
+      }
+    }
+  ]
+}
