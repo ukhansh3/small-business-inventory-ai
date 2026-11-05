@@ -8,6 +8,61 @@ AI가 양·필요한 때·받는 방식을 되묻고, 조건에 맞는 판매처
 
 **앱 링크: https://cheonhajangsa-mvp.vercel.app**
 
+- 앱만 써 볼 사람 → [1. 써 보는 방법](#1-써-보는-방법-다른-팀용)
+- 우리 팀원(코드 실행·수정) → 바로 아래 [0. 팀원용 시작하기](#0-팀원용-시작하기)
+
+---
+
+## 0. 팀원용 시작하기
+
+이 앱은 팀 저장소 `민혁` 브랜치의 `apps/cheonhajangsa-mvp/` 폴더에 있다. 아래 명령은 모두 **이 폴더 안에서** 실행한다.
+
+### 처음 한 번
+1. Node.js 24를 설치한다(https://nodejs.org).
+2. 저장소를 받고 앱 폴더로 들어간다.
+   ```bash
+   git clone -b 민혁 https://github.com/ukhansh3/small-business-inventory-ai.git
+   ```
+   ```bash
+   cd small-business-inventory-ai/apps/cheonhajangsa-mvp
+   ```
+3. 패키지를 설치한다.
+   ```bash
+   npm ci
+   ```
+4. 민혁에게 직접 받은 `.env.local` 파일을 이 폴더(`apps/cheonhajangsa-mvp/`)에 그대로 넣는다.
+   - **`cp .env.example .env.local`은 실행하지 않는다.** 받은 키 파일이 빈 파일로 덮어써진다.
+   - 파일 이름은 점으로 시작해 Finder·탐색기에서 안 보일 수 있다. 맥 Finder는 `Cmd+Shift+.`로 보인다.
+
+### 실행
+터미널 두 개를 열고 각각 앱 폴더에서 실행한다.
+```bash
+npm run dev:api
+```
+```bash
+npm run web
+```
+브라우저에서 http://localhost:8081/?test=1 을 연다. 화면 위에 '테스트 기기'가 보이면 정상이다(우리가 시험한 기록이 동네 시세·측정에 섞이지 않는다).
+
+### 이미 되어 있으니 하지 않는 것
+- **DB 마이그레이션(아래 '기록 DB')을 다시 실행하지 않는다.** 팀이 같은 Supabase를 쓰고 0001~0005가 이미 적용돼 있다. 다시 실행하면 "이미 있음" 오류가 난다. DB를 바꾸는 SQL은 실행 전에 팀에 먼저 공유한다.
+- **카카오 도메인 등록은 하지 않아도 된다.** `http://localhost:8081`과 배포 링크가 이미 등록돼 있다. 다른 포트로 열면 지도가 안 뜬다.
+- **배포(`vercel link`·`vercel deploy`)는 하지 않는다.** 배포 링크는 민혁 계정에 있다. 다른 계정으로 하면 링크가 따로 생긴다. 고친 코드는 push하고 알려 주면 민혁이 확인 후 배포한다.
+
+### 고친 뒤
+1. 검사를 돌린다: `npm run typecheck`, `npm test`, `npm run check:data`
+2. 각자 브랜치나 `민혁` 브랜치에 push하고 팀 카톡에 알린다.
+3. `.env.local`은 git에 올라가지 않는다(`.gitignore`). 카톡·노션·메일에도 올리지 않는다.
+
+### 비용이 드는 명령
+`npm run evals`, `npm run evals:images`는 실시간 Claude를 여러 번 불러 민혁 계정으로 비용이 나간다. 필요할 때만, 팀에 알리고 돌린다. 앱을 쓰는 것도 AI를 부르지만 한 번에 소액이다(하루 AI 500회 한도는 배포 앱과 같이 쓴다).
+
+### Windows(PowerShell)
+명령은 같다. 환경 변수를 앞에 붙이는 명령만 다르게 쓴다.
+```powershell
+$env:E2E_BASE_URL="https://cheonhajangsa-mvp.vercel.app"; npm run e2e
+```
+
 ---
 
 ## 1. 써 보는 방법 (다른 팀용)
@@ -61,6 +116,8 @@ AI가 양·필요한 때·받는 방식을 되묻고, 조건에 맞는 판매처
 ---
 
 ## 2. 직접 실행하기 (개발자용)
+
+> 우리 팀원은 이 절 대신 위 [0. 팀원용 시작하기](#0-팀원용-시작하기)를 따른다. 이 절은 자기 키·DB로 처음부터 세우는 경우다.
 
 ### 준비
 - Node.js 24
@@ -116,12 +173,13 @@ npm run e2e
 ```
 사진 읽기는 `npm run evals:images`(합성 영수증 11장, 비용 발생).
 
-로컬 웹(`dev:api`·`web` 실행 중)에서 '상추' → 결과 → 전화하기, 가격 한 줄 진단 흐름을 설치된 Chrome으로 확인한다. 배포 링크로 돌리려면 `E2E_BASE_URL=https://cheonhajangsa-mvp.vercel.app npm run e2e`.
+로컬 웹(`dev:api`·`web` 실행 중)에서 '상추' → 결과 → 전화하기, 가격 한 줄 진단 흐름을 설치된 Chrome으로 확인한다. 배포 링크로 돌리려면 `E2E_BASE_URL=https://cheonhajangsa-mvp.vercel.app npm run e2e`(Windows는 위 0절의 PowerShell 형식).
 
 ### 기록 DB(선택)
-Supabase SQL Editor에서 `supabase/migrations/`의 0001~0005를 차례로 한 번씩 실행한다(0004 단가 진단 기록, 0005 시세에서 테스트 기기 제외). 0003은 호출 한도(기기별 시간당 60턴, 세션 AI 6회, 하루 AI 500회, 행동 기록 분당 120건)다. 표는 `chj` 스키마에 만들어지고, 서버는 서비스 키로 `public.chj_*` 함수만 부른다.
+팀 Supabase에는 이미 적용돼 있다. 새 Supabase 프로젝트를 만들 때만 실행한다. Supabase SQL Editor에서 `supabase/migrations/`의 0001~0005를 차례로 한 번씩 실행한다(0004 단가 진단 기록, 0005 시세에서 테스트 기기 제외). 0003은 호출 한도(기기별 시간당 60턴, 세션 AI 6회, 하루 AI 500회, 행동 기록 분당 120건)다. 표는 `chj` 스키마에 만들어지고, 서버는 서비스 키로 `public.chj_*` 함수만 부른다.
 
 ### 배포(Vercel)
+팀 배포 링크는 민혁 계정에서만 배포한다. 아래는 자기 Vercel에 따로 세울 때의 방법이다.
 ```bash
 npx vercel link
 ```
