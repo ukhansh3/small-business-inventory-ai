@@ -19,6 +19,7 @@ import { color, font, radius } from "../src/components/theme";
 import { useAssist } from "../src/hooks/useAssist";
 import { useStores } from "../src/hooks/useStores";
 import { type CallPlan, isPhoneUserAgent, planCall } from "../src/lib/call";
+import { isTestDevice } from "../src/lib/device";
 import { focusFor, pinsFor } from "../src/lib/map-pins";
 
 // 지도 홈(v2 S-10): 위 입력창 + 카카오맵 + 아래 목록 시트. 대화·결과·진단·상세 흐름은 시트 안에(component-map 1·7절)
@@ -87,6 +88,7 @@ export default function HomeScreen() {
       <View style={styles.header}>
         <Text style={styles.brand}>천하장사</Text>
         {s.aiMode === "stored" && <Text style={styles.stored}>저장된 응답</Text>}
+        {isTestDevice() && <Text style={styles.stored}>테스트 기기</Text>}
         <View style={styles.spacer} />
         {started && (
           <Pressable

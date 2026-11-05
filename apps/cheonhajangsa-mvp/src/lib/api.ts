@@ -1,5 +1,5 @@
 import type { AskSlot, ChoiceValue, FieldSourceMap, Location, PartialCondition, PriceCheck, SearchResponse, Slot, Store, TurnResponse, VendorDetail } from "./api-types";
-import { getDeviceId } from "./device";
+import { getDeviceId, isTestDevice } from "./device";
 
 // API 클라이언트. 배포는 같은 출처(BASE 비움). 로컬 개발(expo start, __DEV__)은 값이 비어 있으면 로컬 API 서버로 보낸다.
 const BASE = process.env.EXPO_PUBLIC_API_BASE_URL || (__DEV__ ? "http://localhost:8787" : "");
@@ -26,7 +26,7 @@ async function request<T>(method: "GET" | "POST" | "PATCH", path: string, body?:
   try {
     res = await fetch(`${BASE}${path}`, {
       method,
-      headers: { "content-type": "application/json", "x-device-id": getDeviceId() },
+      headers: { "content-type": "application/json", "x-device-id": getDeviceId(), ...(isTestDevice() ? { "x-test-device": "true" } : {}) },
       body: body === undefined ? undefined : JSON.stringify(body),
       keepalive, // 전화 앱으로 넘어가도 기록 요청이 끊기지 않게
     });
