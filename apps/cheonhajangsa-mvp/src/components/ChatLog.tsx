@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View } from "react-native";
 import type { ChatMessage } from "../lib/assist-state";
-import { color, font, radius } from "./theme";
+import { color } from "./theme";
+import { AppIcon } from "./AppIcon";
 
 export function ChatLog({ messages, loading }: { messages: ChatMessage[]; loading: boolean }) {
   return (
@@ -16,18 +17,22 @@ export function ChatLog({ messages, loading }: { messages: ChatMessage[]; loadin
 function Bubble({ role, text, muted }: { role: ChatMessage["role"]; text: string; muted?: boolean }) {
   const owner = role === "owner";
   return (
+    <View style={[styles.messageRow, owner && styles.ownerRow]}>
+    {!owner && <View style={styles.avatar}><AppIcon name="bot" size={18} color={color.green}/></View>}
     <View style={[styles.bubble, owner ? styles.owner : styles.ai]}>
       <Text style={[styles.text, owner && styles.ownerText, muted && styles.muted]}>{text}</Text>
+    </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   log: { gap: 8 },
-  bubble: { maxWidth: "85%", paddingVertical: 10, paddingHorizontal: 14, borderRadius: radius },
-  owner: { alignSelf: "flex-end", backgroundColor: color.ownerBubble, borderBottomRightRadius: 4 },
-  ai: { alignSelf: "flex-start", backgroundColor: color.surface, borderWidth: 1, borderColor: color.line, borderBottomLeftRadius: 4 },
-  text: { fontSize: font.body, color: color.ink, lineHeight: 22 },
+  messageRow:{flexDirection:"row",alignItems:"flex-start",gap:9},ownerRow:{justifyContent:"flex-end"},avatar:{width:30,height:30,borderRadius:10,backgroundColor:color.greenSoft,alignItems:"center",justifyContent:"center"},
+  bubble: { maxWidth: "85%", paddingVertical: 11, paddingHorizontal: 14, borderRadius: 18 },
+  owner: { alignSelf: "flex-end", backgroundColor: color.ownerBubble, borderBottomRightRadius: 5 },
+  ai: { alignSelf: "flex-start", backgroundColor: color.soft, borderBottomLeftRadius: 5 },
+  text: { fontSize: 14, color: color.ink, lineHeight: 22 },
   ownerText: { color: "#ffffff" },
   muted: { color: color.faint },
 });

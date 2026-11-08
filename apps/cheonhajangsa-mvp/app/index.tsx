@@ -1,6 +1,7 @@
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Linking, Platform, Pressable, ScrollView, type ScrollViewInstance, StyleSheet, Text, useWindowDimensions, View } from "react-native";
+import { Linking, Platform, Pressable, ScrollView, type ScrollViewInstance, StyleSheet, Text, TextInput, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import type { VendorCard } from "../core/search-types";
 import { AskOptions } from "../src/components/AskOptions";
 import { CallSheet } from "../src/components/CallSheet";
@@ -8,238 +9,171 @@ import { ChatInput } from "../src/components/ChatInput";
 import { ChatLog } from "../src/components/ChatLog";
 import { ChipEditor } from "../src/components/ChipEditor";
 import { ConditionChips } from "../src/components/ConditionChips";
-import { ExampleBanner } from "../src/components/ExampleBanner";
 import { KakaoMap } from "../src/components/KakaoMap";
 import { MarketLine } from "../src/components/MarketLine";
 import { NoticeCard } from "../src/components/NoticeCard";
 import { PriceCheckCard } from "../src/components/PriceCheckCard";
 import { ResultList } from "../src/components/ResultList";
-import { StoreCard, StoreList } from "../src/components/StoreList";
 import { color, font, radius } from "../src/components/theme";
 import { useAssist } from "../src/hooks/useAssist";
 import { useStores } from "../src/hooks/useStores";
 import { type CallPlan, isPhoneUserAgent, planCall } from "../src/lib/call";
 import { isTestDevice } from "../src/lib/device";
 import { focusFor, pinsFor } from "../src/lib/map-pins";
+import { AppIcon, type IconName } from "../src/components/AppIcon";
+import { CompactStoreCard } from "../src/components/CompactStoreCard";
+import { CommunityScreen, SavedScreen, ProfileScreen } from '../src/components/MemberScreens';
 
-// 지도 홈(v2 S-10): 위 입력창 + 카카오맵 + 아래 목록 시트. 대화·결과·진단·상세 흐름은 시트 안에(component-map 1·7절)
 const IS_PHONE = Platform.OS !== "web" || isPhoneUserAgent(globalThis.navigator?.userAgent ?? "");
+type ActiveTab = "map" | "assistant" | "community" | "saved" | "profile";
 
 export default function HomeScreen() {
   const a = useAssist();
   const s = a.state;
   const router = useRouter();
-
-  // 위치 화면(S-06)에서 돌아오면 바뀐 위치를 반영한다(WF-02)
-  useFocusEffect(useCallback(() => a.applySavedLocation(), [a.applySavedLocation]));
-  const openLocation = () => router.push("/location");
-  const openDetail = (card: VendorCard) =>
-    router.push({
-      pathname: "/vendor/[id]",
-      params: {
-        id: card.vendor_id,
-        item_id: s.condition.item_id ?? "item_lettuce",
-        location_id: s.condition.location_id ?? "",
-        session_id: s.sessionId ?? "",
-        rank: String(card.rank),
-      },
-    });
+  const [tab, setTab] = useState<ActiveTab>("map");
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [mapStageHeight, setMapStageHeight] = useState(400);
+  const [query, setQuery] = useState("");
+  const [storeFilter, setStoreFilter] = useState<"all" | "vendor">("all");
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [call, setCall] = useState<{ card: VendorCard; plan: Exclude<CallPlan, { kind: "dial" }> } | null>(null);
   const scroll = useRef<ScrollViewInstance>(null);
-  const { height: screenH } = useWindowDimensions();
-  const [sheetOpen, setSheetOpen] = useState(false); // 목록을 크게(지도 작게)
-  const [selectedId, setSelectedId] = useState<string | null>(null); // 지도에서 고른 가게
+  const chipsY = useRef(0);
+  const priceY = useRef(0);
+
+  const { applySavedLocation } = a;
+  useFocusEffect(useCallback(() => applySavedLocation(), [applySavedLocation]));
   const st = useStores(s.condition.location_id ?? a.currentLocation?.location_id ?? null);
   const me = a.currentLocation;
   const pins = useMemo(() => pinsFor(st.stores, me ? { lat: me.lat, lng: me.lng, name: me.name } : null), [st.stores, me]);
   const focusIds = useMemo(() => focusFor(selectedId, s.results, s.priceCheck), [selectedId, s.results, s.priceCheck]);
-  const selected = selectedId ? st.stores.find((x) => x.store_id === selectedId) ?? null : null;
-  const mapHeight = sheetOpen ? 140 : Math.max(200, Math.round(screenH * 0.36));
-
-  // 새 결과·진단이 오면 고른 가게 강조를 푼다(결과 핀을 강조, AC-30)
-  useEffect(() => setSelectedId(null), [s.results, s.priceCheck]);
-  const onPinPress = (id: string) => {
-    setSelectedId(id);
-    scroll.current?.scrollTo({ y: 0, animated: true });
-  };
-  const [call, setCall] = useState<{ card: VendorCard; plan: Exclude<CallPlan, { kind: "dial" }> } | null>(null);
-
-  const chipsY = useRef(0);
-
-  // 대화 중에는 맨 아래로. 결과가 있으면 조건 칩이 화면 위에 오게 해서 칩 편집과 상위 결과가 보이게 한다.
-  const priceY = useRef(0);
-  useEffect(() => {
-    if (s.messages.length === 0) return; // 대화 전에는 가게 목록 맨 위에 둔다
-    if (s.results && s.editor !== "recover") scroll.current?.scrollTo({ y: Math.max(chipsY.current - 12, 0), animated: true });
-    else if (s.priceCheck && !s.loading) return; // 진단 카드는 자리가 잡힐 때(onLayout) 맨 위로 맞춘다
-    else scroll.current?.scrollToEnd({ animated: true });
-  }, [s.messages.length, s.loading, s.editor, s.results, s.priceCheck]);
-
-  const onCall = (card: VendorCard) => {
-    a.recordCall(card); // tel:을 열기 전에 보낸다(API-04)
-    const plan = planCall(card, IS_PHONE);
-    if (plan.kind === "dial") void Linking.openURL(plan.url);
-    else setCall({ card, plan });
-  };
-
+  const selected = selectedId ? st.stores.find((item) => item.store_id === selectedId) ?? null : null;
+  const mapHeight = mapStageHeight;
+  const collapsedSheetHeight = 216;
+  const sheetHeight = sheetOpen ? Math.max(collapsedSheetHeight, Math.min(mapStageHeight - 40, 570)) : collapsedSheetHeight;
+  const visibleStores = st.stores.filter((store) => storeFilter === "all" || store.kind === "vendor");
   const started = s.messages.length > 0;
 
+  useEffect(() => {
+    if (tab !== "assistant" || s.messages.length === 0) return;
+    if (s.results && s.editor !== "recover") scroll.current?.scrollTo({ y: Math.max(chipsY.current - 12, 0), animated: true });
+    else if (!s.priceCheck || s.loading) scroll.current?.scrollToEnd({ animated: true });
+  }, [tab, s.messages.length, s.loading, s.editor, s.results, s.priceCheck]);
+
+  const openLocation = () => router.push("/location");
+  const openDetail = (card: VendorCard) => router.push({
+    pathname: "/vendor/[id]",
+    params: { id: card.vendor_id, item_id: s.condition.item_id ?? "item_lettuce", location_id: s.condition.location_id ?? "", session_id: s.sessionId ?? "", rank: String(card.rank) },
+  });
+  const onCall = (card: VendorCard) => {
+    a.recordCall(card);
+    const next = planCall(card, IS_PHONE);
+    if (next.kind === "dial") void Linking.openURL(next.url);
+    else setCall({ card, plan: next });
+  };
+  const sendFromMap = (text: string) => {
+    setSelectedId(null);
+    if (text.trim().length >= 1 && text.trim().length <= 200) setTab("assistant");
+    a.sendText(text);
+  };
+
   return (
-    <View style={styles.screen}>
-      <View style={styles.header}>
-        <Text style={styles.brand}>천하장사</Text>
-        {s.aiMode === "stored" && <Text style={styles.stored}>저장된 응답</Text>}
-        {isTestDevice() && <Text style={styles.stored}>테스트 기기</Text>}
-        <View style={styles.spacer} />
-        {started && (
-          <Pressable
-            accessibilityRole="button"
-            disabled={s.loading}
-            onPress={() => {
-              setSelectedId(null);
-              a.restart();
-            }}
-            style={styles.restart}
-          >
-            <Text style={styles.restartLabel}>새로 찾기</Text>
-          </Pressable>
-        )}
-      </View>
-      {s.exampleData && <ExampleBanner />}
-      <ChatInput disabled={s.loading} error={s.inputError} onSend={a.sendText} onPhoto={a.sendPhoto} />
-      <Pressable accessibilityRole="button" accessibilityHint="눌러서 내 위치 바꾸기" disabled={s.loading} onPress={openLocation} style={styles.locationBar}>
-        <Text style={styles.locationText}>
-          내 위치: <Text style={styles.locationName}>{a.currentLocation?.name ?? "기본 위치"}</Text> ▾
-        </Text>
-      </Pressable>
-
-      {me ? (
-        <KakaoMap center={{ lat: me.lat, lng: me.lng }} pins={pins} focusIds={focusIds} height={mapHeight} onPinPress={onPinPress} />
-      ) : (
-        <View style={[styles.mapWait, { height: mapHeight }]} />
-      )}
-
-      <Pressable accessibilityRole="button" onPress={() => setSheetOpen((v) => !v)} style={styles.handle}>
-        <View style={styles.grip} />
-        <Text style={styles.handleLabel}>{sheetOpen ? "지도 크게 보기 ▼" : "목록 크게 보기 ▲"}</Text>
-      </Pressable>
-
-      <ScrollView ref={scroll} style={styles.body} contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-        {selected && (
-          <View style={styles.selected}>
-            <View style={styles.selectedHead}>
-              <Text style={styles.selectedTitle}>지도에서 고른 가게</Text>
-              <Pressable accessibilityRole="button" onPress={() => setSelectedId(null)}>
-                <Text style={styles.selectedClose}>닫기</Text>
-              </Pressable>
+    <SafeAreaView style={styles.safe} edges={["top"]}>
+      <View style={styles.screen}>
+        <Header tab={tab} test={isTestDevice()} stored={s.aiMode === "stored"} started={started} loading={s.loading} onRestart={() => { setSelectedId(null); a.restart(); }} />
+        {tab === "map" ? (
+          <>
+            <View style={styles.mapTools}>
+              <Pressable accessibilityRole="button" accessibilityHint="눌러서 내 위치 바꾸기" onPress={openLocation} style={styles.locationBar}><AppIcon name="locate" size={16} color={color.green}/><Text style={styles.locationText}>{a.currentLocation?.name ?? "기본 위치"} 주변</Text><AppIcon name="chevron" size={14}/></Pressable>
+              <View style={styles.searchBar}><AppIcon name="search" size={20} color={color.sub}/><TextInput value={query} onChangeText={setQuery} accessibilityLabel="필요한 재료 입력" placeholder="어떤 품목을 찾으세요?" placeholderTextColor={color.faint} returnKeyType="search" onSubmitEditing={()=>{if(query.trim())sendFromMap(query);}} style={styles.searchInput}/><Pressable accessibilityRole="button" accessibilityLabel="품목 검색" onPress={()=>{if(query.trim())sendFromMap(query);}}><AppIcon name="arrow" size={20} color={color.green}/></Pressable></View>
+              <View style={styles.filterRow}>{[{key:"all",label:"전체 업체"},{key:"vendor",label:"가격 정보 있음"}].map(item=><Pressable key={item.key} accessibilityRole="button" accessibilityState={{selected:storeFilter===item.key}} onPress={()=>setStoreFilter(item.key as "all"|"vendor")} style={[styles.filterChip,storeFilter===item.key&&styles.filterOn]}><Text style={[styles.filterText,storeFilter===item.key&&styles.filterTextOn]}>{item.label}</Text></Pressable>)}<Pressable onPress={openLocation} style={styles.filterChip}><Text style={styles.filterText}>내 위치 변경</Text></Pressable></View>
             </View>
-            <StoreCard store={selected} onCall={onCall} onDetail={openDetail} />
-          </View>
-        )}
-
-        <Text style={styles.intro}>사장님, 필요한 재료를 한 마디로 말씀해 주세요.</Text>
-        {!started && (
-          <Text style={styles.introSub}>
-            재료 이름(상추), 받은 가격(상추 2kg 1만원), 영수증·결제내역 사진(📷) 중 하나를 위 입력창에 보내 주세요. {a.currentLocation?.name ?? "내 위치"} 근처 판매처와 동네 시세로 알려 드려요.
-          </Text>
-        )}
-
-        <ChatLog messages={s.messages} loading={s.loading} />
-
-        {s.ask && !s.loading && <AskOptions ask={s.ask} disabled={s.loading} onPick={(o) => a.sendChoice(s.ask!.slot, o)} />}
-
-        {s.notice && !s.loading && (
-          <NoticeCard notice={s.notice} request={s.request} disabled={s.loading} onRequest={a.requestItem} onSearchLettuce={a.searchLettuce} />
-        )}
-
-        {s.networkError && (
-          <View style={styles.netErr}>
-            <Text style={styles.netErrText}>연결이 끊겼어요.</Text>
-            <Pressable accessibilityRole="button" onPress={a.retry} style={styles.retry}>
-              <Text style={styles.retryLabel}>다시 시도</Text>
+            <View style={styles.mapStage} onLayout={(event)=>setMapStageHeight(Math.round(event.nativeEvent.layout.height))}>
+            <View style={styles.mapWrap}>
+              {me ? <KakaoMap center={{ lat: me.lat, lng: me.lng }} pins={pins} focusIds={focusIds} height={mapHeight} onPinPress={setSelectedId} /> : <View style={[styles.mapWait, { height: mapHeight }]} />}
+            </View>
+            <Pressable accessibilityRole="button" accessibilityLabel="내 위치 기준으로 다시 보기" onPress={()=>{setSelectedId(null);st.retry();}} style={[styles.locateButton,{bottom:sheetHeight+16}]}><AppIcon name="locate" size={22}/></Pressable>
+            <View style={[styles.sheet,{height:sheetHeight}]}>
+            <Pressable accessibilityRole="button" onPress={() => setSheetOpen((value) => !value)} style={styles.handle}>
+              <View style={styles.grip} />
+              <View style={styles.sheetHeading}><View><Text style={styles.sheetTitle}>근처 업체 {visibleStores.length}곳</Text><Text style={styles.sheetSub}>가격·배송 조건·확인일을 비교해 보세요</Text></View><Text style={styles.sheetLink}>{sheetOpen ? "접기" : "목록 전체보기"}</Text></View>
             </Pressable>
+            <ScrollView style={styles.body} contentContainerStyle={styles.mapContent} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
+              {s.exampleData && <Text style={styles.dataNote}>예시 판매처의 이름·번호·가격은 실제 정보가 아니에요.</Text>}
+              {selected && <CompactStoreCard store={selected} onDetail={openDetail}/>}
+              {s.results ? <ResultList results={s.results} onCall={onCall} onDetail={openDetail} /> : st.error ? <ErrorRow message={st.error} onRetry={st.retry} /> : visibleStores.filter(store=>store.store_id!==selectedId).slice(0,30).map(store=><CompactStoreCard key={store.store_id} store={store} onDetail={openDetail}/>)}
+            </ScrollView>
+            </View>
           </View>
-        )}
-
-        <View style={styles.conditions} onLayout={(e) => (chipsY.current = e.nativeEvent.layout.y)}>
-          {s.chips && <ConditionChips chips={s.chips} disabled={s.loading} onEdit={a.openEditor} onLocation={openLocation} />}
-          {s.editor !== "closed" && (
-            <ChipEditor
-              key={s.editor}
-              editor={s.editor}
-              condition={s.condition}
-              disabled={s.loading}
-              onSubmit={a.editCondition}
-              onClose={() => a.openEditor("closed")}
-            />
-          )}
-        </View>
-
-        {s.market && s.results && <MarketLine market={s.market} />}
-        {s.results && <ResultList results={s.results} onCall={onCall} onDetail={openDetail} />}
-
-        {s.priceCheck && !s.loading && (
-          <View
-            key={s.priceCheck.check_id} // 새 진단마다 다시 그려 자리를 다시 잡는다
-            onLayout={(e) => {
-              priceY.current = e.nativeEvent.layout.y;
-              scroll.current?.scrollTo({ y: Math.max(priceY.current - 80, 0), animated: true });
-            }}
-          >
-          <PriceCheckCard
-            check={s.priceCheck}
-            share={s.share}
-            disabled={s.loading}
-            onShare={a.sharePrice}
-            onSearch={a.searchLettuce}
-            onCall={onCall}
-            onDetail={openDetail}
-          />
-          </View>
-        )}
-
-        {!started && (st.error ? (
-          <View style={styles.netErr}>
-            <Text style={styles.netErrText}>{st.error}</Text>
-            <Pressable accessibilityRole="button" onPress={st.retry} style={styles.retry}>
-              <Text style={styles.retryLabel}>다시 시도</Text>
-            </Pressable>
-          </View>
-        ) : (
-          <StoreList stores={st.stores} onCall={onCall} onDetail={openDetail} />
-        ))}
-      </ScrollView>
-
-      {call && <CallSheet card={call.card} plan={call.plan} onClose={() => setCall(null)} />}
-    </View>
+          </>
+        ) : tab === "assistant" ? (
+          <>
+            {s.exampleData && <Text style={styles.aiDataNote}>예시 데이터 포함 · 실제 거래 전 업체에 확인해 주세요</Text>}
+            <ScrollView ref={scroll} style={styles.body} contentContainerStyle={styles.aiContent} keyboardShouldPersistTaps="handled">
+              {!started && <Welcome onExample={a.sendText} />}
+              <ChatLog messages={s.messages} loading={s.loading} />
+              {s.ask && !s.loading && <AskOptions ask={s.ask} disabled={s.loading} onPick={(option) => a.sendChoice(s.ask!.slot, option)} />}
+              {s.notice && !s.loading && <NoticeCard notice={s.notice} request={s.request} disabled={s.loading} onRequest={a.requestItem} onSearchLettuce={a.searchLettuce} />}
+              {s.networkError && <ErrorRow message="연결이 끊겼어요." onRetry={a.retry} />}
+              <View style={styles.conditions} onLayout={(event) => (chipsY.current = event.nativeEvent.layout.y)}>
+                {s.chips && <ConditionChips chips={s.chips} disabled={s.loading} onEdit={a.openEditor} onLocation={openLocation} />}
+                {s.editor !== "closed" && <ChipEditor key={s.editor} editor={s.editor} condition={s.condition} disabled={s.loading} onSubmit={a.editCondition} onClose={() => a.openEditor("closed")} />}
+              </View>
+              {s.market && s.results && <MarketLine market={s.market} />}
+              {s.results && <><Pressable accessibilityRole="button" onPress={() => setTab("map")} style={styles.exampleChip}><Text style={styles.sheetLink}>⌖ 검색 결과 지도에서 보기</Text></Pressable><ResultList results={s.results} onCall={onCall} onDetail={openDetail} /></>}
+              {s.priceCheck && !s.loading && <View key={s.priceCheck.check_id} onLayout={(event) => { priceY.current = event.nativeEvent.layout.y; scroll.current?.scrollTo({ y: Math.max(priceY.current - 80, 0), animated: true }); }}><PriceCheckCard check={s.priceCheck} share={s.share} disabled={s.loading} onShare={a.sharePrice} onSearch={a.searchLettuce} onCall={onCall} onDetail={openDetail} /></View>}
+            </ScrollView>
+            <ChatInput disabled={s.loading} error={s.inputError} onSend={a.sendText} onPhoto={a.sendPhoto} />
+          </>
+        ) : tab==='community'?<CommunityScreen/>:tab==='saved'?<SavedScreen onDetail={openDetail}/>:<ProfileScreen onSaved={()=>setTab('saved')} onLocation={openLocation} location={a.currentLocation?.name??'기본 위치'}/>}
+        <BottomNav active={tab} onChange={setTab} />
+        {call && <CallSheet card={call.card} plan={call.plan} onClose={() => setCall(null)} />}
+      </View>
+    </SafeAreaView>
   );
 }
 
+function Welcome({ onExample }: { onExample: (text: string) => void }) {
+  const examples = ["근처 상추 파는 곳 찾아줘", "상추 2kg 오늘 배달해 주는 곳", "상추 2kg 1만원이면 비싼가요?"];
+  return <View style={styles.welcome}><View style={styles.botMark}><Text style={styles.botMarkText}>✦</Text></View><Text style={styles.welcomeTitle}>무엇을 찾아드릴까요?</Text><Text style={styles.welcomeSub}>등록된 거래 정보만 근거로, 가격과 배송 조건을 함께 비교해 드려요.</Text><View style={styles.examples}>{examples.map((text) => <Pressable key={text} onPress={() => onExample(text)} style={styles.exampleChip}><Text style={styles.exampleText}>{text}</Text></Pressable>)}</View></View>;
+}
+
+function Header({ tab, test, stored, started, loading, onRestart }: { tab: ActiveTab; test: boolean; stored: boolean; started: boolean; loading: boolean; onRestart: () => void }) {
+  const titles={map:"천하장사",assistant:"AI 도우미",community:"사장님 커뮤니티",saved:"저장",profile:"내 정보"};
+  return <View style={styles.header}><View style={styles.brandMark}><AppIcon name={tab==="assistant"?"bot":"store"} size={20} color="#ffffff"/></View><View><Text style={styles.brand}>{titles[tab]}</Text>{tab === "assistant" && <Text style={styles.brandSub}>등록된 거래 정보로 찾아드려요</Text>}</View><View style={styles.spacer} />{stored && <Text style={styles.status}>저장 응답</Text>}{tab === "assistant" && started ? <Pressable accessibilityLabel="새 대화" disabled={loading} onPress={onRestart} style={styles.iconButton}><AppIcon name="edit" size={21}/></Pressable> : <View style={styles.iconButton}><AppIcon name="bell" size={21}/></View>}</View>;
+}
+
+function BottomNav({ active, onChange }: { active: ActiveTab; onChange:(tab:ActiveTab)=>void }) {
+  const tabs: {key:ActiveTab;icon:IconName;label:string}[] = [{ key: "map", icon: "map", label: "지도" }, { key: "assistant", icon: "bot", label: "AI 도우미" }, { key: "community", icon: "users", label: "커뮤니티" }, { key: "saved", icon: "bookmark", label: "저장" }, { key: "profile", icon: "user", label: "내 정보" }];
+  return <View style={styles.nav}>{tabs.map((item) => { const selected = active === item.key; return <Pressable key={item.key} accessibilityRole="tab" accessibilityState={{ selected }} onPress={()=>onChange(item.key)} style={styles.navItem}><AppIcon name={item.icon} size={21} color={selected?color.green:color.sub}/><Text style={[styles.navLabel, selected && styles.navOn]}>{item.label}</Text><View style={[styles.navDot, selected && styles.navDotOn]} /></Pressable>; })}</View>;
+}
+
+function ErrorRow({ message, onRetry }: { message: string; onRetry: () => void }) {
+  return <View style={styles.netErr}><Text style={styles.netErrText}>{message}</Text><Pressable onPress={onRetry} style={styles.retry}><Text style={styles.retryLabel}>다시 시도</Text></Pressable></View>;
+}
+
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: color.bg },
-  header: { flexDirection: "row", alignItems: "center", gap: 8, paddingHorizontal: 16, paddingVertical: 12, backgroundColor: color.surface, borderBottomWidth: 1, borderBottomColor: color.line },
-  brand: { fontSize: font.title, fontWeight: "800", color: color.green },
-  stored: { fontSize: 12, color: color.sub, borderWidth: 1, borderColor: color.line, borderRadius: 4, paddingHorizontal: 6, paddingVertical: 2 },
-  spacer: { flex: 1 },
-  restart: { paddingVertical: 6, paddingHorizontal: 10, borderRadius: radius, borderWidth: 1, borderColor: color.line },
-  restartLabel: { fontSize: font.small, color: color.ink, fontWeight: "600" },
-  locationBar: { paddingHorizontal: 16, paddingVertical: 8, backgroundColor: color.surface, borderBottomWidth: 1, borderBottomColor: color.line },
-  locationText: { fontSize: font.small, color: color.sub },
-  locationName: { color: color.green, fontWeight: "700" },
-  mapWait: { width: "100%", backgroundColor: color.greenSoft },
-  handle: { alignItems: "center", gap: 4, paddingTop: 6, paddingBottom: 8, backgroundColor: color.surface, borderTopLeftRadius: 14, borderTopRightRadius: 14, marginTop: -12, borderBottomWidth: 1, borderBottomColor: color.line },
-  grip: { width: 40, height: 4, borderRadius: 2, backgroundColor: color.line },
-  handleLabel: { fontSize: 12, color: color.sub, fontWeight: "600" },
-  selected: { gap: 8 },
-  selectedHead: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
-  selectedTitle: { fontSize: font.small, fontWeight: "700", color: color.sub },
-  selectedClose: { fontSize: font.small, color: color.sub, padding: 4 },
-  body: { flex: 1 },
-  content: { padding: 16, gap: 14 },
-  conditions: { gap: 10 },
-  intro: { fontSize: font.large, fontWeight: "700", color: color.ink },
-  introSub: { fontSize: font.body, color: color.sub, lineHeight: 22 },
-  netErr: { flexDirection: "row", alignItems: "center", gap: 10, padding: 12, borderRadius: radius, backgroundColor: color.redSoft },
-  netErrText: { flex: 1, fontSize: font.body, color: color.red },
-  retry: { backgroundColor: color.red, borderRadius: radius, paddingVertical: 8, paddingHorizontal: 14 },
-  retryLabel: { color: "#ffffff", fontWeight: "700", fontSize: font.body },
+  mapStage:{flex:1,position:"relative",overflow:"hidden"},
+  mapTools:{paddingHorizontal:18,paddingBottom:14,backgroundColor:color.surface,zIndex:2},
+  searchBar:{height:50,flexDirection:"row",alignItems:"center",gap:9,paddingHorizontal:14,borderWidth:1,borderColor:color.line,borderRadius:16,backgroundColor:"#ffffff",shadowColor:"#14181f",shadowOpacity:0.12,shadowRadius:16,shadowOffset:{width:0,height:5},elevation:4},
+  searchInput:{flex:1,fontSize:15,color:color.ink,paddingVertical:12},
+  filterRow:{flexDirection:"row",gap:8,marginTop:12},
+  filterChip:{height:36,paddingHorizontal:12,justifyContent:"center",borderRadius:20,borderWidth:1,borderColor:color.line,backgroundColor:"#ffffff"},filterOn:{backgroundColor:color.green,borderColor:color.green},filterText:{fontSize:12,color:color.ink,fontWeight:"500"},filterTextOn:{color:"#ffffff"},
+  sheet:{position:"absolute",bottom:0,left:0,right:0,borderTopLeftRadius:24,borderTopRightRadius:24,backgroundColor:"#ffffff",shadowColor:"#14181f",shadowOpacity:0.16,shadowRadius:22,shadowOffset:{width:0,height:-5},elevation:10,overflow:"hidden"},
+  locateButton:{position:"absolute",right:16,width:46,height:46,borderRadius:23,backgroundColor:"#ffffff",alignItems:"center",justifyContent:"center",shadowColor:"#14181f",shadowOpacity:0.15,shadowRadius:12,elevation:5},
+  dataNote:{fontSize:10,color:color.sub,lineHeight:15,paddingTop:4},aiDataNote:{fontSize:10,color:color.sub,paddingHorizontal:18,paddingVertical:6,backgroundColor:color.soft},
+  pending:{flex:1,alignItems:"center",justifyContent:"center",padding:24,gap:12},pendingIcon:{width:82,height:82,borderRadius:28,backgroundColor:color.greenSoft,alignItems:"center",justifyContent:"center",marginBottom:8},pendingTitle:{fontSize:20,fontWeight:"700",color:color.ink},pendingSub:{fontSize:13,color:color.sub},pendingNote:{fontSize:11,color:color.green,paddingHorizontal:12,paddingVertical:5,borderRadius:12,backgroundColor:color.greenSoft},pendingAction:{marginTop:18,padding:16},
+  safe: { flex: 1, backgroundColor: color.surface }, screen: { flex: 1, backgroundColor: color.bg },
+  header: { minHeight: 60, flexDirection: "row", alignItems: "center", gap: 9, paddingHorizontal: 18, paddingTop:14,paddingBottom:8, backgroundColor: color.surface },
+  brandMark: { width: 36, height: 36, borderRadius: 12, alignItems: "center", justifyContent: "center", backgroundColor: color.green, shadowColor: color.green, shadowOpacity: 0.25, shadowRadius: 8, shadowOffset: { width: 0, height: 4 }, elevation: 2 },
+  brandIcon: { color: "#ffffff", fontSize: 18, fontWeight: "800" }, brand: { fontSize:20, fontWeight: "600", letterSpacing: -0.6, color: color.ink }, brandSub: { marginTop: 1, color: color.sub, fontSize: 10 }, spacer: { flex: 1 },
+  status: { paddingHorizontal: 7, paddingVertical: 3, overflow: "hidden", borderRadius: 8, backgroundColor: color.soft, color: color.sub, fontSize: 10, fontWeight: "700" }, iconButton: { width: 38, height: 38, borderRadius: 19, alignItems: "center", justifyContent: "center", backgroundColor: color.soft }, iconButtonText: { color: color.ink, fontSize: 23 },
+  locationBar: { flexDirection: "row", alignItems: "center",alignSelf:"flex-start", gap: 5, paddingTop:5,paddingBottom:13, backgroundColor: 'transparent' }, locationPin: { color: color.green, fontSize: 11 }, locationText: { color: color.ink, fontSize: 13, fontWeight: "500" }, chevron: { color: color.sub, fontSize: 15 },
+  mapWrap: { position: "relative", overflow: "hidden", backgroundColor: "#e9efe7" }, mapWait: { width: "100%", backgroundColor: "#e9efe7" }, mapBadge: { position: "absolute", top: 14, alignSelf: "center", paddingHorizontal: 14, paddingVertical: 9, borderRadius: 20, backgroundColor: color.surface, shadowColor: "#14181f", shadowOpacity: 0.15, shadowRadius: 10, elevation: 3 }, mapBadgeText: { color: color.green, fontSize: 12, fontWeight: "700" },
+  handle: { paddingTop: 8, paddingHorizontal: 18, paddingBottom: 8,backgroundColor:color.surface }, grip: { width: 38, height: 4, alignSelf: "center", marginBottom: 12, borderRadius: 2, backgroundColor: color.line }, sheetHeading: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" }, sheetTitle: { fontSize: 16, fontWeight: "600", color: color.ink }, sheetSub: { marginTop: 3, fontSize: 11, color: color.sub }, sheetLink: { color: color.green, fontSize: 12, fontWeight: "500" },
+  body: { flex: 1 }, mapContent: { paddingHorizontal: 16, paddingTop: 6, paddingBottom: 24, gap: 12 }, aiContent: { paddingHorizontal: 16, paddingTop: 10, paddingBottom: 24, gap: 14 }, selected: { gap: 8 }, selectedHead: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" }, selectedTitle: { color: color.sub, fontSize: font.small, fontWeight: "700" }, close: { color: color.green, fontSize: font.small, fontWeight: "700" },
+  welcome: { alignItems: "center", paddingVertical: 28, gap: 9 }, botMark: { width: 50, height: 50, borderRadius: 17, alignItems: "center", justifyContent: "center", backgroundColor: color.greenSoft }, botMarkText: { color: color.green, fontSize: 22, fontWeight: "800" }, welcomeTitle: { marginTop: 5, color: color.ink, fontSize: 22, fontWeight: "800", letterSpacing: -0.5 }, welcomeSub: { maxWidth: 310, color: color.sub, fontSize: 13, lineHeight: 19, textAlign: "center" }, examples: { width: "100%", marginTop: 10, gap: 8 }, exampleChip: { minHeight: 42, justifyContent: "center", paddingHorizontal: 14, borderRadius: 14, backgroundColor: color.soft }, exampleText: { color: color.ink, fontSize: 13 }, conditions: { gap: 10 },
+  nav: { height: 72, flexDirection: "row", paddingHorizontal: 4, paddingTop: 6, paddingBottom: 8, borderTopWidth: 1, borderTopColor: color.line, backgroundColor: color.surface }, navItem: { flex: 1, alignItems: "center", justifyContent: "center", gap: 2 }, navIcon: { color: color.sub, fontSize: 20, lineHeight: 23 }, navLabel: { color: color.sub, fontSize: 10, fontWeight: "600" }, navOn: { color: color.green }, navDot: { width: 4, height: 4, borderRadius: 2, backgroundColor: "transparent" }, navDotOn: { backgroundColor: color.green },
+  netErr: { flexDirection: "row", alignItems: "center", gap: 10, padding: 12, borderRadius: radius, backgroundColor: color.redSoft }, netErrText: { flex: 1, fontSize: font.body, color: color.red }, retry: { paddingVertical: 8, paddingHorizontal: 12, borderRadius: 12, backgroundColor: color.red }, retryLabel: { color: "#ffffff", fontWeight: "700", fontSize: font.small },
 });

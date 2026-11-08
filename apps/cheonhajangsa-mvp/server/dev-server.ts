@@ -10,12 +10,13 @@ import { handleVendorDetail } from "./handlers/vendors";
 import { handleMarket, handlePhotoCheck, handleSharePriceCheck } from "./handlers/price-checks";
 import { handleSearch } from "./handlers/search";
 import { errorResponse } from "./http";
+import { handleMembers } from "./handlers/members";
 
 // 로컬 개발 서버: npm run dev:api. 배포(Vercel)와 같은 핸들러를 부른다.
 if (existsSync(".env.local")) process.loadEnvFile(".env.local");
 
 const PORT = Number(process.env.DEV_API_PORT) || 8787;
-const DEV_ORIGIN = "http://localhost:8081"; // expo start --web 기본 주소(로컬에서만 CORS 허용)
+const DEV_ORIGINS = new Set(["http://localhost:8081", "http://localhost:8082", "http://localhost:8084", "http://127.0.0.1:8081", "http://127.0.0.1:8082", "http://127.0.0.1:8084"]);
 
 type Route = (req: Request) => Promise<Response>;
 const routes: Record<string, Route> = {
@@ -43,14 +44,16 @@ async function toRequest(m: IncomingMessage): Promise<Request> {
 }
 
 const cors = {
-  "access-control-allow-origin": DEV_ORIGIN,
-  "access-control-allow-headers": "content-type, x-device-id, x-debug-now, x-ai-mode, x-test-device",
-  "access-control-allow-methods": "GET, POST, PATCH, OPTIONS",
+  "access-control-allow-origin": "http://localhost:8081",
+  "access-control-allow-headers": "content-type, authorization, x-device-id, x-debug-now, x-ai-mode, x-test-device",
+  "access-control-allow-methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
 };
 
 createServer(async (m, res) => {
+  const origin=typeof m.headers.origin==='string'?m.headers.origin:'';
+  const responseCors={...cors,'access-control-allow-origin':DEV_ORIGINS.has(origin)?origin:'http://localhost:8081',vary:'Origin'};
   if (m.method === "OPTIONS") {
-    res.writeHead(204, cors).end();
+    res.writeHead(204, responseCors).end();
     return;
   }
   const path = (m.url ?? "/").split("?")[0] ?? "/";
@@ -61,7 +64,8 @@ createServer(async (m, res) => {
       ? `${m.method} /api/v1/price-checks/:id`
       : `${m.method} ${path}`;
   const route = routes[key];
-  const response = route ? await route(await toRequest(m)) : errorResponse("NOT_FOUND", "없는 주소예요.");
-  res.writeHead(response.status, { ...Object.fromEntries(response.headers), ...cors });
+  const memberRoute=/^\/api\/v1\/(auth\/|community\/|me\/(profile|saved-vendors))/.test(path);
+  const response = memberRoute ? await handleMembers(await toRequest(m)) : route ? await route(await toRequest(m)) : errorResponse("NOT_FOUND", "없는 주소예요.");
+  res.writeHead(response.status, { ...Object.fromEntries(response.headers), ...responseCors });
   res.end(Buffer.from(await response.arrayBuffer()));
 }).listen(PORT, () => console.log(`API 개발 서버: http://localhost:${PORT}`));

@@ -8,6 +8,7 @@ import { getVendorDetail, sendEvent } from "../../src/lib/api";
 import type { VendorDetail } from "../../src/lib/api-types";
 import { type CallPlan, isPhoneUserAgent, planCall } from "../../src/lib/call";
 import { newUuid } from "../../src/lib/device";
+import { SaveVendorButton } from '../../src/components/SaveVendorButton';
 
 // S-04 판매처 상세(WF-06, API-03). 카드 정보 + 주소·요일별 영업시간·입고 일정·배달 지역·확인일·출처.
 const DAY_LABEL = { mon: "월", tue: "화", wed: "수", thu: "목", fri: "금", sat: "토", sun: "일" } as const;
@@ -31,7 +32,13 @@ export default function VendorScreen() {
       .then(setDetail)
       .catch((e: Error) => setError(e.message || "정보를 불러오지 못했어요."));
   };
-  useEffect(load, [id]);
+  useEffect(() => {
+    let active = true;
+    getVendorDetail(id, { item_id: one(p.item_id) ?? 'item_lettuce', location_id: one(p.location_id) ?? '', session_id: one(p.session_id), rank: one(p.rank) })
+      .then((next) => { if (active) { setDetail(next); setError(null); } })
+      .catch((e: Error) => { if (active) setError(e.message || '정보를 불러오지 못했어요.'); });
+    return () => { active = false; };
+  }, [id, p.item_id, p.location_id, p.session_id, p.rank]);
 
   const back = () => (router.canGoBack() ? router.back() : router.replace("/"));
 
@@ -112,6 +119,7 @@ export default function VendorScreen() {
                 {detail.checked_on ? ` · ${detail.checked_on} 확인` : " · 확인일 없음"}
               </Text>
             </Section>
+            <SaveVendorButton id={c.vendor_id}/>
 
             <Pressable accessibilityRole="button" onPress={call} style={({ pressed }) => [styles.call, pressed && styles.pressed]}>
               <Text style={styles.callLabel}>전화하기</Text>
