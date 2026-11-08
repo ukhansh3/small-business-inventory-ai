@@ -4,6 +4,29 @@
   "installCommand": "npm ci",
   "buildCommand": "npm run build:web",
   "outputDirectory": "dist",
-  "regions": ["icn1"],
-  "rewrites": [{ "source": "/((?!api/).*)", "destination": "/index.html" }]
+  "regions": [
+    "icn1"
+  ],
+  "rewrites": [
+    {
+      "source": "/api/v1/devices/me",
+      "destination": "/api/v1/devices"
+    },
+    {
+      "source": "/api/v1/auth/:path*",
+      "destination": "/api/v1/members"
+    },
+    {
+      "source": "/api/v1/community/:path*",
+      "destination": "/api/v1/members"
+    },
+    {
+      "source": "/api/v1/me/:path*",
+      "destination": "/api/v1/members"
+    },
+    {
+      "source": "/((?!api/).*)",
+      "destination": "/index.html"
+    }
+  ]
 }
