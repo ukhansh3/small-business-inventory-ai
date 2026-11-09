@@ -1,5 +1,5 @@
 import { useFocusEffect, useRouter } from "expo-router";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Linking, Platform, Pressable, ScrollView, type ScrollViewInstance, StyleSheet, Text, TextInput, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import type { VendorCard } from "../core/search-types";
@@ -15,6 +15,7 @@ import { NoticeCard } from "../src/components/NoticeCard";
 import { PriceCheckCard } from "../src/components/PriceCheckCard";
 import { ResultList } from "../src/components/ResultList";
 import { color, font, radius } from "../src/components/theme";
+import type { Store } from "../src/lib/api-types";
 import { useAssist } from "../src/hooks/useAssist";
 import { useStores } from "../src/hooks/useStores";
 import { type CallPlan, isPhoneUserAgent, planCall } from "../src/lib/call";
@@ -50,6 +51,8 @@ export default function HomeScreen() {
   useFocusEffect(useCallback(() => applySavedLocation(), [applySavedLocation]));
   const st = useStores(s.condition.location_id ?? a.currentLocation?.location_id ?? null);
   const me = a.currentLocation;
+  const { retry: reloadStores } = st;
+  useFocusEffect(useCallback(() => reloadStores(), [reloadStores]));
   const visibleStores = useMemo(() => {
     const keyword = storeQuery.toLowerCase();
     const produceQuery = /^(야채|채소|과일|청과)$/.test(keyword);
@@ -76,13 +79,15 @@ export default function HomeScreen() {
   const sheetHeight = sheetOpen
     ? Math.max(collapsedSheetHeight, Math.min(mapStageHeight - 40, 570))
     : showPreview ? previewHeight : collapsedSheetHeight;
-  const started = s.messages.length > 0;
+  const [storeReplies, setStoreReplies] = useState<{ after: number; text: string; stores: Store[] }[]>([]);
+  const started = s.messages.length > 0 || storeReplies.length > 0;
 
   useEffect(() => {
-    if (tab !== "assistant" || s.messages.length === 0) return;
-    if (s.results && s.editor !== "recover") scroll.current?.scrollTo({ y: Math.max(chipsY.current - 12, 0), animated: true });
+    if (tab !== "assistant" || !started) return;
+    if (storeReplies.at(-1)?.after === s.messages.length) scroll.current?.scrollToEnd({ animated: true });
+    else if (s.results && s.editor !== "recover") scroll.current?.scrollTo({ y: Math.max(chipsY.current - 12, 0), animated: true });
     else if (!s.priceCheck || s.loading) scroll.current?.scrollToEnd({ animated: true });
-  }, [tab, s.messages.length, s.loading, s.editor, s.results, s.priceCheck]);
+  }, [tab, started, storeReplies, s.messages.length, s.loading, s.editor, s.results, s.priceCheck]);
 
   const openLocation = () => router.push("/location");
   const openDetail = (card: VendorCard) => router.push({
@@ -104,10 +109,36 @@ export default function HomeScreen() {
     setSheetMode(keyword ? "list" : "collapsed");
   };
 
+  const sendAssistantText = (text: string) => {
+    const input = text.toLowerCase().replace(/[\s·]/g, "");
+    const terms = st.stores.flatMap((store) => [
+      store.name,
+      ...store.category.split("·"),
+      ...(store.demo_service?.split("·") ?? []),
+    ]);
+    const matchedTerm = terms
+      .map((term) => term.trim())
+      .filter((term) => {
+        const normalized = term.toLowerCase().replace(/\s/g, "");
+        return normalized.length >= 2 && input.includes(normalized);
+      })
+      .sort((first, second) => second.replace(/\s/g, "").length - first.replace(/\s/g, "").length)[0];
+    const keyword = matchedTerm ?? (input.includes("폐식용유") ? "폐식용유" : "");
+    if (keyword) {
+      const normalized = keyword.toLowerCase().replace(/\s/g, "");
+      const stores = st.stores.filter((store) =>
+        [store.name, store.category, store.demo_service].some((value) => value?.toLowerCase().replace(/\s/g, "").includes(normalized)),
+      );
+      setStoreReplies((previous) => [...previous, { after: s.messages.length, text, stores }]);
+      return;
+    }
+    return a.sendText(text);
+  };
+
   return (
     <SafeAreaView style={styles.safe} edges={["top"]}>
       <View style={styles.screen}>
-        <Header tab={tab} test={isTestDevice()} stored={s.aiMode === "stored"} started={started} loading={s.loading} onRestart={() => { setSelectedId(null); a.restart(); }} />
+        <Header tab={tab} test={isTestDevice()} stored={s.aiMode === "stored"} started={started} loading={s.loading} onRestart={() => { setSelectedId(null); setStoreReplies([]); a.restart(); }} />
         {tab === "map" ? (
           <>
             <View style={styles.mapTools}>
@@ -149,12 +180,12 @@ export default function HomeScreen() {
               <View style={styles.sheetHeading}><View><Text style={styles.sheetTitle}>{visiblePinCount === null ? "지도 업체" : `화면 속 업체 ${visiblePinCount}곳`}</Text><Text style={styles.sheetSub}>가격·배송 조건·확인일을 비교해 보세요</Text></View><Text style={styles.sheetLink}>{sheetOpen ? "↓ 접기" : "↑ 목록 보기"}</Text></View>
             </Pressable>
             {showPreview && <ScrollView style={styles.body} contentContainerStyle={styles.mapContent} keyboardShouldPersistTaps="handled">
-              <CompactStoreCard key={selected.store_id} store={selected} onDetail={openDetail}/>
+              <CompactStoreCard key={selected.store_id} store={selected} location={me?.location_id}/>
             </ScrollView>}
             {sheetOpen && <ScrollView style={styles.body} contentContainerStyle={styles.mapContent} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
               {s.exampleData && <Text style={styles.dataNote}>예시 판매처의 이름·번호·가격은 실제 정보가 아니에요.</Text>}
-              {selected && <CompactStoreCard store={selected} onDetail={openDetail}/>}
-              {showAiResults && s.results ? <ResultList results={s.results} onCall={onCall} onDetail={openDetail} /> : st.error ? <ErrorRow message={st.error} onRetry={st.retry} /> : visibleStores.length === 0 ? <Text style={styles.sheetSub}>조건에 맞는 근처 업체가 없어요.</Text> : visibleStores.filter(store=>store.store_id!==selectedId).slice(0, storeQuery ? undefined : 30).map(store=><CompactStoreCard key={store.store_id} store={store} onDetail={openDetail}/>)}
+              {selected && <CompactStoreCard store={selected} location={me?.location_id}/>}
+              {showAiResults && s.results ? <ResultList results={s.results} stores={st.stores} location={me?.location_id} /> : st.error ? <ErrorRow message={st.error} onRetry={st.retry} /> : visibleStores.length === 0 ? <Text style={styles.sheetSub}>조건에 맞는 근처 업체가 없어요.</Text> : visibleStores.filter(store=>store.store_id!==selectedId).slice(0, storeQuery ? undefined : 30).map(store=><CompactStoreCard key={store.store_id} store={store} location={me?.location_id}/>)}
             </ScrollView>}
             </View>
           </View>
@@ -164,7 +195,17 @@ export default function HomeScreen() {
             {s.exampleData && <Text style={styles.aiDataNote}>예시 데이터 포함 · 실제 거래 전 업체에 확인해 주세요</Text>}
             <ScrollView ref={scroll} style={styles.body} contentContainerStyle={styles.aiContent} keyboardShouldPersistTaps="handled">
               {!started && <Welcome onExample={a.sendText} />}
-              <ChatLog messages={s.messages} loading={s.loading} />
+              {storeReplies.map((reply, index) => (
+                <Fragment key={index}>
+                  <ChatLog messages={[
+                    ...s.messages.slice(storeReplies[index - 1]?.after ?? 0, reply.after),
+                    { id: -(index * 2 + 1), role: "owner", text: reply.text },
+                    { id: -(index * 2 + 2), role: "ai", text: reply.stores.length ? `관련 업체 ${reply.stores.length}곳을 찾았어요.` : "조건에 맞는 근처 업체가 없어요." },
+                  ]} loading={false} />
+                  {reply.stores.map((store) => <CompactStoreCard key={store.store_id} store={store} location={me?.location_id} />)}
+                </Fragment>
+              ))}
+              <ChatLog messages={s.messages.slice(storeReplies.at(-1)?.after ?? 0)} loading={s.loading} />
               {s.ask && !s.loading && <AskOptions ask={s.ask} disabled={s.loading} onPick={(option) => a.sendChoice(s.ask!.slot, option)} />}
               {s.notice && !s.loading && <NoticeCard notice={s.notice} request={s.request} disabled={s.loading} onRequest={a.requestItem} onSearchLettuce={a.searchLettuce} />}
               {s.networkError && <ErrorRow message="연결이 끊겼어요." onRetry={a.retry} />}
@@ -173,12 +214,12 @@ export default function HomeScreen() {
                 {s.editor !== "closed" && <ChipEditor key={s.editor} editor={s.editor} condition={s.condition} disabled={s.loading} onSubmit={a.editCondition} onClose={() => a.openEditor("closed")} />}
               </View>
               {s.market && s.results && <MarketLine market={s.market} />}
-              {s.results && <><Pressable accessibilityRole="button" onPress={() => { setSelectedId(null); setShowAiResults(true); setSheetMode("list"); setTab("map"); }} style={styles.exampleChip}><Text style={styles.sheetLink}>⌖ 검색 결과 지도에서 보기</Text></Pressable><ResultList results={s.results} onCall={onCall} onDetail={openDetail} /></>}
+              {s.results && <><Pressable accessibilityRole="button" onPress={() => { setSelectedId(null); setShowAiResults(true); setSheetMode("list"); setTab("map"); }} style={styles.exampleChip}><Text style={styles.sheetLink}>⌖ 검색 결과 지도에서 보기</Text></Pressable><ResultList results={s.results} stores={st.stores} location={me?.location_id} /></>}
               {s.priceCheck && !s.loading && <View key={s.priceCheck.check_id} onLayout={(event) => { priceY.current = event.nativeEvent.layout.y; scroll.current?.scrollTo({ y: Math.max(priceY.current - 80, 0), animated: true }); }}><PriceCheckCard check={s.priceCheck} share={s.share} disabled={s.loading} onShare={a.sharePrice} onSearch={a.searchLettuce} onCall={onCall} onDetail={openDetail} /></View>}
             </ScrollView>
-            <ChatInput disabled={s.loading} error={s.inputError} onSend={a.sendText} onPhoto={a.sendPhoto} />
+            <ChatInput disabled={s.loading} error={s.inputError} onSend={sendAssistantText} onPhoto={a.sendPhoto} />
           </>
-        ) : tab==='community'?<CommunityScreen/>:tab==='saved'?<SavedScreen onDetail={openDetail}/>:<ProfileScreen onSaved={()=>setTab('saved')} onLocation={openLocation} location={a.currentLocation?.name??'기본 위치'}/>}
+        ) : tab==='community'?<CommunityScreen/>:tab==='saved'?<SavedScreen/>:<ProfileScreen onSaved={()=>setTab('saved')} onLocation={openLocation} location={a.currentLocation?.name??'기본 위치'}/>}
         <BottomNav active={tab} onChange={setTab} />
         {call && <CallSheet card={call.card} plan={call.plan} onClose={() => setCall(null)} />}
       </View>

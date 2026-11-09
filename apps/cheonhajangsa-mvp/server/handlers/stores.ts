@@ -21,6 +21,8 @@ export type Store = {
   lat: number;
   lng: number;
   distance_m: number;
+  used_count?: number;
+  saved_count?: number;
   demo_service?: string;
   vendor_card?: VendorCard;
   source?: string;
@@ -29,7 +31,7 @@ export type Store = {
 
 export type DemoStore = Pick<Store, "store_id" | "name" | "category" | "lat" | "lng"> & { service: string };
 
-export type StoresDeps = { data: Dataset; publicStores: PublicStoresFile; env: ServerEnv; clock?: () => Date; loadDemoStores?: () => Promise<DemoStore[]> };
+export type StoresDeps = { data: Dataset; publicStores: PublicStoresFile; env: ServerEnv; clock?: () => Date; loadDemoStores?: () => Promise<DemoStore[]>; loadActivity?: (locationId: string) => Promise<{ vendor_id: string; used_count: number; saved_count: number }[] | null> };
 
 function parseBbox(v: string | null): [number, number, number, number] | null {
   if (!v) return null;
@@ -71,11 +73,20 @@ export function handleStores(req: Request, deps: StoresDeps): Promise<Response> 
         source_date: deps.publicStores.source_date,
       });
     }
-    const demos = await deps.loadDemoStores?.() ?? [];
+    const [demoRows, activity] = await Promise.all([deps.loadDemoStores?.(), deps.loadActivity?.(loc.id)]);
+    const demos = demoRows ?? [];
     for (const { service, ...demo } of demos) {
       if (!inBox(demo.lat, demo.lng)) continue;
       stores.push({ ...demo, kind: "public", address: "아주대 주변 가상 위치",
         demo_service: service, distance_m: Math.round(distanceMeters(loc, demo)) });
+    }
+    if (activity) {
+      const byId = new Map(activity.map((row) => [row.vendor_id, row]));
+      for (const store of stores) {
+        const counts = byId.get(store.store_id);
+        store.used_count = counts?.used_count ?? 0;
+        store.saved_count = counts?.saved_count ?? 0;
+      }
     }
     stores.sort((a, b) => a.distance_m - b.distance_m || a.name.localeCompare(b.name, "ko"));
     return json(200, { location_id: loc.id, stores });

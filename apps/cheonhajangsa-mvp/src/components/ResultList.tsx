@@ -1,9 +1,10 @@
 import { StyleSheet, Text, View } from "react-native";
-import type { SearchResult, VendorCard as Card } from "../../core/search-types";
+import type { SearchResult } from "../../core/search-types";
 import { color, font } from "./theme";
-import { VendorCard } from "./VendorCard";
+import { CompactStoreCard } from "./CompactStoreCard";
+import type { Store } from "../lib/api-types";
 
-export function ResultList({ results, onCall, onDetail }: { results: SearchResult; onCall: (c: Card) => void; onDetail: (c: Card) => void }) {
+export function ResultList({ results, stores, location }: { results: SearchResult; stores: Store[]; location?: string }) {
   if (results.total === 0) {
     return (
       <View style={styles.empty}>
@@ -21,7 +22,9 @@ export function ResultList({ results, onCall, onDetail }: { results: SearchResul
             {g.title} <Text style={styles.count}>{g.count}</Text>
           </Text>
           {g.items.map((c) => (
-            <VendorCard key={c.vendor_id} card={c} dimmed={g.key !== "available"} onCall={() => onCall(c)} onDetail={() => onDetail(c)} />
+            <CompactStoreCard key={c.vendor_id} location={location} store={stores.find((store) => store.store_id === c.vendor_id) ?? {
+              store_id: c.vendor_id, name: c.name, category: c.kind, distance_m: c.distance.meters,
+            }} />
           ))}
         </View>
       ))}

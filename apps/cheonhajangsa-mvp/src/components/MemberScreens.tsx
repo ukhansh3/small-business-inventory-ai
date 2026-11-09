@@ -9,7 +9,6 @@ import {
 } from "react-native";
 import { useMember, type Post, type Comment } from "../lib/members";
 import type { Store } from "../lib/api-types";
-import type { VendorCard } from "../../core/search-types";
 import { CompactStoreCard } from "./CompactStoreCard";
 import { AppIcon } from "./AppIcon";
 import { color } from "./theme";
@@ -626,18 +625,14 @@ function CommunityContent() {
 }
 
 type Saved = { vendor_id: string; saved_at: string; store: Store | null };
-export function SavedScreen({
-  onDetail,
-}: {
-  onDetail: (card: VendorCard) => void;
-}) {
+export function SavedScreen() {
   return (
     <LoginGate>
-      <SavedContent onDetail={onDetail} />
+      <SavedContent />
     </LoginGate>
   );
 }
-function SavedContent({ onDetail }: { onDetail: (card: VendorCard) => void }) {
+function SavedContent() {
   const member = useMember(),
     [tab, setTab] = useState("업체"),
     [notice, setNotice] = useState(""),
@@ -668,7 +663,7 @@ function SavedContent({ onDetail }: { onDetail: (card: VendorCard) => void }) {
         ? saved.data?.vendors.map((item) => (
             <View key={item.vendor_id}>
               {item.store ? (
-                <CompactStoreCard store={item.store} onDetail={onDetail} />
+                <CompactStoreCard store={item.store} />
               ) : (
                 <Text style={s.copy}>
                   현재 공개 정보를 확인할 수 없는 업체예요.

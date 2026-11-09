@@ -1,25 +1,53 @@
-import { Linking, Pressable, StyleSheet, Text, View } from "react-native";
-import type { VendorCard } from "../../core/search-types";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useRouter } from "expo-router";
 import type { Store } from "../lib/api-types";
-import { AppIcon } from "./AppIcon";
 import { VendorArtwork } from "./VendorArtwork";
+import { AppIcon } from "./AppIcon";
 import { color } from "./theme";
-import { SaveVendorButton } from './SaveVendorButton';
 
-export function CompactStoreCard({store,onDetail}:{store:Store;onDetail:(card:VendorCard)=>void}) {
-  const card=store.vendor_card;
-  const open=()=>card ? onDetail(card) : void Linking.openURL(`https://map.kakao.com/link/map/${encodeURIComponent(store.name)},${store.lat},${store.lng}`);
-  return <View><Pressable accessibilityRole={store.demo_service ? undefined : "button"} accessibilityLabel={store.demo_service ? store.name : `${store.name} 상세 보기`} onPress={store.demo_service ? undefined : open} style={styles.row}>
-    <VendorArtwork card={card} store={store}/>
-    <View style={styles.copy}>
-      <View style={styles.heading}><Text numberOfLines={1} style={styles.name}>{store.name}</Text>{(card?.is_example || store.demo_service) && <Text style={styles.badge}>예시</Text>}</View>
-      <Text style={styles.meta}>{store.category} · {store.distance_m < 1000 ? `${Math.round(store.distance_m)}m` : `${(store.distance_m/1000).toFixed(1)}km`}</Text>
-      {store.demo_service ? <Text style={styles.address}>{store.demo_service}</Text> : card ? <><Text numberOfLines={2} style={styles.price}>{card.price.display}</Text><Text numberOfLines={1} style={styles.meta}>{card.delivery.display ?? card.min_sale.display}</Text></> : <><Text numberOfLines={1} style={styles.address}>{store.address}</Text><Text style={styles.meta}>공공데이터 · 가격·재고 미확인</Text></>}
-    </View>
-    {!store.demo_service && <AppIcon name="chevron" size={16} color={color.faint}/>}
-  </Pressable><SaveVendorButton id={store.store_id}/></View>;
+export function CompactStoreCard({ store, location }: { store: Pick<Store, "store_id" | "name" | "category" | "distance_m" | "used_count" | "saved_count" | "vendor_card" | "demo_service">; location?: string }) {
+  const router = useRouter();
+  const distance = store.distance_m < 1000
+    ? Math.round(store.distance_m) + "m"
+    : (store.distance_m / 1000).toFixed(1) + "km";
+  return (
+    <Pressable accessibilityRole="button" accessibilityLabel={store.name + " 상세 보기"}
+      onPress={() => router.push({ pathname: "/store/[id]", params: { id: store.store_id, location: location ?? "" } })}
+      style={styles.row}>
+      <VendorArtwork card={store.vendor_card} store={store} />
+      <View style={styles.copy}>
+        <Text style={styles.name}>{store.name}</Text>
+        <Text style={styles.meta}>{store.category} · {distance}</Text>
+        <View style={styles.badges}>
+          <Text style={[styles.badge, styles.used]}>사용 {store.used_count ?? "–"}명</Text>
+          <Text style={[styles.badge, styles.saved]}>저장 {store.saved_count ?? "–"}명</Text>
+          {!!store.demo_service && <Text style={styles.demo}>시연</Text>}
+        </View>
+      </View>
+      <View style={styles.arrow}><AppIcon name="chevron" size={15} color={color.sub} /></View>
+    </Pressable>
+  );
 }
-const styles=StyleSheet.create({
-  row:{flexDirection:"row",alignItems:"center",gap:12,paddingVertical:14,borderBottomWidth:1,borderBottomColor:color.line},
-  copy:{flex:1,gap:4},heading:{flexDirection:"row",alignItems:"center",gap:6},name:{fontSize:15,fontWeight:"700",color:color.ink,flexShrink:1},badge:{fontSize:10,color:"#8a5a00",backgroundColor:"#fff3d6",paddingHorizontal:5,paddingVertical:2,borderRadius:5},meta:{fontSize:11,color:color.sub,lineHeight:16},price:{fontSize:14,fontWeight:"700",color:color.green,lineHeight:20},address:{fontSize:12,color:color.ink,lineHeight:17},
+
+const styles = StyleSheet.create({
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    padding: 12,
+    marginVertical: 4,
+    borderWidth: 1,
+    borderColor: color.line,
+    borderRadius: 16,
+    backgroundColor: "#fff",
+  },
+  copy: { flex: 1, gap: 4 },
+  name: { fontSize: 16, fontWeight: "700", color: color.ink },
+  meta: { fontSize: 12, color: color.sub },
+  badges: { flexDirection: "row", flexWrap: "wrap", alignItems: "center", gap: 5, marginTop: 3 },
+  badge: { borderRadius: 8, paddingHorizontal: 7, paddingVertical: 4, fontSize: 12, fontWeight: "700", color: "#9a3412" },
+  used: { backgroundColor: "#ffedd5" },
+  saved: { backgroundColor: "#fff7ed" },
+  demo: { fontSize: 10, color: color.sub },
+  arrow: { width: 26, height: 26, borderRadius: 13, alignItems: "center", justifyContent: "center", backgroundColor: color.soft },
 });

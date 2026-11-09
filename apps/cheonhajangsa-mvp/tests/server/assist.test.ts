@@ -43,22 +43,19 @@ async function turn(ai: AiClient, body: unknown): Promise<{ status: number; body
 const next = (prev: Turn, input: unknown) => ({ session_id: prev.session_id, turn_seq: prev.turn_seq, input, condition: prev.condition, field_source: prev.field_source });
 
 describe("AC-5 되묻기 순서", () => {
-  it("'상추' 한 마디 → qty_kg → urgency → fulfillment → 결과. AI는 첫 턴 1번만", async () => {
+  it("'상추' 한 마디 → urgency → fulfillment → 결과. AI는 첫 턴 1번만", async () => {
     const ai = fakeAi(async () => ({ type: "search", item_id: "item_lettuce", qty_kg: null, urgency: null, fulfillment: null }));
     const t1 = await turn(ai, { session_id: null, input: { type: "text", text: "상추" } });
     expect(t1.status).toBe(200);
     expect(t1.body.type).toBe("ask");
-    expect(t1.body.ask?.slot).toBe("qty_kg");
-
-    const t2 = await turn(ai, next(t1.body, { type: "choice", slot: "qty_kg", value: 2 }));
-    expect(t2.body.ask?.slot).toBe("urgency");
-    const t3 = await turn(ai, next(t2.body, { type: "choice", slot: "urgency", value: "now" }));
+    expect(t1.body.ask?.slot).toBe("urgency");
+    const t3 = await turn(ai, next(t1.body, { type: "choice", slot: "urgency", value: "now" }));
     expect(t3.body.ask?.slot).toBe("fulfillment");
     const t4 = await turn(ai, next(t3.body, { type: "choice", slot: "fulfillment", value: "pickup" }));
     expect(t4.body.type).toBe("results");
     expect(t4.body.results?.total).toBe(1);
     expect(t4.body.session_id).toBe(t1.body.session_id);
-    expect(t4.body.condition?.field_source).toMatchObject({ item_id: "said", qty_kg: "asked", urgency: "asked", fulfillment: "asked", location_id: "default" });
+    expect(t4.body.condition?.field_source).toMatchObject({ item_id: "said", qty_kg: "default", urgency: "asked", fulfillment: "asked", location_id: "default" });
     expect(ai.calls).toBe(1);
   });
 
@@ -76,10 +73,10 @@ describe("AC-5 되묻기 순서", () => {
     expect(t2.body.ask?.slot).toBe("urgency");
   });
 
-  it("AI가 허용 범위 밖 양(100kg)을 내면 버리고 되묻는다(지어낸 값 방지)", async () => {
+  it("AI가 허용 범위 밖 양(100kg)을 내면 버리고 일정부터 묻는다", async () => {
     const ai = fakeAi(async () => ({ type: "search", item_id: "item_lettuce", qty_kg: 100, urgency: null, fulfillment: null }));
     const t1 = await turn(ai, { session_id: null, input: { type: "text", text: "상추" } });
-    expect(t1.body.ask?.slot).toBe("qty_kg");
+    expect(t1.body.ask?.slot).toBe("urgency");
   });
 
   it("선택지에 없는 값은 400", async () => {

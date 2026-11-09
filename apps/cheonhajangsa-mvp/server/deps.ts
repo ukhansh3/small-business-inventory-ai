@@ -46,6 +46,14 @@ export function storesDeps(): StoresDeps {
   const { supabaseUrl, supabaseServiceRoleKey } = env;
   return {
     data, env, publicStores,
+    async loadActivity(locationId) {
+      if (!supabaseUrl || !supabaseServiceRoleKey) return null;
+      const db = createClient(supabaseUrl, supabaseServiceRoleKey, {
+        auth: { persistSession: false, autoRefreshToken: false },
+      });
+      const { data, error } = await db.rpc("chj_store_activity_counts", { p_location_id: locationId });
+      return error ? null : data;
+    },
     async loadDemoStores() {
       if (!supabaseUrl || !supabaseServiceRoleKey) return [];
       const db = createClient(supabaseUrl, supabaseServiceRoleKey, {

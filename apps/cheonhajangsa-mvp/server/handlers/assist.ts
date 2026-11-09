@@ -120,7 +120,7 @@ export function handleAssistTurn(req: Request, deps: AssistDeps): Promise<Respon
         const known = name ? deps.data.items.find((i) => i.name === name || i.aliases.includes(name)) : undefined;
         const notice =
           decision.kind === "off_topic"
-            ? { kind: "off_topic", message: "필요한 재료를 말씀해 주세요. 예: 상추 2kg", recognized_item: null, actions: ["search_lettuce"] }
+            ? { kind: "off_topic", message: "이 도우미에서는 식재료 판매처와 가격을 확인할 수 있어요. 업체나 업종은 지도에서 검색해 주세요.", recognized_item: null, actions: ["search_lettuce"] }
             : {
                 kind: "out_of_scope_item",
                 message: name ? `아직 상추만 준비돼 있어요. ${name} 요청을 남겨 주시면 먼저 준비할게요.` : "아직 상추만 준비돼 있어요.",
@@ -162,7 +162,8 @@ export function handleAssistTurn(req: Request, deps: AssistDeps): Promise<Respon
       applyChoice(cond, src, body.input.slot, body.input.value);
     }
 
-    // 빠진 조건 되묻기(WF-04). qty는 '잘 모르겠어요'(null)도 답한 것으로 본다.
+    // 수량을 말하지 않아도 판매처를 검색할 수 있다.
+    src.qty_kg ??= "default";
     const missing = ASK_ORDER.find((slot) => src[slot] === undefined);
     if (missing) {
       const q = QUESTIONS[missing];

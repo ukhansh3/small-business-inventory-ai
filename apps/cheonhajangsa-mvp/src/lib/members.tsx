@@ -47,7 +47,7 @@ export class MemberApiError extends Error {
     super(message);
   }
 }
-async function request<T>(
+export async function request<T>(
   path: string,
   method = "GET",
   body?: unknown,

@@ -197,7 +197,30 @@ export async function handleMembers(
         return error(401, "UNAUTHENTICATED", "다시 로그인해 주세요.");
       return json(200, { session: result.data.session });
     }
+    const reviewRoute = /^\/me\/vendor-reviews\/([^/]+)$/.exec(path);
+    if (reviewRoute && method === "GET") {
+      const vendorId = z.string().min(1).max(160).parse(decodeURIComponent(reviewRoute[1]!));
+      const rows = checked(await db.from("chj_vendor_reviews")
+        .select("id,rating,body,created_at,user_id").eq("vendor_id", vendorId)
+        .order("created_at", { ascending: false }).order("id"));
+      return json(200, { reviews: (rows ?? []).map(({ user_id, ...row }) => ({ ...row, example: user_id === null })) });
+    }
     const user = await requireMember(req, db);
+    if (reviewRoute && method === "PUT") {
+      const vendorId = z.string().min(1).max(160).parse(decodeURIComponent(reviewRoute[1]!));
+      const input = z.object({ rating: z.number().int().min(1).max(5), body: z.string().trim().min(1).max(500) }).strict().parse(await body(req));
+      const { handleStores } = await import("./stores");
+      const stores = await handleStores(new Request(url.origin + "/api/v1/stores", {
+        headers: { "x-device-id": req.headers.get("x-device-id") ?? "" },
+      }), storesDeps());
+      if (!stores.ok) return stores;
+      const data = (await stores.json()) as { stores: { store_id: string }[] };
+      if (!data.stores.some((store) => store.store_id === vendorId))
+        return error(404, "NOT_FOUND", "현재 공개된 업체를 찾을 수 없어요.");
+      checked(await db.from("chj_vendor_reviews")
+        .upsert({ vendor_id: vendorId, user_id: user.id, ...input }, { onConflict: "vendor_id,user_id" }));
+      return new Response(null, { status: 204 });
+    }
     if (path === "/auth/logout" && method === "POST") {
       const token = req.headers
         .get("authorization")!
@@ -433,35 +456,55 @@ export async function handleMembers(
         })),
       });
     }
-    const savedRoute = /^\/me\/saved-vendors\/([^/]+)$/.exec(path);
-    if (savedRoute && (method === "PUT" || method === "DELETE")) {
-      const id = z
-        .string()
-        .min(1)
-        .max(160)
-        .parse(decodeURIComponent(savedRoute[1]!));
+    const activityRoute = /^\/me\/(saved-vendors|used-vendors)\/([^/]+)$/.exec(path);
+    if (activityRoute && ["GET", "PUT", "DELETE"].includes(method)) {
+      const id = z.string().min(1).max(160).parse(decodeURIComponent(activityRoute[2]!));
       const key = { user_id: user.id, vendor_id: id };
-      if (method === "PUT") {
-        const { handleStores } = await import("./stores");
-        const res = await handleStores(
-          new Request(`${url.origin}/api/v1/stores`, {
-            headers: { "x-device-id": req.headers.get("x-device-id") ?? "" },
-          }),
-          storesDeps(),
-        );
-        if (!res.ok) return res;
-        const data = (await res.json()) as { stores: { store_id: string }[] };
-        if (!data.stores.some((store) => store.store_id === id))
-          return error(404, "NOT_FOUND", "현재 공개된 업체를 찾을 수 없어요.");
-        checked(
-          await db
-            .from("chj_saved_vendors")
-            .upsert(key, {
-              onConflict: "user_id,vendor_id",
-              ignoreDuplicates: true,
-            }),
-        );
-      } else checked(await db.from("chj_saved_vendors").delete().match(key));
+      const locationId = url.searchParams.get("location_id");
+      if (locationId && !/^[a-zA-Z0-9_-]{1,160}$/.test(locationId))
+        return error(422, "INVALID_INPUT", "위치를 확인해 주세요.");
+      if (method === "GET") {
+        if (!locationId) return error(422, "INVALID_INPUT", "위치를 선택해 주세요.");
+        const [savedCount, usedCount, saved, used] = await Promise.all([
+          db.from("chj_saved_vendors").select("*", { count: "exact", head: true }).eq("vendor_id", id).eq("location_id", locationId),
+          db.from("chj_used_vendors").select("*", { count: "exact", head: true }).eq("vendor_id", id).eq("location_id", locationId),
+          db.from("chj_saved_vendors").select("vendor_id").match(key).maybeSingle(),
+          db.from("chj_used_vendors").select("vendor_id").match(key).maybeSingle(),
+        ]);
+        checked(savedCount);
+        checked(usedCount);
+        return json(200, {
+          saved_count: savedCount.count ?? 0,
+          used_count: usedCount.count ?? 0,
+          saved: !!checked(saved),
+          used: !!checked(used),
+        });
+      }
+      if (activityRoute[1] === "used-vendors" && (method !== "PUT" || !locationId))
+        return error(422, "INVALID_INPUT", "사용 기록을 남길 위치를 선택해 주세요.");
+      if (method === "DELETE") {
+        checked(await db.from("chj_saved_vendors").delete().match(key));
+        return new Response(null, { status: 204 });
+      }
+
+      const { handleStores } = await import("./stores");
+      const res = await handleStores(
+        new Request(url.origin + "/api/v1/stores" + url.search, {
+          headers: { "x-device-id": req.headers.get("x-device-id") ?? "" },
+        }),
+        storesDeps(),
+      );
+      if (!res.ok) return res;
+      const data = (await res.json()) as { stores: { store_id: string }[] };
+      if (!data.stores.some((store) => store.store_id === id))
+        return error(404, "NOT_FOUND", "현재 공개된 업체를 찾을 수 없어요.");
+      if (locationId && !storesDeps().data.locations.some((location) => location.id === locationId))
+        return error(422, "INVALID_INPUT", "위치를 확인해 주세요.");
+      const table = activityRoute[1] === "used-vendors" ? "chj_used_vendors" : "chj_saved_vendors";
+      checked(await db.from(table).upsert(
+        { ...key, ...(locationId ? { location_id: locationId } : {}) },
+        { onConflict: "user_id,vendor_id", ignoreDuplicates: !locationId },
+      ));
       return new Response(null, { status: 204 });
     }
     return error(404, "NOT_FOUND", "없는 주소예요.");

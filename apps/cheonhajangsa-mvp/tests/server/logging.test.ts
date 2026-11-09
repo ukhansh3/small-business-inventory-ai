@@ -92,13 +92,13 @@ describe("WF-13 대화·검색 기록", () => {
     const ai = fixedAi({ type: "search", item_id: "item_lettuce", qty_kg: null, urgency: null, fulfillment: null });
     const r1 = await (await handleAssistTurn(req("assist/turns", { session_id: null, input: { type: "text", text: "상추" } }), { data, env, ai, log })).json();
     await handleAssistTurn(
-      req("assist/turns", { session_id: r1.session_id, turn_seq: r1.turn_seq, input: { type: "choice", slot: "qty_kg", value: 2 }, condition: r1.condition, field_source: r1.field_source }),
+      req("assist/turns", { session_id: r1.session_id, turn_seq: r1.turn_seq, input: { type: "choice", slot: "urgency", value: "now" }, condition: r1.condition, field_source: r1.field_source }),
       { data, env, ai, log },
     );
     expect(seen.turns.map((t) => t.ai_called)).toEqual([true, false]);
-    expect(seen.turns[0]!.turns[1]).toMatchObject({ kind: "ask", ask_slot: "qty_kg" });
+    expect(seen.turns[0]!.turns[1]).toMatchObject({ kind: "ask", ask_slot: "urgency" });
     expect(seen.turns[1]!.turns.map((x) => x.seq)).toEqual([3, 4]);
-    expect(seen.turns[1]!.turns[0]).toMatchObject({ kind: "choice", ask_slot: "qty_kg", chosen: "2" });
+    expect(seen.turns[1]!.turns[0]).toMatchObject({ kind: "choice", ask_slot: "urgency", chosen: "now" });
   });
 
   it("AC-15 AI 실패도 기록(outcome ai_failed) 후 503", async () => {
