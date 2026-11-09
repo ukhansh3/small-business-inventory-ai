@@ -1,3 +1,5 @@
+import { rawDataset } from "../../core/data";
+import publicStores from "../../data/public_stores.json";
 import {
   createClient,
   type SupabaseClient,
@@ -240,15 +242,13 @@ export async function handleMembers(
       if (!owner) return error(404, "NOT_FOUND", "아직 문의를 받을 사장님 계정이 연결되지 않았어요.");
       if (owner.user_id === user.id) return error(422, "INVALID_INPUT", "내 업체에 문의할 수 없어요.");
 
-      const response = await handleStores(new Request(url.origin + "/api/v1/stores", {
-        headers: { "x-device-id": req.headers.get("x-device-id") ?? "" },
-      }), storesDeps());
-      if (!response.ok) return response;
-      const { stores } = await response.json() as { stores: { store_id: string; name: string }[] };
-      const store = stores.find((entry) => entry.store_id === vendor_id);
-      if (!store) return error(404, "NOT_FOUND", "업체를 찾을 수 없어요.");
+      const listedName = rawDataset.vendors.find((entry) => entry.id === vendor_id)?.name
+        ?? publicStores.stores.find((entry) => entry.store_id === vendor_id)?.name;
+      const vendorName = listedName ?? checked(await db.from("chj_demo_stores").select("name")
+        .eq("store_id", vendor_id).maybeSingle())?.name;
+      if (!vendorName) return error(404, "NOT_FOUND", "업체를 찾을 수 없어요.");
       const thread = checked(await db.from("chj_vendor_threads")
-        .upsert({ vendor_id, vendor_name: store.name, customer_id: user.id, owner_id: owner.user_id },
+        .upsert({ vendor_id, vendor_name: vendorName, customer_id: user.id, owner_id: owner.user_id },
           { onConflict: "vendor_id,customer_id,owner_id" }).select("id").single());
       return json(200, thread);
     }
