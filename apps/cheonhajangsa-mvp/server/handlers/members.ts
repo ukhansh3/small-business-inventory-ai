@@ -6,6 +6,7 @@ import {
 import { z } from "zod";
 import { json } from "../http";
 import { storesDeps } from "../deps";
+import { handleStores } from "./stores";
 
 const categories = ["구매처 질문", "가격 제보", "거래 경험"] as const;
 const postInput = z
@@ -238,7 +239,7 @@ export async function handleMembers(
       const owner = checked(await db.from("chj_vendor_owners").select("user_id").eq("vendor_id", vendor_id).maybeSingle());
       if (!owner) return error(404, "NOT_FOUND", "아직 문의를 받을 사장님 계정이 연결되지 않았어요.");
       if (owner.user_id === user.id) return error(422, "INVALID_INPUT", "내 업체에 문의할 수 없어요.");
-      const { handleStores } = await import("./stores");
+
       const response = await handleStores(new Request(url.origin + "/api/v1/stores", {
         headers: { "x-device-id": req.headers.get("x-device-id") ?? "" },
       }), storesDeps());
@@ -277,7 +278,7 @@ export async function handleMembers(
     if (reviewRoute && method === "PUT") {
       const vendorId = z.string().min(1).max(160).parse(decodeURIComponent(reviewRoute[1]!));
       const input = z.object({ rating: z.number().int().min(1).max(5), body: z.string().trim().min(1).max(500) }).strict().parse(await body(req));
-      const { handleStores } = await import("./stores");
+
       const stores = await handleStores(new Request(url.origin + "/api/v1/stores", {
         headers: { "x-device-id": req.headers.get("x-device-id") ?? "" },
       }), storesDeps());
@@ -503,7 +504,7 @@ export async function handleMembers(
             .order("created_at", { ascending: false }),
         ) ?? [];
       // 같은 지도 핸들러에서 원천 업체를 조회한다. 임의 가격/좌표를 생성하지 않는다.
-      const { handleStores } = await import("./stores");
+
       const storeRes = await handleStores(
         new Request(`${url.origin}/api/v1/stores${url.search}`, {
           headers: { "x-device-id": req.headers.get("x-device-id") ?? "" },
@@ -553,7 +554,6 @@ export async function handleMembers(
         return new Response(null, { status: 204 });
       }
 
-      const { handleStores } = await import("./stores");
       const res = await handleStores(
         new Request(url.origin + "/api/v1/stores" + url.search, {
           headers: { "x-device-id": req.headers.get("x-device-id") ?? "" },
