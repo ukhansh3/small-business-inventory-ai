@@ -113,6 +113,7 @@ export type Store = {
   lat: number;
   lng: number;
   distance_m: number;
+  demo_service?: string;
   vendor_card?: import("../../core/search-types").VendorCard;
   source?: string;
   source_date?: string;

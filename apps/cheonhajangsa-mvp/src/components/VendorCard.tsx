@@ -1,11 +1,13 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import type { VendorCard as Card } from "../../core/search-types";
+import { VendorArtwork } from "./VendorArtwork";
 import { color, font } from "./theme";
 
 // S-03 결과 카드. 강조 순서: 위치·거리·연락처 → 입고 → 가격(보조). 문구는 서버가 만든 그대로.
 export function VendorCard({ card, dimmed, onCall, onDetail }: { card: Card; dimmed: boolean; onCall: () => void; onDetail: () => void }) {
   return (
     <View style={[styles.card, dimmed && styles.dimmed]}>
+      <VendorArtwork card={card} large />
       <View style={styles.head}>
         <Text style={styles.name}>{card.name}</Text>
         <Text style={styles.kind}>{card.kind}</Text>

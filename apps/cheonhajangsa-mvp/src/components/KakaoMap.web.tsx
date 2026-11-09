@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { type HostInstance, StyleSheet, Text, View } from "react-native";
-import type { MapProps, Pin } from "./map-types";
+import type { MapProps } from "./map-types";
 import { color, font } from "./theme";
 
 // 카카오맵(웹, v2 4절). 공개용 JavaScript 키는 등록된 도메인에서만 동작한다(EXPO_PUBLIC_KAKAO_JS_KEY).
@@ -9,14 +9,17 @@ const KEY = process.env.EXPO_PUBLIC_KAKAO_JS_KEY ?? "";
 
 // 쓰는 기능만 좁힌 카카오맵 타입
 type LatLng = object;
-type KMap = { setCenter(p: LatLng): void; setBounds(b: object, top?: number, right?: number, bottom?: number, left?: number): void; relayout(): void };
+type KMap = { getProjection(): { containerPointFromCoords(p: LatLng): { x: number; y: number } }; setCenter(p: LatLng): void; setBounds(b: object, top?: number, right?: number, bottom?: number, left?: number): void; relayout(): void };
 type Overlay = { setMap(m: KMap | null): void };
+type Marker = Overlay & { setOpacity(opacity: number): void };
 type Kakao = {
   maps: {
     load(cb: () => void): void;
     LatLng: new (lat: number, lng: number) => LatLng;
     Map: new (el: HTMLElement, o: { center: LatLng; level: number }) => KMap;
     LatLngBounds: new () => { extend(p: LatLng): void };
+    Marker: new (o: { position: LatLng; title: string; zIndex: number; clickable: boolean }) => Marker;
+    event: { addListener(target: Marker, event: "click", listener: () => void): void; addListener(target: KMap, event: "idle", listener: () => void): void; removeListener(target: KMap, event: "idle", listener: () => void): void };
     CustomOverlay: new (o: { position: LatLng; content: HTMLElement; yAnchor?: number; zIndex?: number; clickable?: boolean }) => Overlay;
   };
 };
@@ -41,35 +44,7 @@ function loadKakao(): Promise<Kakao> {
   return loading;
 }
 
-const STYLE: Record<Pin["kind"], { size: number; fill: string; border: string }> = {
-  vendor: { size: 14, fill: color.green, border: "#ffffff" },
-  example: { size: 14, fill: "#d9a21b", border: "#ffffff" },
-  public: { size: 9, fill: "#7f9c86", border: "#ffffff" },
-  me: { size: 16, fill: "#2b6de8", border: "#ffffff" },
-};
-
-function pinElement(pin: Pin, focused: boolean, dimmed: boolean, onPress: () => void): HTMLElement {
-  const st = STYLE[pin.kind];
-  const size = focused ? st.size + 6 : st.size;
-  const el = document.createElement("div");
-  el.title = pin.name;
-  el.setAttribute("role", "button");
-  el.setAttribute("aria-label", pin.name);
-  Object.assign(el.style, {
-    width: `${size}px`,
-    height: `${size}px`,
-    borderRadius: "50%",
-    background: st.fill,
-    border: `2px solid ${st.border}`,
-    boxShadow: focused ? `0 0 0 3px ${st.fill}55` : "0 1px 2px rgba(0,0,0,.35)",
-    opacity: dimmed ? "0.3" : "1",
-    cursor: pin.kind === "me" ? "default" : "pointer",
-  });
-  if (pin.kind !== "me") el.onclick = onPress;
-  return el;
-}
-
-export function KakaoMap({ center, pins, focusIds, height, onPinPress }: MapProps) {
+export function KakaoMap({ center, pins, focusIds, height, onPinPress, coveredBottom = 0, onVisibleCountChange }: MapProps) {
   const box = useRef<HostInstance>(null); // 웹에서는 DOM 요소
   const kakao = useRef<Kakao | null>(null);
   const map = useRef<KMap | null>(null);
@@ -86,7 +61,7 @@ export function KakaoMap({ center, pins, focusIds, height, onPinPress }: MapProp
       .then((k) => {
         if (cancelled || !box.current) return;
         kakao.current = k;
-        map.current = new k.maps.Map(box.current as unknown as HTMLElement, { center: new k.maps.LatLng(center.lat, center.lng), level: 5 });
+        map.current = new k.maps.Map(box.current as unknown as HTMLElement, { center: new k.maps.LatLng(center.lat, center.lng), level: 4 });
         setReady(true);
       })
       .catch(() => !cancelled && setError("지도를 불러오지 못했어요. 아래 목록을 이용해 주세요."));
@@ -104,16 +79,26 @@ export function KakaoMap({ center, pins, focusIds, height, onPinPress }: MapProp
     const focus = new Set(focusIds);
     const anyFocus = focus.size > 0;
     overlays.current = pins.map((p) => {
-      const f = focus.has(p.id);
-      const o = new k.maps.CustomOverlay({
-        position: new k.maps.LatLng(p.lat, p.lng),
-        content: pinElement(p, f, anyFocus && !f && p.kind !== "me", () => press.current(p.id)),
-        yAnchor: 0.5,
-        zIndex: p.kind === "me" ? 4 : f ? 3 : p.kind === "public" ? 1 : 2,
-        clickable: true,
+      const position = new k.maps.LatLng(p.lat, p.lng);
+      if (p.kind === "me") {
+        const dot = document.createElement("div");
+        dot.title = p.name;
+        Object.assign(dot.style, {
+          width: "16px", height: "16px", boxSizing: "border-box",
+          borderRadius: "50%", background: "#2b6de8", border: "2px solid #fff",
+        });
+        const overlay = new k.maps.CustomOverlay({ position, content: dot, yAnchor: 0.5, zIndex: 4 });
+        overlay.setMap(m);
+        return overlay;
+      }
+      const focused = focus.has(p.id);
+      const marker = new k.maps.Marker({
+        position, title: p.name, zIndex: focused ? 3 : p.kind === "public" ? 1 : 2, clickable: true,
       });
-      o.setMap(m);
-      return o;
+      if (anyFocus && !focused) marker.setOpacity(0.3);
+      k.maps.event.addListener(marker, "click", () => press.current(p.id));
+      marker.setMap(m);
+      return marker;
     });
     if (anyFocus) {
       const b = new k.maps.LatLngBounds();
@@ -128,6 +113,33 @@ export function KakaoMap({ center, pins, focusIds, height, onPinPress }: MapProp
   useEffect(() => {
     map.current?.relayout();
   }, [height]);
+
+  useEffect(() => {
+    const sdk = kakao.current;
+    const instance = map.current;
+    const element = box.current as unknown as HTMLElement | null;
+    if (!ready || !sdk || !instance || !element || !onVisibleCountChange) return;
+
+    const updateCount = () => {
+      const projection = instance.getProjection();
+      const width = element.clientWidth;
+      const visibleHeight = Math.max(0, element.clientHeight - coveredBottom);
+      const count = pins.filter((pin) => {
+        if (pin.kind === "me") return false;
+        const point = projection.containerPointFromCoords(new sdk.maps.LatLng(pin.lat, pin.lng));
+        return point.x >= 0 && point.x < width && point.y >= 0 && point.y < visibleHeight;
+      }).length;
+      onVisibleCountChange(count);
+    };
+
+    sdk.maps.event.addListener(instance, "idle", updateCount);
+    updateCount();
+    return () => sdk.maps.event.removeListener(instance, "idle", updateCount);
+  }, [ready, pins, height, coveredBottom, onVisibleCountChange]);
+
+  useEffect(() => {
+    return () => onVisibleCountChange?.(null);
+  }, [onVisibleCountChange]);
 
   return (
     <View style={[styles.wrap, { height }]}>

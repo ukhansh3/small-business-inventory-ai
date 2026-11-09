@@ -10,7 +10,7 @@ export function pinsFor(stores: Store[], me: { lat: number; lng: number; name: s
     lat: s.lat,
     lng: s.lng,
     name: s.name,
-    kind: s.kind === "public" ? "public" : s.vendor_card?.is_example ? "example" : "vendor",
+    kind: s.demo_service ? "example" : s.kind === "public" ? "public" : s.vendor_card?.is_example ? "example" : "vendor",
   }));
   if (me) pins.push({ id: "__me", lat: me.lat, lng: me.lng, name: `내 위치: ${me.name}`, kind: "me" });
   return pins;

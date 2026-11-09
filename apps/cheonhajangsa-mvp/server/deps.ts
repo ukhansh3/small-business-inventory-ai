@@ -1,3 +1,5 @@
+import { createClient } from "@supabase/supabase-js";
+import type { DemoStore, StoresDeps } from "./handlers/stores";
 import { createHash } from "node:crypto";
 import publicStoresJson from "../data/public_stores.json";
 import { loadDataset, rawDataset } from "../core/data";
@@ -34,14 +36,30 @@ function base(): Base {
 
 // v2 지도용 공공데이터 가게. 형식이 틀리면 시작할 때 실패한다(AC-27)
 let publicStores: PublicStoresFile | null = null;
-export function storesDeps(): { data: Dataset; env: ServerEnv; publicStores: PublicStoresFile } {
+export function storesDeps(): StoresDeps {
   if (!publicStores) {
     const v = validatePublicStores(publicStoresJson);
     if (!v.ok) throw new Error(`공공데이터 가게 형식 오류:\n${v.errors.join("\n")}`);
     publicStores = v.data;
   }
   const { data, env } = base();
-  return { data, env, publicStores };
+  const { supabaseUrl, supabaseServiceRoleKey } = env;
+  return {
+    data, env, publicStores,
+    async loadDemoStores() {
+      if (!supabaseUrl || !supabaseServiceRoleKey) return [];
+      const db = createClient(supabaseUrl, supabaseServiceRoleKey, {
+        auth: { persistSession: false, autoRefreshToken: false },
+      });
+      const result = await db.from("chj_demo_stores")
+        .select("store_id,name,category,service,lat,lng").returns<DemoStore[]>();
+      if (result.error) {
+        console.warn("가상 업체 조회 실패:", result.error.code);
+        return [];
+      }
+      return result.data;
+    },
+  };
 }
 
 export function defaultDeps(): { data: Dataset; env: ServerEnv; log: Logger; dataVersion: string } {

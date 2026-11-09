@@ -1,6 +1,7 @@
 import { Linking, Pressable, StyleSheet, Text, View } from "react-native";
 import { distanceDisplay } from "../../core/distance";
 import type { Store } from "../lib/api-types";
+import { VendorArtwork } from "./VendorArtwork";
 import { color, font, radius } from "./theme";
 
 // 공공데이터 가게 카드(R-22, AC-29): 이름·업종·거리·주소와 출처·기준일만. 가격·입고·번호 없음
@@ -8,6 +9,7 @@ export function PublicStoreCard({ store }: { store: Store }) {
   const kakaoUrl = `https://map.kakao.com/link/map/${encodeURIComponent(store.name)},${store.lat},${store.lng}`;
   return (
     <View style={styles.card}>
+      <VendorArtwork store={store} />
       <View style={styles.head}>
         <Text style={styles.name}>{store.name}</Text>
         <Text style={styles.kind}>{store.category}</Text>

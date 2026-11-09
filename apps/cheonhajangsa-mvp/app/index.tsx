@@ -32,10 +32,14 @@ export default function HomeScreen() {
   const s = a.state;
   const router = useRouter();
   const [tab, setTab] = useState<ActiveTab>("map");
-  const [sheetOpen, setSheetOpen] = useState(false);
+  const [sheetMode, setSheetMode] = useState<"collapsed" | "preview" | "list">("collapsed");
+  const [visiblePinCount, setVisiblePinCount] = useState<number | null>(null);
   const [mapStageHeight, setMapStageHeight] = useState(400);
   const [query, setQuery] = useState("");
-  const [storeFilter, setStoreFilter] = useState<"all" | "vendor">("all");
+  const [storeQuery, setStoreQuery] = useState("");
+  const [showAiResults, setShowAiResults] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [categoriesOpen, setCategoriesOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [call, setCall] = useState<{ card: VendorCard; plan: Exclude<CallPlan, { kind: "dial" }> } | null>(null);
   const scroll = useRef<ScrollViewInstance>(null);
@@ -46,13 +50,32 @@ export default function HomeScreen() {
   useFocusEffect(useCallback(() => applySavedLocation(), [applySavedLocation]));
   const st = useStores(s.condition.location_id ?? a.currentLocation?.location_id ?? null);
   const me = a.currentLocation;
-  const pins = useMemo(() => pinsFor(st.stores, me ? { lat: me.lat, lng: me.lng, name: me.name } : null), [st.stores, me]);
-  const focusIds = useMemo(() => focusFor(selectedId, s.results, s.priceCheck), [selectedId, s.results, s.priceCheck]);
-  const selected = selectedId ? st.stores.find((item) => item.store_id === selectedId) ?? null : null;
+  const visibleStores = useMemo(() => {
+    const keyword = storeQuery.toLowerCase();
+    const produceQuery = /^(야채|채소|과일|청과)$/.test(keyword);
+    return st.stores.filter((store) => {
+      if (selectedCategory) return store.category === selectedCategory;
+      const description = [store.name, store.category, store.vendor_card?.kind, store.demo_service].join(" ").toLowerCase();
+      return description.replace(/\s+/g, "").includes(keyword.replace(/\s+/g, "")) ||
+        (produceQuery && /채소|야채|과일|청과|시장점포/.test(description));
+    });
+  }, [st.stores, storeQuery, selectedCategory]);
+  const categories = [...new Set(st.stores.map((store) => store.category))];
+  const mapStores = showAiResults ? st.stores : visibleStores;
+  const pins = useMemo(() => pinsFor(mapStores, me ? { lat: me.lat, lng: me.lng, name: me.name } : null), [mapStores, me]);
+  const focusIds = useMemo(
+    () => focusFor(selectedId, showAiResults ? s.results : null, showAiResults ? s.priceCheck : null),
+    [selectedId, showAiResults, s.results, s.priceCheck],
+  );
+  const selected = selectedId ? mapStores.find((store) => store.store_id === selectedId) ?? null : null;
   const mapHeight = mapStageHeight;
-  const collapsedSheetHeight = 216;
-  const sheetHeight = sheetOpen ? Math.max(collapsedSheetHeight, Math.min(mapStageHeight - 40, 570)) : collapsedSheetHeight;
-  const visibleStores = st.stores.filter((store) => storeFilter === "all" || store.kind === "vendor");
+  const collapsedSheetHeight = 82;
+  const sheetOpen = sheetMode === "list";
+  const showPreview = sheetMode === "preview" && selected !== null;
+  const previewHeight = Math.max(collapsedSheetHeight, Math.min(230, Math.round(mapStageHeight * 0.6)));
+  const sheetHeight = sheetOpen
+    ? Math.max(collapsedSheetHeight, Math.min(mapStageHeight - 40, 570))
+    : showPreview ? previewHeight : collapsedSheetHeight;
   const started = s.messages.length > 0;
 
   useEffect(() => {
@@ -72,10 +95,13 @@ export default function HomeScreen() {
     if (next.kind === "dial") void Linking.openURL(next.url);
     else setCall({ card, plan: next });
   };
-  const sendFromMap = (text: string) => {
+  const searchStores = (keyword: string, category = "") => {
+    setSelectedCategory(category);
+    setQuery(keyword);
+    setStoreQuery(keyword);
     setSelectedId(null);
-    if (text.trim().length >= 1 && text.trim().length <= 200) setTab("assistant");
-    a.sendText(text);
+    setShowAiResults(false);
+    setSheetMode(keyword ? "list" : "collapsed");
   };
 
   return (
@@ -86,24 +112,50 @@ export default function HomeScreen() {
           <>
             <View style={styles.mapTools}>
               <Pressable accessibilityRole="button" accessibilityHint="눌러서 내 위치 바꾸기" onPress={openLocation} style={styles.locationBar}><AppIcon name="locate" size={16} color={color.green}/><Text style={styles.locationText}>{a.currentLocation?.name ?? "기본 위치"} 주변</Text><AppIcon name="chevron" size={14}/></Pressable>
-              <View style={styles.searchBar}><AppIcon name="search" size={20} color={color.sub}/><TextInput value={query} onChangeText={setQuery} accessibilityLabel="필요한 재료 입력" placeholder="어떤 품목을 찾으세요?" placeholderTextColor={color.faint} returnKeyType="search" onSubmitEditing={()=>{if(query.trim())sendFromMap(query);}} style={styles.searchInput}/><Pressable accessibilityRole="button" accessibilityLabel="품목 검색" onPress={()=>{if(query.trim())sendFromMap(query);}}><AppIcon name="arrow" size={20} color={color.green}/></Pressable></View>
-              <View style={styles.filterRow}>{[{key:"all",label:"전체 업체"},{key:"vendor",label:"가격 정보 있음"}].map(item=><Pressable key={item.key} accessibilityRole="button" accessibilityState={{selected:storeFilter===item.key}} onPress={()=>setStoreFilter(item.key as "all"|"vendor")} style={[styles.filterChip,storeFilter===item.key&&styles.filterOn]}><Text style={[styles.filterText,storeFilter===item.key&&styles.filterTextOn]}>{item.label}</Text></Pressable>)}<Pressable onPress={openLocation} style={styles.filterChip}><Text style={styles.filterText}>내 위치 변경</Text></Pressable></View>
+              <View style={styles.searchBar}><AppIcon name="search" size={20} color={color.sub}/><TextInput value={query} onChangeText={setQuery} accessibilityLabel="업체명 또는 업종 입력" placeholder="업체명이나 업종을 검색하세요" placeholderTextColor={color.faint} returnKeyType="search" onSubmitEditing={() => searchStores(query.trim())} style={styles.searchInput}/><Pressable accessibilityRole="button" accessibilityLabel="업체 검색" onPress={() => searchStores(query.trim())}><AppIcon name="arrow" size={20} color={color.green}/></Pressable></View>
+              <View style={styles.filterRow}>
+                <Pressable accessibilityRole="button" onPress={() => { searchStores(""); setCategoriesOpen(false); }}
+                  style={[styles.filterChip, !storeQuery && styles.filterOn]}>
+                  <Text style={[styles.filterText, !storeQuery && styles.filterTextOn]}>전체 업체</Text>
+                </Pressable>
+                <Pressable accessibilityRole="button" accessibilityState={{ expanded: categoriesOpen }}
+                  onPress={() => setCategoriesOpen((open) => !open)} style={styles.filterChip}>
+                  <Text style={styles.filterText}>
+                    {categoriesOpen ? "업종 접기 ↑" : `업종 ${categories.length}개 보기 ↓`}
+                  </Text>
+                </Pressable>
+                <Pressable onPress={openLocation} style={styles.filterChip}><Text style={styles.filterText}>내 위치 변경</Text></Pressable>
+              </View>
             </View>
+            {categoriesOpen && categories.length > 0 && (
+              <View style={styles.categoryFilters}>
+                {categories.map((category) => (
+                  <Pressable key={category} accessibilityRole="button" accessibilityState={{ selected: selectedCategory === category }}
+                    onPress={() => { const next = selectedCategory === category ? "" : category; searchStores(next, next); setCategoriesOpen(false); }}
+                    style={[styles.filterChip, selectedCategory === category && styles.filterOn]}>
+                    <Text style={[styles.filterText, selectedCategory === category && styles.filterTextOn]}>{category}</Text>
+                  </Pressable>
+                ))}
+              </View>
+            )}
             <View style={styles.mapStage} onLayout={(event)=>setMapStageHeight(Math.round(event.nativeEvent.layout.height))}>
             <View style={styles.mapWrap}>
-              {me ? <KakaoMap center={{ lat: me.lat, lng: me.lng }} pins={pins} focusIds={focusIds} height={mapHeight} onPinPress={setSelectedId} /> : <View style={[styles.mapWait, { height: mapHeight }]} />}
+              {me ? <KakaoMap center={{ lat: me.lat, lng: me.lng }} pins={pins} focusIds={focusIds} height={mapHeight} coveredBottom={sheetHeight} onVisibleCountChange={setVisiblePinCount} onPinPress={(id) => { setSelectedId(id); setSheetMode("preview"); }} /> : <View style={[styles.mapWait, { height: mapHeight }]} />}
             </View>
             <Pressable accessibilityRole="button" accessibilityLabel="내 위치 기준으로 다시 보기" onPress={()=>{setSelectedId(null);st.retry();}} style={[styles.locateButton,{bottom:sheetHeight+16}]}><AppIcon name="locate" size={22}/></Pressable>
             <View style={[styles.sheet,{height:sheetHeight}]}>
-            <Pressable accessibilityRole="button" onPress={() => setSheetOpen((value) => !value)} style={styles.handle}>
+            <Pressable accessibilityRole="button" accessibilityState={{ expanded: sheetOpen }} onPress={() => setSheetMode(sheetOpen ? "collapsed" : "list")} style={styles.handle}>
               <View style={styles.grip} />
-              <View style={styles.sheetHeading}><View><Text style={styles.sheetTitle}>근처 업체 {visibleStores.length}곳</Text><Text style={styles.sheetSub}>가격·배송 조건·확인일을 비교해 보세요</Text></View><Text style={styles.sheetLink}>{sheetOpen ? "접기" : "목록 전체보기"}</Text></View>
+              <View style={styles.sheetHeading}><View><Text style={styles.sheetTitle}>{visiblePinCount === null ? "지도 업체" : `화면 속 업체 ${visiblePinCount}곳`}</Text><Text style={styles.sheetSub}>가격·배송 조건·확인일을 비교해 보세요</Text></View><Text style={styles.sheetLink}>{sheetOpen ? "↓ 접기" : "↑ 목록 보기"}</Text></View>
             </Pressable>
-            <ScrollView style={styles.body} contentContainerStyle={styles.mapContent} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
+            {showPreview && <ScrollView style={styles.body} contentContainerStyle={styles.mapContent} keyboardShouldPersistTaps="handled">
+              <CompactStoreCard key={selected.store_id} store={selected} onDetail={openDetail}/>
+            </ScrollView>}
+            {sheetOpen && <ScrollView style={styles.body} contentContainerStyle={styles.mapContent} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
               {s.exampleData && <Text style={styles.dataNote}>예시 판매처의 이름·번호·가격은 실제 정보가 아니에요.</Text>}
               {selected && <CompactStoreCard store={selected} onDetail={openDetail}/>}
-              {s.results ? <ResultList results={s.results} onCall={onCall} onDetail={openDetail} /> : st.error ? <ErrorRow message={st.error} onRetry={st.retry} /> : visibleStores.filter(store=>store.store_id!==selectedId).slice(0,30).map(store=><CompactStoreCard key={store.store_id} store={store} onDetail={openDetail}/>)}
-            </ScrollView>
+              {showAiResults && s.results ? <ResultList results={s.results} onCall={onCall} onDetail={openDetail} /> : st.error ? <ErrorRow message={st.error} onRetry={st.retry} /> : visibleStores.length === 0 ? <Text style={styles.sheetSub}>조건에 맞는 근처 업체가 없어요.</Text> : visibleStores.filter(store=>store.store_id!==selectedId).slice(0, storeQuery ? undefined : 30).map(store=><CompactStoreCard key={store.store_id} store={store} onDetail={openDetail}/>)}
+            </ScrollView>}
             </View>
           </View>
           </>
@@ -121,7 +173,7 @@ export default function HomeScreen() {
                 {s.editor !== "closed" && <ChipEditor key={s.editor} editor={s.editor} condition={s.condition} disabled={s.loading} onSubmit={a.editCondition} onClose={() => a.openEditor("closed")} />}
               </View>
               {s.market && s.results && <MarketLine market={s.market} />}
-              {s.results && <><Pressable accessibilityRole="button" onPress={() => setTab("map")} style={styles.exampleChip}><Text style={styles.sheetLink}>⌖ 검색 결과 지도에서 보기</Text></Pressable><ResultList results={s.results} onCall={onCall} onDetail={openDetail} /></>}
+              {s.results && <><Pressable accessibilityRole="button" onPress={() => { setSelectedId(null); setShowAiResults(true); setSheetMode("list"); setTab("map"); }} style={styles.exampleChip}><Text style={styles.sheetLink}>⌖ 검색 결과 지도에서 보기</Text></Pressable><ResultList results={s.results} onCall={onCall} onDetail={openDetail} /></>}
               {s.priceCheck && !s.loading && <View key={s.priceCheck.check_id} onLayout={(event) => { priceY.current = event.nativeEvent.layout.y; scroll.current?.scrollTo({ y: Math.max(priceY.current - 80, 0), animated: true }); }}><PriceCheckCard check={s.priceCheck} share={s.share} disabled={s.loading} onShare={a.sharePrice} onSearch={a.searchLettuce} onCall={onCall} onDetail={openDetail} /></View>}
             </ScrollView>
             <ChatInput disabled={s.loading} error={s.inputError} onSend={a.sendText} onPhoto={a.sendPhoto} />
@@ -154,6 +206,7 @@ function ErrorRow({ message, onRetry }: { message: string; onRetry: () => void }
 }
 
 const styles = StyleSheet.create({
+  categoryFilters: { flexDirection: "row", flexWrap: "wrap", gap: 6, paddingHorizontal: 16, paddingBottom: 8 },
   mapStage:{flex:1,position:"relative",overflow:"hidden"},
   mapTools:{paddingHorizontal:18,paddingBottom:14,backgroundColor:color.surface,zIndex:2},
   searchBar:{height:50,flexDirection:"row",alignItems:"center",gap:9,paddingHorizontal:14,borderWidth:1,borderColor:color.line,borderRadius:16,backgroundColor:"#ffffff",shadowColor:"#14181f",shadowOpacity:0.12,shadowRadius:16,shadowOffset:{width:0,height:5},elevation:4},

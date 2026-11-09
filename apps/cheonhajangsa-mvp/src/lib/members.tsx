@@ -90,6 +90,7 @@ type ContextValue = {
     password: string,
     nickname?: string,
   ) => Promise<string>;
+  resendConfirmation: (email: string) => Promise<string>;
   logout: () => Promise<void>;
   api: <T>(path: string, method?: string, body?: unknown) => Promise<T>;
   refreshProfile: () => Promise<void>;
@@ -191,6 +192,10 @@ export function MemberProvider({ children }: PropsWithChildren) {
     }
     return result.message ?? "로그인했어요.";
   }
+  async function resendConfirmation(email: string) {
+    const result = await request<{ message: string }>("/auth/resend", "POST", { email });
+    return result.message;
+  }
   async function logout() {
     try {
       await api("/auth/logout", "POST");
@@ -200,7 +205,7 @@ export function MemberProvider({ children }: PropsWithChildren) {
   }
   return (
     <Context
-      value={{ profile, initializing, api, login, logout, refreshProfile }}
+      value={{ profile, initializing, api, login, resendConfirmation, logout, refreshProfile }}
     >
       {children}
     </Context>

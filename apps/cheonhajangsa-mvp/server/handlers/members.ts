@@ -15,6 +15,7 @@ const postInput = z
     body: z.string().trim().min(1).max(5000),
   })
   .strict();
+const emailConfirmationUrl = "https://cheonhajangsa-mvp.vercel.app/";
 const credentials = z
   .object({
     email: z.email(),
@@ -160,7 +161,7 @@ export async function handleMembers(
       const result = await db.auth.signUp({
         email: input.email,
         password: input.password,
-        options: { data: { nickname: input.nickname } },
+        options: { data: { nickname: input.nickname }, emailRedirectTo: emailConfirmationUrl },
       });
       if (result.error)
         return error(
@@ -174,6 +175,17 @@ export async function handleMembers(
           ? "가입했어요."
           : "인증 메일을 확인한 뒤 로그인해 주세요.",
       });
+    }
+    if (path === "/auth/resend" && method === "POST") {
+      const { email } = z.object({ email: z.email() }).strict().parse(await body(req));
+      const result = await db.auth.resend({
+        type: "signup",
+        email,
+        options: { emailRedirectTo: emailConfirmationUrl },
+      });
+      if (result.error)
+        return error(400, "RESEND_FAILED", "인증 메일을 보내지 못했어요. 잠시 뒤 다시 시도해 주세요.");
+      return json(200, { message: "가입 확인이 필요한 계정이라면 인증 메일이 도착해요." });
     }
     if (path === "/auth/refresh" && method === "POST") {
       const input = z

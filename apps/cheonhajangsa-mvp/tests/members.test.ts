@@ -54,6 +54,22 @@ function fake(row: unknown = null) {
   };
 }
 describe("회원 API 권한과 입력 계약", () => {
+  it("가입과 인증 메일 재발송에 배포 주소를 사용한다", async () => {
+    const email = "test@example.invalid";
+    const password = "test-password";
+    const signUp = vi.fn(async () => ({ data: { session: null }, error: null }));
+    const resend = vi.fn(async () => ({ data: {}, error: null }));
+    const db = { auth: { signUp, resend } } as unknown as SupabaseClient;
+    const emailRedirectTo = "https://cheonhajangsa-mvp.vercel.app/";
+
+    expect((await handleMembers(request("/auth/signup", "POST", { email, password, nickname: "테스트" }, false), db)).status).toBe(200);
+    expect(signUp).toHaveBeenCalledWith({
+      email, password, options: { data: { nickname: "테스트" }, emailRedirectTo },
+    });
+    expect((await handleMembers(request("/auth/resend", "POST", { email }, false), db)).status).toBe(200);
+    expect(resend).toHaveBeenCalledWith({ type: "signup", email, options: { emailRedirectTo } });
+  });
+
   it("기기 ID만으로 회원 정보를 조회하지 못한다", async () => {
     const f = fake();
     const res = await handleMembers(

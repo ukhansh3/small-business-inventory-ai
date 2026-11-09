@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Linking, Platform, Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import { CallSheet } from "../../src/components/CallSheet";
 import { ExampleBanner } from "../../src/components/ExampleBanner";
+import { VendorArtwork } from "../../src/components/VendorArtwork";
 import { color, font, radius } from "../../src/components/theme";
 import { getVendorDetail, sendEvent } from "../../src/lib/api";
 import type { VendorDetail } from "../../src/lib/api-types";
@@ -72,6 +73,7 @@ export default function VendorScreen() {
         {!detail && !error && <Text style={styles.muted}>불러오는 중…</Text>}
         {detail && c && (
           <>
+            <VendorArtwork card={c} large />
             <View style={styles.head}>
               <Text style={styles.name}>{c.name}</Text>
               <Text style={styles.kind}>{c.kind}</Text>

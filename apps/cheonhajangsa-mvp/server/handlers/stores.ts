@@ -21,12 +21,15 @@ export type Store = {
   lat: number;
   lng: number;
   distance_m: number;
+  demo_service?: string;
   vendor_card?: VendorCard;
   source?: string;
   source_date?: string;
 };
 
-export type StoresDeps = { data: Dataset; publicStores: PublicStoresFile; env: ServerEnv; clock?: () => Date };
+export type DemoStore = Pick<Store, "store_id" | "name" | "category" | "lat" | "lng"> & { service: string };
+
+export type StoresDeps = { data: Dataset; publicStores: PublicStoresFile; env: ServerEnv; clock?: () => Date; loadDemoStores?: () => Promise<DemoStore[]> };
 
 function parseBbox(v: string | null): [number, number, number, number] | null {
   if (!v) return null;
@@ -67,6 +70,12 @@ export function handleStores(req: Request, deps: StoresDeps): Promise<Response> 
         source: PUBLIC_SOURCE,
         source_date: deps.publicStores.source_date,
       });
+    }
+    const demos = await deps.loadDemoStores?.() ?? [];
+    for (const { service, ...demo } of demos) {
+      if (!inBox(demo.lat, demo.lng)) continue;
+      stores.push({ ...demo, kind: "public", address: "아주대 주변 가상 위치",
+        demo_service: service, distance_m: Math.round(distanceMeters(loc, demo)) });
     }
     stores.sort((a, b) => a.distance_m - b.distance_m || a.name.localeCompare(b.name, "ko"));
     return json(200, { location_id: loc.id, stores });

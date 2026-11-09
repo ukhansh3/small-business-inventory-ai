@@ -1,3 +1,5 @@
+**[천하장사 웹 앱 바로 열기](https://cheonhajangsa-mvp.vercel.app/)**
+
 > 개발 현황: [구현된 기능·미구현 기능 현황](docs/product/implementation-status.md), [업체 등록 DB 적용 안내](supabase/README.md), [등록 API/DB 계약](docs/contracts/vendor-registration-v1.md). SQL·API·모바일 저장/검토 코드를 구현하며 실제 공유 DB 적용과 구분합니다.
 
 # 지역 자영업자 정보 비대칭 문제 탐색 프로젝트

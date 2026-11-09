@@ -1,4 +1,4 @@
-export type IconName = "store" | "map" | "bot" | "users" | "bookmark" | "user" | "bell" | "search" | "chevron" | "locate" | "arrow" | "camera" | "edit";
+export type IconName = "store" | "map" | "bot" | "users" | "bookmark" | "user" | "bell" | "search" | "chevron" | "locate" | "arrow" | "camera" | "edit" | "eye" | "eyeOff";
 const paths: Record<IconName, string[]> = {
   store: ["M3 10v10h18V10", "M2 10l2-7h16l2 7", "M2 10c0 4 5 4 5 0 0 4 5 4 5 0 0 4 5 4 5 0 0 4 5 4 5 0", "M9 20v-6h6v6"],
   map: ["M9 3 3 6v15l6-3 6 3 6-3V3l-6 3-6-3Z", "M9 3v15M15 6v15"],
@@ -12,6 +12,8 @@ const paths: Record<IconName, string[]> = {
   locate: ["M12 2v4M12 18v4M2 12h4M18 12h4", "M19 12a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z", "M14 12a2 2 0 1 1-4 0 2 2 0 0 1 4 0Z"],
   arrow: ["M12 19V5m-6 6 6-6 6 6"],
   camera: ["M3 6h4l2-3h6l2 3h4v15H3V6Z", "M16 13a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z"],
+  eye: ["M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6-10-6-10-6Z", "M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"],
+  eyeOff: ["M3 3l18 18", "M10 6a12 12 0 0 1 12 6 15 15 0 0 1-3 3", "M6 6a17 17 0 0 0-4 6s3.5 6 10 6a12 12 0 0 0 5-1"],
   edit: ["m16 3 5 5-12 12-6 1 1-6L16 3Z", "m13 6 5 5"],
 };
 export function AppIcon({name,size=22,color="currentColor"}:{name:IconName;size?:number;color?:string}) {

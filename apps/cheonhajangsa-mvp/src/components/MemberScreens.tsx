@@ -97,6 +97,7 @@ export function LoginGate({ children }: { children: React.ReactNode }) {
     [signup, setSignup] = useState(false),
     [email, setEmail] = useState(""),
     [password, setPassword] = useState(""),
+    [passwordVisible, setPasswordVisible] = useState(false),
     [nickname, setNickname] = useState(""),
     [busy, setBusy] = useState(false),
     [notice, setNotice] = useState("");
@@ -150,14 +151,25 @@ export function LoginGate({ children }: { children: React.ReactNode }) {
         keyboardType="email-address"
         style={s.input}
       />
-      <TextInput
-        accessibilityLabel="비밀번호"
-        placeholder="비밀번호 (8자 이상)"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-        style={s.input}
-      />
+      <View style={s.passwordRow}>
+        <TextInput
+          accessibilityLabel="비밀번호"
+          placeholder="비밀번호 (8자 이상)"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry={!passwordVisible}
+          autoCapitalize="none"
+          style={[s.input, s.passwordInput]}
+        />
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={passwordVisible ? "비밀번호 숨기기" : "비밀번호 표시"}
+          onPress={() => setPasswordVisible((visible) => !visible)}
+          style={s.passwordToggle}
+        >
+          <AppIcon name={passwordVisible ? "eyeOff" : "eye"} size={20} color={color.ink} />
+        </Pressable>
+      </View>
       <Notice text={notice} />
       <Action
         label={busy ? "확인 중…" : signup ? "회원가입" : "로그인"}
@@ -171,9 +183,23 @@ export function LoginGate({ children }: { children: React.ReactNode }) {
       />
       <Action
         secondary
+        label="인증 메일 다시 보내기"
+        disabled={busy || !email.trim()}
+        onPress={() => {
+          setBusy(true);
+          setNotice("");
+          void member.resendConfirmation(email.trim())
+            .then(setNotice)
+            .catch((e) => setNotice(message(e)))
+            .finally(() => setBusy(false));
+        }}
+      />
+      <Action
+        secondary
         label={signup ? "이미 계정이 있어요" : "회원가입하기"}
         onPress={() => {
           setSignup(!signup);
+          setPasswordVisible(false);
           setNotice("");
         }}
       />
@@ -742,7 +768,20 @@ function ProfileContent({
     [editing, setEditing] = useState(false),
     [nickname, setNickname] = useState(member.profile?.nickname ?? ""),
     [notice, setNotice] = useState(""),
-    [busy, setBusy] = useState(false);
+    [busy, setBusy] = useState(false),
+    [loggingOut, setLoggingOut] = useState(false);
+
+  async function logout() {
+    setLoggingOut(true);
+    setNotice("");
+    try {
+      await member.logout();
+    } catch (error) {
+      setNotice(message(error));
+    } finally {
+      setLoggingOut(false);
+    }
+  }
   return (
     <ScrollView contentContainerStyle={s.page}>
       <View style={s.panel}>
@@ -761,6 +800,12 @@ function ProfileContent({
           </View>
         </View>
         <Notice text={notice} />
+        <Action
+          secondary
+          label={loggingOut ? "로그아웃 중…" : "로그아웃"}
+          disabled={loggingOut || busy}
+          onPress={() => void logout()}
+        />
         {editing ? (
           <>
             <TextInput
@@ -813,11 +858,6 @@ function ProfileContent({
         사업자 인증 여부와 로그인 계정은 별개입니다. 이 앱에서 주문·결제는
         제공하지 않아요.
       </Text>
-      <Action
-        secondary
-        label="로그아웃"
-        onPress={() => void member.logout().catch((e) => setNotice(message(e)))}
-      />
     </ScrollView>
   );
 }
@@ -853,6 +893,9 @@ const s = StyleSheet.create({
   sub: { fontSize: 13, color: color.sub, lineHeight: 20 },
   muted: { fontSize: 11, color: color.sub, lineHeight: 17 },
   copy: { fontSize: 14, color: color.ink, lineHeight: 23 },
+  passwordRow: { position: "relative", justifyContent: "center" },
+  passwordInput: { paddingRight: 52 },
+  passwordToggle: { position: "absolute", right: 2, top: 0, bottom: 0, width: 44, justifyContent: "center", alignItems: "center" },
   input: {
     borderWidth: 1,
     borderColor: color.line,
