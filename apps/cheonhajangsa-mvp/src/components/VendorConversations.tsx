@@ -88,8 +88,13 @@ export function VendorConversations({ threadId }: { threadId?: string }) {
           <>
             {chat?.messages.length === 0 && <Text style={styles.status}>첫 메시지를 보내 문의를 시작해 보세요.</Text>}
             {chat?.messages.map((message) => (
-              <View key={message.id} style={[styles.bubble, message.mine ? styles.mine : styles.theirs]}>
-                <Text style={[styles.message, message.mine && styles.mineText]}>{message.body}</Text>
+              <View key={message.id} style={[styles.messageRow, message.mine && styles.myMessageRow]}>
+                {message.mine && message.unread && (
+                  <Text accessibilityLabel="상대방이 아직 읽지 않음" style={styles.unreadMarker}>1</Text>
+                )}
+                <View style={[styles.bubble, message.mine ? styles.mine : styles.theirs]}>
+                  <Text style={[styles.message, message.mine && styles.mineText]}>{message.body}</Text>
+                </View>
               </View>
             ))}
           </>
@@ -150,6 +155,9 @@ const styles = StyleSheet.create({
   threadAvatar: { width: 58, height: 58, borderRadius: 17, overflow: "hidden", alignItems: "center", justifyContent: "center" },
   unreadBadge: { minWidth: 22, height: 22, paddingHorizontal: 6, borderRadius: 11, backgroundColor: "#b54708", alignItems: "center", justifyContent: "center" },
   unreadText: { color: "#fff", fontSize: 12, fontWeight: "700" },
+  messageRow: { flexDirection: "row", alignItems: "flex-end", gap: 5 },
+  myMessageRow: { justifyContent: "flex-end" },
+  unreadMarker: { color: "#9a3412", fontSize: 12, fontWeight: "700", paddingBottom: 2 },
   bubble: { maxWidth: "84%", paddingHorizontal: 14, paddingVertical: 10, borderRadius: 17 },
   theirs: { alignSelf: "flex-start", backgroundColor: "#fff", borderBottomLeftRadius: 5, borderWidth: 1, borderColor: color.line },
   mine: { alignSelf: "flex-end", backgroundColor: color.green, borderBottomRightRadius: 5 },

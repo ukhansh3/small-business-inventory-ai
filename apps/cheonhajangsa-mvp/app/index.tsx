@@ -1,3 +1,5 @@
+import { LoginPrompt } from "../src/components/LoginPrompt";
+import { useMember } from "../src/lib/members";
 import { VendorConversations } from "../src/components/VendorConversations";
 import { useFocusEffect, useRouter } from "expo-router";
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -33,6 +35,7 @@ export default function HomeScreen() {
   const a = useAssist();
   const s = a.state;
   const router = useRouter();
+  const member = useMember();
   const [tab, setTab] = useState<ActiveTab>("map");
   const [sheetMode, setSheetMode] = useState<"collapsed" | "preview" | "list">("collapsed");
   const [visiblePinCount, setVisiblePinCount] = useState<number | null>(null);
@@ -68,8 +71,8 @@ export default function HomeScreen() {
   const mapStores = showAiResults ? st.stores : visibleStores;
   const pins = useMemo(() => pinsFor(mapStores, me ? { lat: me.lat, lng: me.lng, name: me.name } : null), [mapStores, me]);
   const focusIds = useMemo(
-    () => focusFor(selectedId, showAiResults ? s.results : null, showAiResults ? s.priceCheck : null),
-    [selectedId, showAiResults, s.results, s.priceCheck],
+    () => focusFor(null, showAiResults ? s.results : null, showAiResults ? s.priceCheck : null),
+    [showAiResults, s.results, s.priceCheck],
   );
   const selected = selectedId ? mapStores.find((store) => store.store_id === selectedId) ?? null : null;
   const mapHeight = mapStageHeight;
@@ -172,13 +175,16 @@ export default function HomeScreen() {
             )}
             <View style={styles.mapStage} onLayout={(event)=>setMapStageHeight(Math.round(event.nativeEvent.layout.height))}>
             <View style={styles.mapWrap}>
-              {me ? <KakaoMap center={{ lat: me.lat, lng: me.lng }} pins={pins} focusIds={focusIds} height={mapHeight} coveredBottom={sheetHeight} onVisibleCountChange={setVisiblePinCount} onPinPress={(id) => { setSelectedId(id); setSheetMode("preview"); }} /> : <View style={[styles.mapWait, { height: mapHeight }]} />}
+              {me ? <KakaoMap center={{ lat: me.lat, lng: me.lng }} pins={pins} focusIds={focusIds} selectedId={selectedId} height={mapHeight} coveredBottom={sheetHeight} onVisibleCountChange={setVisiblePinCount} onPinPress={(id) => { setSelectedId(id); setSheetMode("preview"); }} /> : <View style={[styles.mapWait, { height: mapHeight }]} />}
             </View>
             <Pressable accessibilityRole="button" accessibilityLabel="내 위치 기준으로 다시 보기" onPress={()=>{setSelectedId(null);st.retry();}} style={[styles.locateButton,{bottom:sheetHeight+16}]}><AppIcon name="locate" size={22}/></Pressable>
             <View style={[styles.sheet,{height:sheetHeight}]}>
-            <Pressable accessibilityRole="button" accessibilityState={{ expanded: sheetOpen }} onPress={() => setSheetMode(sheetOpen ? "collapsed" : "list")} style={styles.handle}>
+            <Pressable accessibilityRole="button" accessibilityState={{ expanded: sheetOpen || showPreview }} onPress={() => {
+              setSelectedId(null);
+              setSheetMode(sheetOpen || showPreview ? "collapsed" : "list");
+            }} style={styles.handle}>
               <View style={styles.grip} />
-              <View style={styles.sheetHeading}><View><Text style={styles.sheetTitle}>{visiblePinCount === null ? "지도 업체" : `화면 속 업체 ${visiblePinCount}곳`}</Text></View><Text style={styles.sheetLink}>{sheetOpen ? "↓ 접기" : "↑ 목록 보기"}</Text></View>
+              <View style={styles.sheetHeading}><View><Text style={styles.sheetTitle}>{showPreview ? "선택하신 업체" : sheetOpen ? "업체 목록" : visiblePinCount === null ? "지도 업체" : `화면 속 업체 ${visiblePinCount}곳`}</Text></View><Text style={styles.sheetLink}>{sheetOpen || showPreview ? "↓ 접기" : "↑ 목록 보기"}</Text></View>
             </Pressable>
             {showPreview && <ScrollView style={styles.body} contentContainerStyle={styles.mapContent} keyboardShouldPersistTaps="handled">
               <CompactStoreCard key={selected.store_id} store={selected} location={me?.location_id}/>
@@ -218,6 +224,8 @@ export default function HomeScreen() {
             </ScrollView>
             <ChatInput disabled={s.loading} error={s.inputError} onSend={sendAssistantText} onPhoto={a.sendPhoto} />
           </>
+        ) : (tab === "messages" || tab === "saved") && !member.profile ? (
+          member.initializing ? <Text style={styles.sheetSub}>로그인 확인 중…</Text> : <LoginPrompt feature={tab} onLogin={() => setTab("profile")} />
         ) : tab==='messages'?<VendorConversations/>:tab==='community'?<CommunityScreen/>:tab==='saved'?<SavedScreen/>:<ProfileScreen onSaved={()=>setTab('saved')} onLocation={openLocation} location={a.currentLocation?.name??'기본 위치'}/>}
         <BottomNav active={tab} onChange={setTab} />
         {call && <CallSheet card={call.card} plan={call.plan} onClose={() => setCall(null)} />}

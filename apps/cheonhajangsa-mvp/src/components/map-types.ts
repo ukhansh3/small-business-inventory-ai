@@ -5,6 +5,7 @@ export type MapProps = {
   center: { lat: number; lng: number };
   pins: Pin[];
   focusIds: string[]; // 강조할 핀(결과·더 싼 곳·고른 가게). 있으면 이 핀들이 보이게 맞춘다
+  selectedId?: string | null;
   height: number;
   coveredBottom?: number;
   onVisibleCountChange?: (count: number | null) => void;

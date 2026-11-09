@@ -44,7 +44,7 @@ function loadKakao(): Promise<Kakao> {
   return loading;
 }
 
-export function KakaoMap({ center, pins, focusIds, height, onPinPress, coveredBottom = 0, onVisibleCountChange }: MapProps) {
+export function KakaoMap({ center, pins, focusIds, selectedId, height, onPinPress, coveredBottom = 0, onVisibleCountChange }: MapProps) {
   const box = useRef<HostInstance>(null); // 웹에서는 DOM 요소
   const kakao = useRef<Kakao | null>(null);
   const map = useRef<KMap | null>(null);
@@ -76,7 +76,7 @@ export function KakaoMap({ center, pins, focusIds, height, onPinPress, coveredBo
     const m = map.current;
     if (!ready || !k || !m) return;
     for (const o of overlays.current) o.setMap(null);
-    const focus = new Set(focusIds);
+    const focus = new Set(selectedId ? [selectedId] : focusIds);
     const anyFocus = focus.size > 0;
     overlays.current = pins.map((p) => {
       const position = new k.maps.LatLng(p.lat, p.lng);
@@ -100,7 +100,15 @@ export function KakaoMap({ center, pins, focusIds, height, onPinPress, coveredBo
       marker.setMap(m);
       return marker;
     });
-    if (anyFocus) {
+  }, [ready, pins, focusIds, selectedId]);
+
+  // 검색 결과의 지도 범위만 맞춘다. 개별 핀 선택은 강조만 바꾼다.
+  useEffect(() => {
+    const k = kakao.current;
+    const m = map.current;
+    if (!ready || !k || !m) return;
+    const focus = new Set(focusIds);
+    if (focus.size > 0) {
       const b = new k.maps.LatLngBounds();
       for (const p of pins) if (focus.has(p.id) || p.kind === "me") b.extend(new k.maps.LatLng(p.lat, p.lng));
       m.setBounds(b, 30, 30, 30, 30);
