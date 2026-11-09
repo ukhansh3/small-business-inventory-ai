@@ -205,7 +205,55 @@ export async function handleMembers(
         .order("created_at", { ascending: false }).order("id"));
       return json(200, { reviews: (rows ?? []).map(({ user_id, ...row }) => ({ ...row, example: user_id === null })) });
     }
+    if (path === "/me/conversations/availability" && method === "GET") {
+      const vendorId = z.string().min(1).max(160).parse(url.searchParams.get("vendor_id"));
+      const owner = checked(await db.from("chj_vendor_owners").select("vendor_id").eq("vendor_id", vendorId).maybeSingle());
+      return json(200, { available: !!owner });
+    }
     const user = await requireMember(req, db);
+    if (path === "/me/conversations" && method === "GET") {
+      const threads = checked(await db.from("chj_vendor_threads").select("id,vendor_name,owner_id")
+        .or("customer_id.eq." + user.id + ",owner_id.eq." + user.id)
+        .order("created_at", { ascending: false }));
+      return json(200, { threads: (threads ?? []).map((thread) => ({
+        id: thread.id, vendor_name: thread.vendor_name, incoming: thread.owner_id === user.id,
+      })) });
+    }
+    if (path === "/me/conversations" && method === "POST") {
+      const { vendor_id } = z.object({ vendor_id: z.string().min(1).max(160) }).strict().parse(await body(req));
+      const owner = checked(await db.from("chj_vendor_owners").select("user_id").eq("vendor_id", vendor_id).maybeSingle());
+      if (!owner) return error(404, "NOT_FOUND", "아직 문의를 받을 사장님 계정이 연결되지 않았어요.");
+      if (owner.user_id === user.id) return error(422, "INVALID_INPUT", "내 업체에 문의할 수 없어요.");
+      const { handleStores } = await import("./stores");
+      const response = await handleStores(new Request(url.origin + "/api/v1/stores", {
+        headers: { "x-device-id": req.headers.get("x-device-id") ?? "" },
+      }), storesDeps());
+      if (!response.ok) return response;
+      const { stores } = await response.json() as { stores: { store_id: string; name: string }[] };
+      const store = stores.find((entry) => entry.store_id === vendor_id);
+      if (!store) return error(404, "NOT_FOUND", "업체를 찾을 수 없어요.");
+      const thread = checked(await db.from("chj_vendor_threads")
+        .upsert({ vendor_id, vendor_name: store.name, customer_id: user.id, owner_id: owner.user_id },
+          { onConflict: "vendor_id,customer_id,owner_id" }).select("id").single());
+      return json(200, thread);
+    }
+    const messageRoute = /^\/me\/conversations\/([0-9a-f-]{36})\/messages$/.exec(path);
+    if (messageRoute && (method === "GET" || method === "POST")) {
+      const threadId = z.uuid().parse(messageRoute[1]);
+      const thread = checked(await db.from("chj_vendor_threads").select("vendor_name")
+        .eq("id", threadId).or("customer_id.eq." + user.id + ",owner_id.eq." + user.id).maybeSingle());
+      if (!thread) return error(404, "NOT_FOUND", "대화를 찾을 수 없어요.");
+      if (method === "POST") {
+        const input = z.object({ body: z.string().trim().min(1).max(2000) }).strict().parse(await body(req));
+        checked(await db.from("chj_vendor_messages").insert({ thread_id: threadId, sender_id: user.id, ...input }));
+        return new Response(null, { status: 204 });
+      }
+      const rows = checked(await db.from("chj_vendor_messages").select("id,sender_id,body,created_at")
+        .eq("thread_id", threadId).order("created_at", { ascending: false }).order("id", { ascending: false }).limit(100));
+      return json(200, { vendor_name: thread.vendor_name, messages: (rows ?? []).reverse().map((row) => ({
+        id: row.id, body: row.body, mine: row.sender_id === user.id,
+      })) });
+    }
     if (reviewRoute && method === "PUT") {
       const vendorId = z.string().min(1).max(160).parse(decodeURIComponent(reviewRoute[1]!));
       const input = z.object({ rating: z.number().int().min(1).max(5), body: z.string().trim().min(1).max(500) }).strict().parse(await body(req));
@@ -465,17 +513,15 @@ export async function handleMembers(
         return error(422, "INVALID_INPUT", "위치를 확인해 주세요.");
       if (method === "GET") {
         if (!locationId) return error(422, "INVALID_INPUT", "위치를 선택해 주세요.");
-        const [savedCount, usedCount, saved, used] = await Promise.all([
-          db.from("chj_saved_vendors").select("*", { count: "exact", head: true }).eq("vendor_id", id).eq("location_id", locationId),
-          db.from("chj_used_vendors").select("*", { count: "exact", head: true }).eq("vendor_id", id).eq("location_id", locationId),
+        const [counts, saved, used] = await Promise.all([
+          db.rpc("chj_store_activity_counts", { p_location_id: locationId }).eq("vendor_id", id).maybeSingle(),
           db.from("chj_saved_vendors").select("vendor_id").match(key).maybeSingle(),
           db.from("chj_used_vendors").select("vendor_id").match(key).maybeSingle(),
         ]);
-        checked(savedCount);
-        checked(usedCount);
+        const activity = checked(counts) as { saved_count: number; used_count: number } | null;
         return json(200, {
-          saved_count: savedCount.count ?? 0,
-          used_count: usedCount.count ?? 0,
+          saved_count: activity?.saved_count ?? 0,
+          used_count: activity?.used_count ?? 0,
           saved: !!checked(saved),
           used: !!checked(used),
         });

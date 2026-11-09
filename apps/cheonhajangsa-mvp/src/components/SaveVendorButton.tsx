@@ -52,9 +52,6 @@ export function SaveVendorButton({ id, location }: { id: string; location?: stri
 
   return (
     <View style={styles.panel}>
-      {!!location && (signedIn && activity
-        ? <Text style={styles.notice}>주변 사장님 {activity.used_count}명 사용함 · {activity.saved_count}명 저장함</Text>
-        : <Text style={styles.notice}>{signedIn ? "주변 사장님 기록 확인 중" : "로그인하면 주변 사장님 기록을 볼 수 있어요."}</Text>)}
       <View style={styles.actions}>
         {!!location && (
           <Pressable accessibilityRole="button" disabled={busy || activity?.used || (signedIn && !activity)}

@@ -64,7 +64,7 @@ createServer(async (m, res) => {
       ? `${m.method} /api/v1/price-checks/:id`
       : `${m.method} ${path}`;
   const route = routes[key];
-  const memberRoute=/^\/api\/v1\/(auth\/|community\/|me\/(profile|saved-vendors|used-vendors|vendor-reviews))/.test(path);
+  const memberRoute=/^\/api\/v1\/(auth\/|community\/|me\/(profile|saved-vendors|used-vendors|vendor-reviews|conversations))/.test(path);
   const response = memberRoute ? await handleMembers(await toRequest(m)) : route ? await route(await toRequest(m)) : errorResponse("NOT_FOUND", "없는 주소예요.");
   res.writeHead(response.status, { ...Object.fromEntries(response.headers), ...responseCors });
   res.end(Buffer.from(await response.arrayBuffer()));

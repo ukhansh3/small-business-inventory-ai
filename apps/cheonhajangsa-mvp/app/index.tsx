@@ -1,3 +1,4 @@
+import { VendorConversations } from "../src/components/VendorConversations";
 import { useFocusEffect, useRouter } from "expo-router";
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Linking, Platform, Pressable, ScrollView, type ScrollViewInstance, StyleSheet, Text, TextInput, View } from "react-native";
@@ -26,7 +27,7 @@ import { CompactStoreCard } from "../src/components/CompactStoreCard";
 import { CommunityScreen, SavedScreen, ProfileScreen } from '../src/components/MemberScreens';
 
 const IS_PHONE = Platform.OS !== "web" || isPhoneUserAgent(globalThis.navigator?.userAgent ?? "");
-type ActiveTab = "map" | "assistant" | "community" | "saved" | "profile";
+type ActiveTab = "map" | "assistant" | "messages" | "community" | "saved" | "profile";
 
 export default function HomeScreen() {
   const a = useAssist();
@@ -219,7 +220,7 @@ export default function HomeScreen() {
             </ScrollView>
             <ChatInput disabled={s.loading} error={s.inputError} onSend={sendAssistantText} onPhoto={a.sendPhoto} />
           </>
-        ) : tab==='community'?<CommunityScreen/>:tab==='saved'?<SavedScreen/>:<ProfileScreen onSaved={()=>setTab('saved')} onLocation={openLocation} location={a.currentLocation?.name??'기본 위치'}/>}
+        ) : tab==='messages'?<VendorConversations/>:tab==='community'?<CommunityScreen/>:tab==='saved'?<SavedScreen/>:<ProfileScreen onSaved={()=>setTab('saved')} onLocation={openLocation} location={a.currentLocation?.name??'기본 위치'}/>}
         <BottomNav active={tab} onChange={setTab} />
         {call && <CallSheet card={call.card} plan={call.plan} onClose={() => setCall(null)} />}
       </View>
@@ -233,12 +234,12 @@ function Welcome({ onExample }: { onExample: (text: string) => void }) {
 }
 
 function Header({ tab, test, stored, started, loading, onRestart }: { tab: ActiveTab; test: boolean; stored: boolean; started: boolean; loading: boolean; onRestart: () => void }) {
-  const titles={map:"천하장사",assistant:"AI 도우미",community:"사장님 커뮤니티",saved:"저장",profile:"내 정보"};
+  const titles={map:"천하장사",assistant:"AI 도우미",messages:"대화",community:"사장님 커뮤니티",saved:"저장",profile:"내 정보"};
   return <View style={styles.header}><View style={styles.brandMark}><AppIcon name={tab==="assistant"?"bot":"store"} size={20} color="#ffffff"/></View><View><Text style={styles.brand}>{titles[tab]}</Text>{tab === "assistant" && <Text style={styles.brandSub}>등록된 거래 정보로 찾아드려요</Text>}</View><View style={styles.spacer} />{stored && <Text style={styles.status}>저장 응답</Text>}{tab === "assistant" && started ? <Pressable accessibilityLabel="새 대화" disabled={loading} onPress={onRestart} style={styles.iconButton}><AppIcon name="edit" size={21}/></Pressable> : <View style={styles.iconButton}><AppIcon name="bell" size={21}/></View>}</View>;
 }
 
 function BottomNav({ active, onChange }: { active: ActiveTab; onChange:(tab:ActiveTab)=>void }) {
-  const tabs: {key:ActiveTab;icon:IconName;label:string}[] = [{ key: "map", icon: "map", label: "지도" }, { key: "assistant", icon: "bot", label: "AI 도우미" }, { key: "community", icon: "users", label: "커뮤니티" }, { key: "saved", icon: "bookmark", label: "저장" }, { key: "profile", icon: "user", label: "내 정보" }];
+  const tabs: {key:ActiveTab;icon:IconName;label:string}[] = [{ key: "map", icon: "map", label: "지도" }, { key: "assistant", icon: "bot", label: "AI 도우미" }, { key: "messages", icon: "edit", label: "대화" }, { key: "community", icon: "users", label: "커뮤니티" }, { key: "saved", icon: "bookmark", label: "저장" }, { key: "profile", icon: "user", label: "내 정보" }];
   return <View style={styles.nav}>{tabs.map((item) => { const selected = active === item.key; return <Pressable key={item.key} accessibilityRole="tab" accessibilityState={{ selected }} onPress={()=>onChange(item.key)} style={styles.navItem}><AppIcon name={item.icon} size={21} color={selected?color.green:color.sub}/><Text style={[styles.navLabel, selected && styles.navOn]}>{item.label}</Text><View style={[styles.navDot, selected && styles.navDotOn]} /></Pressable>; })}</View>;
 }
 

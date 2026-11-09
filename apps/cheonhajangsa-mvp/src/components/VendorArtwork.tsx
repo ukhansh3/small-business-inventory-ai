@@ -3,6 +3,20 @@ import type { VendorCard } from "../../core/search-types";
 import type { Store } from "../lib/api-types";
 import { storefrontPhotos } from "./vendor-storefront-photos";
 
+const customPhotos: Readonly<Record<string, ImageSourcePropType>> = {
+  "v_001": require("../../assets/vendors/woncheon-dawn.png"),
+  "ps_MA0101202607A0141762": require("../../assets/vendors/lucky-produce.png"),
+  "v_005": require("../../assets/vendors/samgeori-vegetables.png"),
+  "demo-produce": require("../../assets/ajou-demo/produce.png"),
+  "demo-oil": require("../../assets/ajou-demo/oil.png"),
+  "demo-packs": require("../../assets/ajou-demo/packs.png"),
+  "demo-interior": require("../../assets/ajou-demo/interior.png"),
+  "demo-meat": require("../../assets/ajou-demo/meat.png"),
+  "demo-clean": require("../../assets/ajou-demo/clean.png"),
+  "demo-repair": require("../../assets/ajou-demo/repair.png"),
+  "demo-pos": require("../../assets/ajou-demo/pos.png"),
+};
+
 const photos: Readonly<Record<string, ImageSourcePropType>> = {
   v_002: require("../../assets/vendors/market.webp"),
   v_003: require("../../assets/vendors/mart.webp"),
@@ -43,7 +57,7 @@ export function VendorArtwork({ card, store, large = false }: {
   const [baseInk, paper] = palettes[type][seed % palettes[type].length] ?? palettes[type][0];
   const hue = (type === "grocery" ? 195 : type === "market" ? 8 : 82) + seed % 47;
   const ink = seed % 2 === 0 ? baseInk : "hsl(" + hue + ", 46%, 29%)";
-  const photo = examplePhoto ?? storefrontPhotos[id];
+  const photo = customPhotos[id] ?? examplePhoto ?? storefrontPhotos[id];
   const variant = Math.floor(seed / 17) % 3;
   const darkSign = variant === 0;
   const accent = darkSign ? paper : ink;
