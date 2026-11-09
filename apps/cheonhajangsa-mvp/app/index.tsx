@@ -178,13 +178,12 @@ export default function HomeScreen() {
             <View style={[styles.sheet,{height:sheetHeight}]}>
             <Pressable accessibilityRole="button" accessibilityState={{ expanded: sheetOpen }} onPress={() => setSheetMode(sheetOpen ? "collapsed" : "list")} style={styles.handle}>
               <View style={styles.grip} />
-              <View style={styles.sheetHeading}><View><Text style={styles.sheetTitle}>{visiblePinCount === null ? "지도 업체" : `화면 속 업체 ${visiblePinCount}곳`}</Text><Text style={styles.sheetSub}>가격·배송 조건·확인일을 비교해 보세요</Text></View><Text style={styles.sheetLink}>{sheetOpen ? "↓ 접기" : "↑ 목록 보기"}</Text></View>
+              <View style={styles.sheetHeading}><View><Text style={styles.sheetTitle}>{visiblePinCount === null ? "지도 업체" : `화면 속 업체 ${visiblePinCount}곳`}</Text></View><Text style={styles.sheetLink}>{sheetOpen ? "↓ 접기" : "↑ 목록 보기"}</Text></View>
             </Pressable>
             {showPreview && <ScrollView style={styles.body} contentContainerStyle={styles.mapContent} keyboardShouldPersistTaps="handled">
               <CompactStoreCard key={selected.store_id} store={selected} location={me?.location_id}/>
             </ScrollView>}
             {sheetOpen && <ScrollView style={styles.body} contentContainerStyle={styles.mapContent} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
-              {s.exampleData && <Text style={styles.dataNote}>예시 판매처의 이름·번호·가격은 실제 정보가 아니에요.</Text>}
               {selected && <CompactStoreCard store={selected} location={me?.location_id}/>}
               {showAiResults && s.results ? <ResultList results={s.results} stores={st.stores} location={me?.location_id} /> : st.error ? <ErrorRow message={st.error} onRetry={st.retry} /> : visibleStores.length === 0 ? <Text style={styles.sheetSub}>조건에 맞는 근처 업체가 없어요.</Text> : visibleStores.filter(store=>store.store_id!==selectedId).slice(0, storeQuery ? undefined : 30).map(store=><CompactStoreCard key={store.store_id} store={store} location={me?.location_id}/>)}
             </ScrollView>}
@@ -193,7 +192,6 @@ export default function HomeScreen() {
           </>
         ) : tab === "assistant" ? (
           <>
-            {s.exampleData && <Text style={styles.aiDataNote}>예시 데이터 포함 · 실제 거래 전 업체에 확인해 주세요</Text>}
             <ScrollView ref={scroll} style={styles.body} contentContainerStyle={styles.aiContent} keyboardShouldPersistTaps="handled">
               {!started && <Welcome onExample={a.sendText} />}
               {storeReplies.map((reply, index) => (
@@ -257,7 +255,6 @@ const styles = StyleSheet.create({
   filterChip:{height:36,paddingHorizontal:12,justifyContent:"center",borderRadius:20,borderWidth:1,borderColor:color.line,backgroundColor:"#ffffff"},filterOn:{backgroundColor:color.green,borderColor:color.green},filterText:{fontSize:12,color:color.ink,fontWeight:"500"},filterTextOn:{color:"#ffffff"},
   sheet:{position:"absolute",bottom:0,left:0,right:0,borderTopLeftRadius:24,borderTopRightRadius:24,backgroundColor:"#ffffff",shadowColor:"#14181f",shadowOpacity:0.16,shadowRadius:22,shadowOffset:{width:0,height:-5},elevation:10,overflow:"hidden"},
   locateButton:{position:"absolute",right:16,width:46,height:46,borderRadius:23,backgroundColor:"#ffffff",alignItems:"center",justifyContent:"center",shadowColor:"#14181f",shadowOpacity:0.15,shadowRadius:12,elevation:5},
-  dataNote:{fontSize:10,color:color.sub,lineHeight:15,paddingTop:4},aiDataNote:{fontSize:10,color:color.sub,paddingHorizontal:18,paddingVertical:6,backgroundColor:color.soft},
   pending:{flex:1,alignItems:"center",justifyContent:"center",padding:24,gap:12},pendingIcon:{width:82,height:82,borderRadius:28,backgroundColor:color.greenSoft,alignItems:"center",justifyContent:"center",marginBottom:8},pendingTitle:{fontSize:20,fontWeight:"700",color:color.ink},pendingSub:{fontSize:13,color:color.sub},pendingNote:{fontSize:11,color:color.green,paddingHorizontal:12,paddingVertical:5,borderRadius:12,backgroundColor:color.greenSoft},pendingAction:{marginTop:18,padding:16},
   safe: { flex: 1, backgroundColor: color.surface }, screen: { flex: 1, backgroundColor: color.bg },
   header: { minHeight: 60, flexDirection: "row", alignItems: "center", gap: 9, paddingHorizontal: 18, paddingTop:14,paddingBottom:8, backgroundColor: color.surface },

@@ -212,12 +212,26 @@ export async function handleMembers(
     }
     const user = await requireMember(req, db);
     if (path === "/me/conversations" && method === "GET") {
-      const threads = checked(await db.from("chj_vendor_threads").select("id,vendor_name,owner_id")
+      const threads = checked(await db.from("chj_vendor_threads").select("id,vendor_id,vendor_name,owner_id,created_at")
         .or("customer_id.eq." + user.id + ",owner_id.eq." + user.id)
         .order("created_at", { ascending: false }));
-      return json(200, { threads: (threads ?? []).map((thread) => ({
-        id: thread.id, vendor_name: thread.vendor_name, incoming: thread.owner_id === user.id,
-      })) });
+      const summaries = await Promise.all((threads ?? []).map(async (thread) => {
+        const [latest, unread] = await Promise.all([
+          db.from("chj_vendor_messages").select("body,created_at").eq("thread_id", thread.id)
+            .order("created_at", { ascending: false }).order("id", { ascending: false }).limit(1).maybeSingle(),
+          db.from("chj_vendor_messages").select("id", { count: "exact", head: true })
+            .eq("thread_id", thread.id).neq("sender_id", user.id).is("read_at", null),
+        ]);
+        const last = checked(latest);
+        checked(unread);
+        return {
+          id: thread.id, vendor_id: thread.vendor_id, vendor_name: thread.vendor_name,
+          last_message: last?.body ?? null, unread_count: unread.count ?? 0,
+          updated_at: last?.created_at ?? thread.created_at,
+        };
+      }));
+      summaries.sort((a, b) => Date.parse(b.updated_at) - Date.parse(a.updated_at));
+      return json(200, { threads: summaries });
     }
     if (path === "/me/conversations" && method === "POST") {
       const { vendor_id } = z.object({ vendor_id: z.string().min(1).max(160) }).strict().parse(await body(req));
@@ -238,7 +252,7 @@ export async function handleMembers(
       return json(200, thread);
     }
     const messageRoute = /^\/me\/conversations\/([0-9a-f-]{36})\/messages$/.exec(path);
-    if (messageRoute && (method === "GET" || method === "POST")) {
+    if (messageRoute && (method === "GET" || method === "POST" || method === "PATCH")) {
       const threadId = z.uuid().parse(messageRoute[1]);
       const thread = checked(await db.from("chj_vendor_threads").select("vendor_name")
         .eq("id", threadId).or("customer_id.eq." + user.id + ",owner_id.eq." + user.id).maybeSingle());
@@ -248,10 +262,16 @@ export async function handleMembers(
         checked(await db.from("chj_vendor_messages").insert({ thread_id: threadId, sender_id: user.id, ...input }));
         return new Response(null, { status: 204 });
       }
-      const rows = checked(await db.from("chj_vendor_messages").select("id,sender_id,body,created_at")
+      if (method === "PATCH") {
+        const { ids } = z.object({ ids: z.array(z.uuid()).min(1).max(100) }).strict().parse(await body(req));
+        checked(await db.from("chj_vendor_messages").update({ read_at: new Date().toISOString() })
+          .eq("thread_id", threadId).in("id", ids).neq("sender_id", user.id).is("read_at", null));
+        return new Response(null, { status: 204 });
+      }
+      const rows = checked(await db.from("chj_vendor_messages").select("id,sender_id,body,created_at,read_at")
         .eq("thread_id", threadId).order("created_at", { ascending: false }).order("id", { ascending: false }).limit(100));
       return json(200, { vendor_name: thread.vendor_name, messages: (rows ?? []).reverse().map((row) => ({
-        id: row.id, body: row.body, mine: row.sender_id === user.id,
+        id: row.id, body: row.body, mine: row.sender_id === user.id, unread: row.read_at === null,
       })) });
     }
     if (reviewRoute && method === "PUT") {
