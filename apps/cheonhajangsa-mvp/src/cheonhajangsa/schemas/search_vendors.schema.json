@@ -1,0 +1,54 @@
+{
+  "type": "object",
+  "properties": {
+    "item_id": {
+      "type": "string",
+      "description": "후보 목록의 품목 id"
+    },
+    "qty_kg": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "description": "원하는 양(kg). 말하지 않았으면 null"
+    },
+    "urgency": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "now",
+            "today",
+            "tomorrow"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "급함. 말하지 않았으면 null"
+    },
+    "fulfillment": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "pickup",
+            "delivery"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "받는 방식. 말하지 않았으면 null"
+    }
+  },
+  "required": [
+    "item_id",
+    "qty_kg",
+    "urgency",
+    "fulfillment"
+  ],
+  "additionalProperties": false
+}

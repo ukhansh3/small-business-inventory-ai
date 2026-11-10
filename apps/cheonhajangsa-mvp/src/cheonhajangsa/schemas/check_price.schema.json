@@ -1,0 +1,29 @@
+{
+  "type": "object",
+  "properties": {
+    "item_id": {
+      "type": "string",
+      "description": "후보 목록의 품목 id"
+    },
+    "qty_kg": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "description": "양(kg). 말하지 않았으면 null"
+    },
+    "amount_won": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "description": "금액(원). 말하지 않았으면 null"
+    }
+  },
+  "required": [
+    "item_id",
+    "qty_kg",
+    "amount_won"
+  ],
+  "additionalProperties": false
+}

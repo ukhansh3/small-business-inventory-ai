@@ -59,11 +59,13 @@
 |---|---|
 | [AGENTS.md](AGENTS.md) | 사람·AI 에이전트의 절대 작업 규칙 |
 | [DEVELOPMENT_GUIDE.md](DEVELOPMENT_GUIDE.md) | 현재 아키텍처, 역할, 개발·검증 절차 |
-| [SPEC.md](SPEC.md) | 범위, API, 수용 기준과 합격선 |
-| [ontology.yaml](ontology.yaml) | 인터뷰로 역추적되는 문제 도메인 개념 |
-| [문제 정의](docs/product/problem-statement.md) | 대상·비대상·대가·반증 조건 |
-| [인터뷰 인덱스](docs/interviews/index.md) | 인터뷰별 자료·분석 상태 |
+| [SPEC.md](docs/SPEC.md) | 범위, API, 수용 기준과 합격선 |
+| [ontology.yaml](docs/ontology.yaml) | 인터뷰로 역추적되는 문제 도메인 개념 |
+| [문제 정의](docs/PROBLEM.md) | 대상·비대상·대가·반증 조건 |
+| [인터뷰 인덱스](docs/research/interviews.md) | 인터뷰별 자료·분석 상태 |
 | [증거 원장](docs/evidence/evidence-ledger.md) | 주장과 지지·반대 근거 연결 |
+| [데이터 스파이크](docs/spikes/2026-11-04_data-comparability.md) | 비교 가능한 거래 조건의 검증 계획 |
+| [파싱 프롬프트](apps/cheonhajangsa-mvp/src/cheonhajangsa/prompts/parse_query.md) | 모델 전송부, JSON Schema, 실패 모드 |
 | [ADR 목록](docs/decisions/README.md) | 방향 변경과 승인 기록 |
 | [MVP 앱 안내](apps/cheonhajangsa-mvp/README.md) | 시연, 로컬 실행, DB 설정 |
 
