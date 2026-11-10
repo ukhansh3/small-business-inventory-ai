@@ -55,19 +55,19 @@ describe("AC-1 최소 판매량(R-03)", () => {
 describe("AC-2 배달(R-07)", () => {
   const data = baseDataset([A, B], [offer("v_101"), offer("v_102")]);
 
-  it("배달 동네 밖인 B는 빠지지 않고 no_delivery 묶음, '배달 안 됨'", () => {
+  it("배달 동네 밖인 B는 빠지지 않고 no_delivery 묶음에 범위 밖으로 표시", () => {
     const r = search(data, cond({ fulfillment: "delivery" }), MON_1000);
     expect(groupOf(r, "v_102")).toBe("no_delivery");
-    expect(card(r, "v_102").delivery).toEqual({ state: "unavailable", display: "배달 안 됨", note: null });
+    expect(card(r, "v_102").delivery).toEqual({ state: "unavailable", display: "이 지역은 배송 범위 밖", note: null });
   });
-  it("배달 동네 안이면 available, '배달 가능'", () => {
+  it("배달 동네 안이면 available, 상세 주소 확인 필요를 표시", () => {
     const inArea = baseDataset(
       [vendor("v_102", "B가게", { delivery_available: true, delivery_dongs: ["원천동"], delivery_note: "2만 원 이상" })],
       [offer("v_102")],
     );
     const r = search(inArea, cond({ fulfillment: "delivery" }), MON_1000);
     expect(groupOf(r, "v_102")).toBe("available");
-    expect(card(r, "v_102").delivery.display).toBe("배달 가능");
+    expect(card(r, "v_102").delivery.display).toBe("이 지역 배송 지원 · 상세 주소 확인 필요");
     expect(card(r, "v_102").delivery.note).toBe("2만 원 이상");
   });
   it("직접 가지러 가면 배달 표시가 없다", () => {

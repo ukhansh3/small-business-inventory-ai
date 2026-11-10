@@ -21,6 +21,9 @@ export type VendorCard = {
   open_status: { state: "open" | "closed"; display: string };
   restock: { state: "restocked_today" | "expected_today" | "none"; time: string | null; display: string | null };
   delivery: { state: "available" | "unavailable" | "not_requested"; display: string | null; note: string | null };
+  deliveryStatus: "supported" | "pickup_only" | "unknown";
+  destinationConfirmationRequired: boolean;
+  deliveryTerms: string | null;
   price: { has_price: boolean; display: string; per_kg_display: string | null };
   min_sale: { kg: number | null; display: string };
   phone: string;

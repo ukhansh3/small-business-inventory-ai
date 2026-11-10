@@ -54,7 +54,7 @@ export const vendorSchema = z.strictObject({
   lng,
   phone: z.string().min(1),
   opening_hours: openingHoursSchema,
-  delivery_available: z.boolean(),
+  delivery_available: z.boolean().nullable(),
   delivery_dongs: z.array(z.string().min(1)),
   delivery_note: z.string().nullable(),
   data_status: z.enum(DATA_STATUSES),

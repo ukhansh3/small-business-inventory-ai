@@ -1,0 +1,321 @@
+{
+  "version": "mvp-qa-v1",
+  "status": "user_approved",
+  "base_commit": "fbc0563d360d5d93bb4cdea16346cd529334ab1f",
+  "fixtures": {
+    "source": "apps/cheonhajangsa-mvp/tests/fixtures/dataset.ts",
+    "now": "2026-11-09T01:00:00Z",
+    "location_id": "loc_test",
+    "location_dong": "원천동",
+    "item_id": "item_lettuce",
+    "delivery_variants": [
+      {
+        "id": "v_901",
+        "delivery_available": true,
+        "delivery_dongs": [
+          "원천동"
+        ],
+        "delivery_note": "2만 원 이상"
+      },
+      {
+        "id": "v_902",
+        "delivery_available": true,
+        "delivery_dongs": [
+          "우만동"
+        ],
+        "delivery_note": null
+      },
+      {
+        "id": "v_903",
+        "delivery_available": false,
+        "delivery_dongs": [],
+        "delivery_note": null
+      },
+      {
+        "id": "v_904",
+        "delivery_available": null,
+        "delivery_dongs": [],
+        "delivery_note": null
+      },
+      {
+        "id": "v_905",
+        "delivery_available": true,
+        "delivery_dongs": [],
+        "delivery_note": null
+      }
+    ]
+  },
+  "rules": {
+    "mandatory_must_run": true,
+    "failures_allowed": 0,
+    "skips_allowed": 0,
+    "xfails_allowed": 0,
+    "external_calls": "stubbed"
+  },
+  "cases": [
+    {
+      "id": "MVP-G04",
+      "required": true,
+      "ac": [
+        "AC04",
+        "AC-2"
+      ],
+      "target": "search_api",
+      "fixture": "delivery_variants",
+      "input": {
+        "item_id": "item_lettuce",
+        "qty_kg": 2,
+        "urgency": "now",
+        "fulfillment": "delivery",
+        "location_id": "loc_test"
+      },
+      "expect": {
+        "total": 5,
+        "available_ids": [
+          "v_901"
+        ],
+        "no_delivery_ids": [
+          "v_902",
+          "v_903",
+          "v_904",
+          "v_905"
+        ],
+        "delivery_by_id": {
+          "v_901": {
+            "deliveryStatus": "supported",
+            "destinationConfirmationRequired": true,
+            "deliveryTerms": "2만 원 이상"
+          },
+          "v_902": {
+            "deliveryStatus": "supported",
+            "destinationConfirmationRequired": false,
+            "deliveryTerms": null
+          },
+          "v_903": {
+            "deliveryStatus": "pickup_only",
+            "destinationConfirmationRequired": false,
+            "deliveryTerms": null
+          },
+          "v_904": {
+            "deliveryStatus": "unknown",
+            "destinationConfirmationRequired": true,
+            "deliveryTerms": null
+          },
+          "v_905": {
+            "deliveryStatus": "supported",
+            "destinationConfirmationRequired": true,
+            "deliveryTerms": null
+          }
+        },
+        "delivery_labels_by_id": {
+          "v_901": "이 지역 배송 지원 · 상세 주소 확인 필요",
+          "v_902": "이 지역은 배송 범위 밖",
+          "v_903": "픽업 전용",
+          "v_904": "배송 미확인",
+          "v_905": "배송 지역 미확인"
+        }
+      }
+    },
+    {
+      "id": "MVP-G04-PICKUP",
+      "required": true,
+      "ac": [
+        "AC04",
+        "AC-2"
+      ],
+      "target": "search_api",
+      "fixture": "delivery_variants",
+      "input": {
+        "item_id": "item_lettuce",
+        "qty_kg": 2,
+        "urgency": "now",
+        "fulfillment": "pickup",
+        "location_id": "loc_test"
+      },
+      "expect": {
+        "total": 5,
+        "all_delivery_states": "not_requested",
+        "all_destination_confirmation_required": false,
+        "no_delivery_count": 0
+      }
+    },
+    {
+      "id": "MVP-G01",
+      "required": true,
+      "ac": [
+        "AC-1"
+      ],
+      "target": "search",
+      "fixture": "minimum_order_2kg",
+      "input": {
+        "below": {
+          "item_id": "item_lettuce",
+          "qty_kg": 1,
+          "urgency": "now",
+          "fulfillment": "pickup",
+          "location_id": "loc_test"
+        },
+        "boundary": {
+          "item_id": "item_lettuce",
+          "qty_kg": 2,
+          "urgency": "now",
+          "fulfillment": "pickup",
+          "location_id": "loc_test"
+        }
+      },
+      "expect": {
+        "below_total": 0,
+        "boundary_ids": [
+          "v_906"
+        ]
+      }
+    },
+    {
+      "id": "MVP-G03",
+      "required": true,
+      "ac": [
+        "AC03",
+        "AC-9"
+      ],
+      "target": "search",
+      "fixture": "ordering_by_distance",
+      "input": {
+        "item_id": "item_lettuce",
+        "qty_kg": 2,
+        "urgency": "now",
+        "fulfillment": "pickup",
+        "location_id": "loc_test"
+      },
+      "expect": {
+        "run_count": 3,
+        "ids_each_run": [
+          "v_907",
+          "v_908"
+        ]
+      }
+    },
+    {
+      "id": "MVP-G24",
+      "required": true,
+      "ac": [
+        "AC-17",
+        "AC-24"
+      ],
+      "target": "assist_api",
+      "fixture": "fake_ai_price",
+      "input": {
+        "text": "상추 2키로 만원 부르던데",
+        "fake_ai_decision": {
+          "type": "price",
+          "item_id": "item_lettuce",
+          "qty_kg": 2,
+          "amount_won": 10000
+        }
+      },
+      "expect": {
+        "response_type": "price_check",
+        "price_per_kg": 5000,
+        "comparable": true
+      }
+    },
+    {
+      "id": "MVP-G18",
+      "required": true,
+      "ac": [
+        "AC-18"
+      ],
+      "target": "price_calculation",
+      "fixture": "missing_weight",
+      "input": {
+        "item_id": "item_lettuce",
+        "qty_kg": null,
+        "amount_won": 3000
+      },
+      "expect": {
+        "comparable": false,
+        "price_per_kg": null
+      }
+    },
+    {
+      "id": "MVP-G15",
+      "required": true,
+      "ac": [
+        "AC-15"
+      ],
+      "target": "assist_api_and_client_state",
+      "fixture": "fake_ai_unavailable",
+      "input": {
+        "text": "상추",
+        "fake_ai_error": "AI_UNAVAILABLE"
+      },
+      "expect": {
+        "http_status": 503,
+        "error_code": "AI_UNAVAILABLE",
+        "opens_manual_conditions": true
+      }
+    },
+    {
+      "id": "MVP-G10",
+      "required": true,
+      "ac": [
+        "AC-10"
+      ],
+      "target": "assist_api",
+      "fixture": "fake_ai_out_of_scope",
+      "input": {
+        "text": "대파 있어요?",
+        "fake_ai_decision": {
+          "type": "notice",
+          "kind": "out_of_scope_item",
+          "item_name": "대파"
+        }
+      },
+      "expect": {
+        "response_type": "notice",
+        "notice_kind": "out_of_scope_item",
+        "search_calls": 0,
+        "emitted_vendor_count": 0
+      }
+    },
+    {
+      "id": "MVP-G25",
+      "required": true,
+      "ac": [
+        "AC-25"
+      ],
+      "target": "market_share",
+      "fixture": "price_check_own_device",
+      "input": {
+        "before_consent": {
+          "share": false
+        },
+        "after_consent": {
+          "share": true
+        }
+      },
+      "expect": {
+        "shared_before_consent": 0,
+        "share_calls_before_consent": 0,
+        "shared_after_consent": 1
+      }
+    },
+    {
+      "id": "MVP-G13",
+      "required": true,
+      "ac": [
+        "AC-13"
+      ],
+      "target": "example_call",
+      "fixture": "example_vendor_phone",
+      "input": {
+        "is_example": true,
+        "action": "call"
+      },
+      "expect": {
+        "shows_example_notice": true,
+        "opens_phone_link": false
+      }
+    }
+  ],
+  "format": "YAML 1.2 JSON-compatible"
+}

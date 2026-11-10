@@ -27,8 +27,8 @@ export function validateDataset(raw: unknown): ValidationResult {
   if (defaults !== 1) errors.push(`locations: 기본 위치가 정확히 1개여야 함(지금 ${defaults}개)`);
 
   for (const v of d.vendors) {
-    if (!v.delivery_available && v.delivery_dongs.length > 0) {
-      errors.push(`vendors.${v.id}: 배달을 안 하는데 배달 동네가 있음`);
+    if (v.delivery_available !== true && v.delivery_dongs.length > 0) {
+      errors.push(`vendors.${v.id}: 배달 지원이 확인되지 않았는데 배달 동네가 있음`);
     }
   }
 

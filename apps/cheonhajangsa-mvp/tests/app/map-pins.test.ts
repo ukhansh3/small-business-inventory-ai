@@ -3,7 +3,7 @@ import type { Store } from "../../src/lib/api-types";
 import { focusFor, pinsFor } from "../../src/lib/map-pins";
 
 const card = (vendor_id: string, is_example: boolean) =>
-  ({ vendor_id, name: vendor_id, kind: "채소가게", is_example, rank: 0, distance: { meters: 1, display: "1m", walk_minutes: 1 }, open_status: { state: "open", display: "" }, restock: { state: "none", time: null, display: null }, delivery: { state: "not_requested", display: null, note: null }, price: { has_price: false, display: "", per_kg_display: null }, min_sale: { kg: null, display: "" }, phone: "" }) as const;
+  ({ vendor_id, name: vendor_id, kind: "채소가게", is_example, rank: 0, distance: { meters: 1, display: "1m", walk_minutes: 1 }, open_status: { state: "open", display: "" }, restock: { state: "none", time: null, display: null }, delivery: { state: "not_requested", display: null, note: null }, deliveryStatus: "unknown", destinationConfirmationRequired: false, deliveryTerms: null, price: { has_price: false, display: "", per_kg_display: null }, min_sale: { kg: null, display: "" }, phone: "" }) as const;
 const stores: Store[] = [
   { store_id: "v_001", kind: "vendor", name: "예시가게", category: "채소가게", address: "", lat: 1, lng: 1, distance_m: 10, vendor_card: { ...card("v_001", true) } },
   { store_id: "v_002", kind: "vendor", name: "확인가게", category: "채소가게", address: "", lat: 2, lng: 2, distance_m: 20, vendor_card: { ...card("v_002", false) } },

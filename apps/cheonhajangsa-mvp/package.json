@@ -41,7 +41,8 @@
     "evals": "tsx scripts/run-evals.ts",
     "e2e": "playwright test",
     "evals:images": "tsx scripts/run-image-evals.ts",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test:golden": "vitest run tests/harness/mvp-golden.test.ts"
   },
   "private": true,
   "engines": {

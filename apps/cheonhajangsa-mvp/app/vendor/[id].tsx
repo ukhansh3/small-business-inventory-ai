@@ -103,7 +103,9 @@ export default function VendorScreen() {
             </Section>
 
             <Section title="배달">
-              <Text style={styles.value}>{detail.delivery_dongs ? `${detail.delivery_dongs.join(", ")}` : "배달 안 함"}</Text>
+              <Text style={styles.value}>{detail.delivery_dongs?.length ? detail.delivery_dongs.join(", ")
+                : c.deliveryStatus === "pickup_only" ? "픽업 전용"
+                : c.deliveryStatus === "supported" ? "배송 지역 미확인" : "배송 미확인"}</Text>
               {detail.delivery_note && <Text style={styles.sub}>{detail.delivery_note}</Text>}
             </Section>
 
