@@ -1,7 +1,7 @@
-version: '0.2'
+version: '0.3'
 status: team_review_draft
 language: ko
-updated_at: '2026-11-04'
+updated_at: '2026-11-10'
 domain: 소규모 외식업 점주의 낯선 품목·공급업체 탐색과 판단
 
 purpose: >-
@@ -14,12 +14,14 @@ evidence_policy:
   interpretation: 팀의 해석은 관찰과 분리한다.
   unknown: 질문하지 않았거나 원음에서 확인하지 못한 값은 unknown으로 둔다.
   quote_rule: 직접 인용은 원음 대조 후 익명화한 경우에만 사용한다.
-  analyzed_interviews: [I01, I02, I03, I04, I05, I06, I09, I10, I12]
-  pending_structure: [I07, I08, I11]
+  analyzed_interviews: [I01, I02, I03, I04, I05, I06, I07, I08, I09, I10, I11, I12]
+  transcript_based_summaries: [I07, I08, I11]
+  event_lookup: 사건 ID 앞의 인터뷰 ID를 sources에서 찾아 해당 로그의 사건을 확인한다.
   limitations:
     - 아주대 인근 외식업 표본에 집중돼 다른 지역과 업종으로 일반화할 수 없다.
     - 수정 전 인터뷰에서 묻지 않은 정보 비대칭 항목은 반대 근거가 아니다.
     - 직접 인용과 일부 수치는 원음 대조가 남아 있다.
+    - 지인·동종 점주와의 사적 교환을 공개 공유의 근거로 사용하지 않는다.
 
 sources:
   I01:
@@ -47,13 +49,13 @@ sources:
     path: docs/interviews/logs/I06.md
     summary: 빈번한 직접 구매가 있었으나 거래처 탐색 문제는 확인하지 못한 사례
   I07:
-    kind: interview_audio_pending_structure
+    kind: interview_log
     path: docs/interviews/logs/I07.md
-    summary: 원음 구조화 전이므로 개념 주장에 사용하지 않음
+    summary: 체인점의 본사 발주 경로
   I08:
-    kind: interview_audio_pending_structure
+    kind: interview_log
     path: docs/interviews/logs/I08.md
-    summary: 원음 구조화 전이므로 개념 주장에 사용하지 않음
+    summary: 공개 가격 부족으로 직접 방문·지인 문의 후 기존 구매처를 유지한 사례
   I09:
     kind: interview_log
     path: docs/interviews/logs/I09.md
@@ -63,9 +65,9 @@ sources:
     path: docs/interviews/logs/I10.md
     summary: 가족 소개·가격 비교·운반과 디지털 부담이 함께 나타난 사례
   I11:
-    kind: interview_audio_pending_structure
+    kind: interview_log
     path: docs/interviews/logs/I11.md
-    summary: 원음 구조화 전이므로 개념 주장에 사용하지 않음
+    summary: 본사 필수 품목과 직접 구매 분리, 최소 주문량 부담과 동종 점주 간 사적 교환
   I12:
     kind: interview_log
     path: docs/interviews/logs/I12.md
@@ -84,215 +86,215 @@ terminology:
 classes:
   BusinessOwner:
     definition: 품목·공급업체 선택을 직접 담당하는 자영업자
-    evidence: [I02, I03, I05, I09, I10, I12]
+    evidence: [I07-E01, I08-E01, I09-E01, I10-E01, I11-E01, I12-E01]
     attributes:
       experience_years:
         type: number
         nullable: true
-        evidence: [I03, I04, I05, I09, I10, I12]
+        interview_metadata: [I03, I04, I05, I09, I10, I12]
       category_experience:
         type: string
         nullable: true
         note: 업력과 별개인 해당 품목·업체 범주의 경험
-        evidence: [I05, I09, I12]
+        evidence: [I05-E01, I09-E01, I12-E02]
       saved_contacts_available:
         type: boolean
         nullable: true
-        evidence: [I09]
+        evidence: [I09-E01]
 
   ProcurementNeed:
     definition: 새 품목 또는 공급업체를 알아봐야 하는 계기
-    evidence: [I02, I05, I09, I12]
+    evidence: [I02-E02, I09-E01, I12-E01]
     attributes:
       need_type:
         type: enum
         values: [new_item, supplier_failure, price_concern, startup, repair_or_service, unknown]
-        evidence: [I02, I05, I09, I12]
+        evidence: [I02-E02, I09-E01, I12-E01]
       occurred_at:
         type: datetime
         nullable: true
         note: 원음에서 확인하지 못하면 unknown 처리
-        evidence: [I09]
+        evidence: [I09-E01]
 
   SearchEpisode:
     definition: 필요 발생부터 후보 탐색·비교·선택까지의 실제 사건
-    evidence: [I02, I03, I05, I09, I10, I12]
+    evidence: [I02-E02, I05-E01, I08-E02, I09-E01, I10-E01, I12-E01]
     attributes:
       contacted_vendor_count:
         type: integer
         nullable: true
         min: 0
-        evidence: [I03, I05, I12]
+        evidence: [I12-E01]
       elapsed_time:
         type: string
         nullable: true
-        evidence: [I02, I09, I12]
+        evidence: [I08-E02, I09-E01, I12-E02]
       monetary_cost:
         type: integer
         nullable: true
         min: 0
         currency: KRW
         note: 금액을 확인하지 못한 손실은 null
-        evidence: [I09]
+        evidence: [I09-E02]
       frequency:
         type: string
         nullable: true
         note: 주기 또는 최근 기간 내 발생 횟수. 추정 금지
-        evidence: [I03, I10, I12]
+        evidence: [I03-E01, I10-E01, I12-E02]
 
   InformationSource:
     definition: 후보와 조건을 알기 위해 실제 사용한 정보 경로
-    evidence: [I02, I03, I05, I09, I10, I12]
+    evidence: [I02-E01, I03-E01, I05-E01, I08-E02, I08-E03, I09-E01, I10-E01, I11-E03, I12-E01]
     attributes:
       source_type:
         type: enum
         values: [search, salesperson, saved_contact, acquaintance, nearby_owner, flyer, direct_visit, prior_experience, unknown]
-        evidence: [I02, I03, I05, I09, I10, I12]
+        evidence: [I02-E01, I03-E01, I05-E01, I08-E02, I09-E01, I10-E01, I11-E03, I12-E01]
       public_or_private:
         type: enum
         values: [public, private_network, first_party, unknown]
-        evidence: [I02, I05, I09, I10, I12]
+        evidence: [I02-E01, I08-E02, I08-E03, I09-E01, I10-E01, I11-E03, I12-E01]
 
   Vendor:
     definition: 품목 또는 외부 서비스를 공급하는 업체
-    evidence: [I01, I02, I03, I04, I05, I09, I10, I12]
+    evidence: [I01-E03, I02-E01, I04-E01, I05-E01, I07-E01, I09-E01, I11-E01, I12-E01]
     attributes:
       vendor_category:
         type: string
         nullable: true
-        evidence: [I02, I05, I09, I12]
+        evidence: [I02-E02, I05-E01, I09-E01, I12-E01]
       relationship_status:
         type: enum
         values: [candidate, active, replaced, former, unknown]
-        evidence: [I02, I04, I05, I09, I12]
+        evidence: [I02-E01, I04-E01, I05-E01, I08-E03, I09-E01, I12-E02]
 
   Offer:
     definition: 비교 시점의 품목·규격·가격·배송·최소 주문 등 조건 묶음
-    evidence: [I02, I03, I05, I09, I10, I12]
+    evidence: [I02-E01, I03-E02, I05-E01, I08-E02, I09-E01, I11-E02, I12-E03]
     attributes:
       item_or_service:
         type: string
         nullable: true
-        evidence: [I02, I03, I05, I09, I12]
+        evidence: [I02-E01, I05-E01, I09-E02, I12-E03]
       amount:
         type: integer
         nullable: true
         min: 0
         currency: KRW
         note: 미확인 가격을 0으로 저장하지 않음
-        evidence: [I02, I03, I09, I10, I12]
+        evidence: [I02-E01, I03-E01, I08-E02, I08-E03, I09-E01, I10-E01]
       specification:
         type: string
         nullable: true
-        evidence: [I03, I05, I12]
+        evidence: [I05-E01, I11-E02, I12-E03]
       fulfillment:
         type: enum
         values: [pickup, delivery, both, unknown]
-        evidence: [I01, I03, I09]
+        evidence: [I01-E03, I03-E02, I09-E01]
       minimum_order:
         type: string
         nullable: true
-        evidence: [I01, I03]
+        evidence: [I11-E02]
 
   DecisionCriterion:
     definition: 후보를 선택·유지·교체할 때 적용한 기준
-    evidence: [I01, I03, I04, I05, I09, I10, I12]
+    evidence: [I01-E03, I03-E02, I04-E01, I05-E01, I08-E03, I09-E01, I10-E01, I11-E02, I12-E03]
     attributes:
       criterion_type:
         type: enum
-        values: [price, quality, freshness, delivery_speed, delivery_reliability, carrying_convenience, relationship, vendor_stability, distance, unknown]
-        evidence: [I01, I03, I04, I05, I09, I10, I12]
+        values: [price, quality, freshness, delivery_speed, delivery_reliability, carrying_convenience, relationship, vendor_stability, distance, minimum_order, unknown]
+        evidence: [I01-E03, I03-E02, I04-E01, I05-E01, I08-E03, I09-E01, I10-E01, I11-E02, I12-E03]
       priority:
         type: integer
         nullable: true
         min: 1
         note: 인터뷰이가 순서를 명시한 경우만 사용
-        evidence: [I05, I09, I12]
+        evidence: [I09-E01]
 
   SupplierDecision:
     definition: 비교 후 내린 선택·유지·교체·보류 결정
-    evidence: [I02, I04, I05, I09, I12]
+    evidence: [I02-E01, I04-E01, I05-E01, I08-E03, I09-E01, I12-E02]
     attributes:
       action:
         type: enum
         values: [select, keep, replace, postpone, no_choice]
-        evidence: [I02, I04, I05, I09, I12]
+        evidence: [I02-E01, I04-E01, I05-E01, I08-E03, I09-E01, I12-E02]
       decided_at:
         type: datetime
         nullable: true
-        evidence: [I09]
+        evidence: [I09-E01]
 
   Outcome:
     definition: 선택 이후 관찰한 만족·손실·재탐색·복귀 행동
-    evidence: [I02, I09, I12]
+    evidence: [I02-E01, I09-E02, I12-E03]
     attributes:
       outcome_type:
         type: enum
         values: [continued, switched_again, emergency_purchase, lost_sale, quality_regret, returned_to_previous, unknown]
-        evidence: [I02, I09, I12]
+        evidence: [I02-E01, I09-E02, I12-E03]
       consequence_description:
         type: string
         nullable: true
         note: 금액이 확인되지 않은 긴급 구매·판매 중단·재구매 결과를 서술
-        evidence: [I09, I12]
+        evidence: [I09-E02, I12-E03]
 
 relations:
   - name: encounters
     from: BusinessOwner
     to: ProcurementNeed
     cardinality: '1:N'
-    evidence: [I02, I05, I09, I12]
+    evidence: [I02-E02, I09-E01, I12-E01]
   - name: performs
     from: BusinessOwner
     to: SearchEpisode
     cardinality: '1:N'
-    evidence: [I02, I03, I05, I09, I10, I12]
+    evidence: [I02-E02, I05-E01, I08-E02, I09-E01, I10-E01, I12-E01]
   - name: triggered_by
     from: SearchEpisode
     to: ProcurementNeed
     cardinality: 'N:1'
-    evidence: [I02, I09, I12]
+    evidence: [I02-E02, I09-E01, I12-E01]
   - name: consults
     from: SearchEpisode
     to: InformationSource
     cardinality: 'N:M'
-    evidence: [I02, I03, I05, I09, I10, I12]
+    evidence: [I02-E01, I05-E01, I08-E02, I08-E03, I09-E01, I10-E01, I12-E01]
   - name: considers
     from: SearchEpisode
     to: Vendor
     role_name: SupplierCandidate
     cardinality: 'N:M'
-    evidence: [I02, I03, I05, I09, I12]
+    evidence: [I02-E02, I05-E01, I08-E02, I09-E01, I12-E01]
   - name: compares
     from: SearchEpisode
     to: Offer
     cardinality: 'N:M'
-    evidence: [I02, I03, I05, I09, I10, I12]
+    evidence: [I02-E01, I03-E01, I08-E02, I09-E01, I10-E01, I12-E01]
   - name: offered_by
     from: Offer
     to: Vendor
     cardinality: 'N:1'
-    evidence: [I02, I03, I05, I09, I12]
+    evidence: [I02-E01, I05-E01, I08-E02, I09-E01]
   - name: applies
     from: SearchEpisode
     to: DecisionCriterion
     cardinality: 'N:M'
-    evidence: [I01, I03, I04, I05, I09, I10, I12]
+    evidence: [I01-E03, I03-E02, I05-E01, I08-E03, I09-E01, I10-E01, I12-E03]
   - name: produces
     from: SearchEpisode
     to: SupplierDecision
     cardinality: '1:0..1'
-    evidence: [I02, I04, I05, I09, I12]
+    evidence: [I02-E01, I04-E01, I08-E03, I09-E01, I12-E02]
   - name: selects
     from: SupplierDecision
     to: Vendor
     cardinality: 'N:0..1'
-    evidence: [I02, I04, I05, I09, I12]
+    evidence: [I02-E01, I04-E01, I08-E03, I09-E01, I12-E02]
   - name: results_in
     from: SupplierDecision
     to: Outcome
     cardinality: '1:0..N'
-    evidence: [I02, I09, I12]
+    evidence: [I02-E01, I09-E02, I12-E03]
 
 core_flow:
   - BusinessOwner encounters ProcurementNeed
@@ -337,7 +339,6 @@ solution_mapping:
     - CommunityPost
 
 open_questions:
-  - I07, I08, I11 구조화 후 새 개념 또는 반대 근거가 생기는가?
   - 접촉 업체 수·소요 시간·손실 금액을 몇 건에서 수치로 확인할 수 있는가?
   - Offer를 동일 규격으로 비교할 수 있는 데이터가 반복 확보되는가?
   - 공개 정보와 사적 인맥 정보의 경계는 무엇인가?

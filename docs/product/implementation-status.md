@@ -18,3 +18,5 @@
 
 - `290da35` 당시의 승인 업체 검색·등록·검토와 공공업체 시연은 [이전 구현 현황](https://github.com/ukhansh3/small-business-inventory-ai/blob/06e83e595f12bbb1286d161f2420c649f15e2d66/docs/product/implementation-status.md)에 보존돼 있다.
 - [업체 등록 계약](../contracts/vendor-registration-v1.md), [Supabase 적용 기록](../database/deployments/2026-10-29/README.md), [가상 업체 검증 기록](../database/deployments/2026-10-29/fixtures/README.md).
+
+사용자 문제 검증의 최신 상태는 [인터뷰 증거 행렬](../interviews/synthesis/current-evidence-matrix.md)을 참고합니다. 배송 판정과 단가·검색 검증은 [GitHub QA 기록](../prompts/delegation_ac04.md)에 있습니다.
