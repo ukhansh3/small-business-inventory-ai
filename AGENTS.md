@@ -14,14 +14,23 @@
 문서가 충돌하면 임의로 절충하지 말고 다음 순서로 판단한다.
 
 1. 사람이 채택한 최신 ADR (`docs/decisions/`)
-2. `SPEC.md` — 범위·API·수용 기준
-3. `ontology.yaml` — 문제 도메인 의미
+2. `docs/SPEC.md` — 범위·API·수용 기준
+3. `docs/ontology.yaml` — 문제 도메인 의미
 4. `apps/cheonhajangsa-mvp/docs/acceptance-criteria.md`와 앱 API 타입·핸들러 — 현행 앱의 세부 기준과 구현 확인
 5. `apps/cheonhajangsa-mvp/README.md` — 현재 개발·시연 환경
-6. `docs/product/problem-statement.md` — 문제와 근거 범위
+6. `docs/PROBLEM.md` — 문제와 근거 범위
 7. 이전 앱의 개발 가이드·목업·발표 자료
 
-인터뷰 사실의 정본은 `docs/interviews/logs/`와 `docs/evidence/evidence-ledger.md`다. ADR이나 SPEC이 관찰 사실을 바꿀 수 없다. `BusinessOwner`, `Vendor`, `Offer`, `SearchEpisode`의 도메인 정의는 `ontology.yaml`의 `terminology`를 참고한다.
+인터뷰 사실의 정본은 `docs/interviews/logs/`와 `docs/evidence/evidence-ledger.md`다. ADR이나 SPEC이 관찰 사실을 바꿀 수 없다. `BusinessOwner`, `Vendor`, `Offer`, `SearchEpisode`의 도메인 정의는 `docs/ontology.yaml`의 `terminology`를 참고한다.
+
+### 도메인 용어집
+
+| 대표어 | 쓰는 필드와 구분 |
+|---|---|
+| `BusinessOwner` | `experience_years`, `category_experience`, `saved_contacts_available` |
+| `Vendor` | 공급업체. API의 공공데이터 `Store`는 지도 조회 결과다. |
+| `Offer` | `item_or_service`, `amount`, `specification`, `fulfillment`, `minimum_order`. 도메인의 `fulfillment`는 `pickup`, `delivery`, `both`, `unknown`을 쓴다. |
+| `SearchEpisode` | 실제 탐색 사건. 앱의 `SearchCondition`은 검색 인자이며 `fulfillment`에 `pickup` 또는 `delivery`를 사용한다. |
 
 ## 3. 근거 규칙
 
@@ -73,6 +82,7 @@
 - `apps/cheonhajangsa-mvp/core/`, `data/` — 검색·단가 계산, Zod 데이터 스키마와 시연 데이터
 - `apps/cheonhajangsa-mvp/supabase/migrations/` — 현행 앱 DB 변경. 적용된 migration은 수정하지 않고 새 migration으로 변경한다.
 - `apps/cheonhajangsa-mvp/tests/`, `e2e/`, `evals/` — 앱 테스트·평가
+- `apps/cheonhajangsa-mvp/src/cheonhajangsa/` — 모델이 사용하는 JSON Schema와 파싱 프롬프트
 - `docs/`, `tests/harness/` — 증거·결정·제품 계약과 루트 골든 케이스
 
 로컬 실행과 환경 설정은 [현행 앱 README](apps/cheonhajangsa-mvp/README.md)를 따른다. 앱 폴더 이동이나 배포 구조 변경은 별도 PR에서 검토한다.

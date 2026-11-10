@@ -318,10 +318,12 @@ problem_boundaries:
 
 solution_mapping:
   status: implementation_model_not_interview_evidence
-  specification: SPEC.md
+  specification: docs/SPEC.md
   contract: apps/cheonhajangsa-mvp/src/lib/api-types.ts
   dataset_schema: apps/cheonhajangsa-mvp/core/schema.ts
   search_contract: apps/cheonhajangsa-mvp/core/search-types.ts
+  parser_schema: apps/cheonhajangsa-mvp/src/cheonhajangsa/schemas/search_vendors.schema.json
+  parser_context: 모델은 item_id, qty_kg, urgency, fulfillment를 추출하고 location_id는 앱이 제공한다.
   mappings:
     Vendor: 예시 판매처는 Vendor와 VendorCard로 나타낸다. 공공데이터 Store는 지도 후보이며 실제 거래 조건을 확인한 업체로 간주하지 않는다.
     Offer: 예시 품목·판매 조건은 Offer로 나타낸다. 시연 값은 실제 거래 증거로 사용하지 않는다.

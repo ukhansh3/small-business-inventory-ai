@@ -1,0 +1,24 @@
+{
+  "type": "object",
+  "properties": {
+    "kind": {
+      "type": "string",
+      "enum": [
+        "out_of_scope_item",
+        "off_topic"
+      ]
+    },
+    "item_name": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "사장님이 말한 품목 이름. 무관한 말이면 null"
+    }
+  },
+  "required": [
+    "kind",
+    "item_name"
+  ],
+  "additionalProperties": false
+}

@@ -1,6 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
 import type { ServerEnv } from "../env";
-import { SYSTEM_PROMPT, TOOLS, userMessage } from "./prompt";
+import { loadSystemPrompt, TOOLS, userMessage } from "./prompt";
 import { toDecision } from "./protocol";
 import { type AiClient, type AiDecision, type AiInput, AiUnavailableError } from "./types";
 
@@ -22,7 +22,7 @@ export function createClaudeAi(env: ServerEnv): AiClient {
           model: env.aiModel,
           max_tokens: 1024,
           output_config: { effort: "low" }, // 문장 하나 해석이라 낮은 effort로 충분하다
-          system: SYSTEM_PROMPT,
+          system: loadSystemPrompt(),
           tools: TOOLS,
           tool_choice: { type: "auto", disable_parallel_tool_use: true },
           messages: [{ role: "user", content: userMessage(input) }],
