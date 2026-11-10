@@ -41,7 +41,10 @@ export function VendorReviews({ vendorId }: { vendorId: string }) {
 
   return (
     <View style={styles.section}>
-      <Text style={styles.title}>별점과 리뷰 {reviews?.length ?? ""}</Text>
+      <Text style={styles.title}>별점과 리뷰</Text>
+      {!!reviews?.length && (
+        <Text style={styles.score}>★ {(reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length).toFixed(1)} · 리뷰 {reviews.length}개{reviews.some((review) => review.example) ? " · 시연 리뷰 포함" : ""}</Text>
+      )}
       <View style={styles.stars}>
         {[1, 2, 3, 4, 5].map((value) => (
           <Pressable key={value} accessibilityRole="button" accessibilityLabel={value + "점"}
