@@ -5,7 +5,7 @@
 ## 1. 현재 단계
 
 - 현재 단계는 **문제 근거를 보존하며 MVP 구현과 검증을 병행하는 단계**다.
-- 지도, 업체 등록, 공공업체 시연, AI, 커뮤니티는 제품 실험 또는 구현 상태다. 인터뷰로 검증된 사용자 요구처럼 표현하지 않는다.
+- 현행 MVP는 지도·업체 탐색, AI 상추 검색·단가 진단을 공개 시연한다. 회원 기능과 이전 앱의 등록·검토 기록은 구현 현황에서 구분한다. 인터뷰로 검증된 사용자 요구처럼 표현하지 않는다.
 - 구현 완료, 실연결 확인, 사용자 수요 검증을 서로 다른 상태로 기록한다.
 - 사용자가 승인하지 않은 기능·기술·수익 모델을 확정 요구사항으로 만들지 않는다.
 
@@ -16,13 +16,12 @@
 1. 사람이 채택한 최신 ADR (`docs/decisions/`)
 2. `SPEC.md` — 범위·API·수용 기준
 3. `ontology.yaml` — 문제 도메인 의미
-4. `packages/vendor-contracts` — 실제 전송 DTO
-5. `DEVELOPMENT_GUIDE.md` — 현재 아키텍처·개발 절차
+4. `apps/cheonhajangsa-mvp/docs/acceptance-criteria.md`와 앱 API 타입·핸들러 — 현행 앱의 세부 기준과 구현 확인
+5. `apps/cheonhajangsa-mvp/README.md` — 현재 개발·시연 환경
 6. `docs/product/problem-statement.md` — 문제와 근거 범위
-7. 앱별 README·DEVELOPMENT_GUIDE
-8. 목업·발표 자료
+7. 이전 앱의 개발 가이드·목업·발표 자료
 
-인터뷰 사실의 정본은 `docs/interviews/logs/`와 `docs/evidence/evidence-ledger.md`다. ADR이나 SPEC이 관찰 사실을 바꿀 수 없다.
+인터뷰 사실의 정본은 `docs/interviews/logs/`와 `docs/evidence/evidence-ledger.md`다. ADR이나 SPEC이 관찰 사실을 바꿀 수 없다. `BusinessOwner`, `Vendor`, `Offer`, `SearchEpisode`의 도메인 정의는 `ontology.yaml`의 `terminology`를 참고한다.
 
 ## 3. 근거 규칙
 
@@ -45,17 +44,18 @@
 
 ## 5. 절대 불변 규칙
 
-- `[AC01]` 승인된 현재 공개본만 일반 업체 검색에 노출한다.
+루트 SPEC의 `AC01~AC16`과 앱 수용 기준의 `AC-*`는 별도 번호 체계다. 아래 참조에서 하이픈을 구분한다.
+
+- `[앱 AC-13, AC-29]` 공공 원문 업체와 예시 판매처의 출처·성격을 구분한다. 공공 업체에 미확인 가격·재고·번호를 붙이지 않고, 예시 번호로 실제 발신하지 않는다.
 - `[AC04]` 배송 지원과 특정 목적지 배송 보장을 구분한다.
 - `[AC05]` null 가격·배송비를 0원 또는 무료로 표시하지 않는다.
 - `[AC06]` 확인일이 없거나 오래된 가격은 최신 정보처럼 표시하지 않는다.
-- `[AC08]` 지도와 목록은 같은 업체 ID 집합을 사용하고 좌표가 없는 업체의 핀을 만들지 않는다.
+- `[AC08, 앱 AC-28~30]` 같은 탐색 결과를 지도와 목록에서 일관되게 연결하고, 좌표가 없는 업체의 핀을 만들지 않는다.
 - `[AC13]` AI는 조회되지 않은 업체·품목·가격 ID를 생성하지 않는다.
 - `[AC11]` 클라이언트가 보낸 사용자 ID·역할로 권한을 부여하지 않는다.
 - `[AC12]` `mvp_demo`를 승인 업체·실제 가격으로 변환하거나 표현하지 않는다.
 - `[AC16]` 다른 사용자 응답에 개인 위치·비공개 업체·사진 경로를 노출하지 않는다.
-- 승인본은 직접 수정하지 않고 새 revision을 검토한다.
-- 운영자는 자신의 업체 revision을 승인하지 않는다.
+- `[이전 앱 AC01, AC09, AC10, AC11]` 승인본만 공개하고 수정은 새 revision으로 검토하며 자기 업체는 승인하지 않는다. 등록·검토 흐름을 다시 도입할 때 적용한다.
 
 ## 6. 구현 전 확인
 
@@ -68,38 +68,28 @@
 
 ## 7. 현재 코드 경계
 
-- `apps/mobile`: 실제 Android·iOS 사용자 앱
-- `apps/cheonhajangsa`: Next.js API 서버, 카카오 지도 페이지, 과거 웹 프로토타입
-- `packages/vendor-contracts`: 모바일·서버가 공유하는 Zod 계약
-- `supabase/migrations`: DB 변경 정본. 적용된 migration은 수정하지 않고 새 migration을 추가한다.
-- `docs`: 증거·결정·제품 계약·검증 기록
+- `apps/cheonhajangsa-mvp/app/`, `src/` — Expo Router 화면, UI와 클라이언트 API 타입
+- `apps/cheonhajangsa-mvp/api/v1/`, `server/` — Vercel API와 요청 검증·권한·AI·저장 처리
+- `apps/cheonhajangsa-mvp/core/`, `data/` — 검색·단가 계산, Zod 데이터 스키마와 시연 데이터
+- `apps/cheonhajangsa-mvp/supabase/migrations/` — 현행 앱 DB 변경. 적용된 migration은 수정하지 않고 새 migration으로 변경한다.
+- `apps/cheonhajangsa-mvp/tests/`, `e2e/`, `evals/` — 앱 테스트·평가
+- `docs/`, `tests/harness/` — 증거·결정·제품 계약과 루트 골든 케이스
 
-현재 폴더 이름은 팀 승인 없이 변경하지 않는다. 특히 `apps/cheonhajangsa`를 이동하거나 lockfile을 합치는 구조 변경은 별도 PR에서 수행한다.
+로컬 실행과 환경 설정은 [현행 앱 README](apps/cheonhajangsa-mvp/README.md)를 따른다. 앱 폴더 이동이나 배포 구조 변경은 별도 PR에서 검토한다.
 
 ## 8. 검증 명령
 
-서버/API 변경:
-
 ```bash
-cd apps/cheonhajangsa
-pnpm test
-pnpm typecheck
-pnpm lint
-pnpm build
+cd apps/cheonhajangsa-mvp
+npm ci
+npm run typecheck
+npm test
+npm run check:data
+npm run lint
+npm run build:web
 ```
 
-모바일 변경:
-
-```bash
-cd apps/mobile
-pnpm test
-pnpm typecheck
-pnpm lint
-pnpm bundle:android
-pnpm bundle:ios
-```
-
-문서·계약 변경도 관련 테스트와 링크·YAML 형식을 확인한다. 테스트를 실행하지 못하면 이유와 미검증 범위를 PR에 적는다.
+변경 범위에 맞게 실행한다. 브라우저 검증은 환경을 준비한 뒤 `npm run e2e`로 수행한다. 실시간 모델을 부르는 `npm run evals`, `npm run evals:images`는 팀에 알리고 실행한다. 문서만 바꾸는 경우 링크·경로·YAML 형식을 확인하고 테스트 실행 여부를 PR에 적는다.
 
 ## 9. 브랜치와 PR
 
