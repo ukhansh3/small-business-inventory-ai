@@ -1,0 +1,32 @@
+{"id":"s01","category":"missing_condition","query":"상추","expect":{"type":"search","item_id":"item_lettuce","qty_kg":null,"urgency":null,"fulfillment":null},"graders":["code"],"note":"기존 v2 비교 케이스"}
+{"id":"s02","category":"missing_condition","query":"상추 2키로","expect":{"type":"search","item_id":"item_lettuce","qty_kg":2,"urgency":null,"fulfillment":null},"graders":["code"],"note":"기존 v2 비교 케이스"}
+{"id":"s03","category":"missing_condition","query":"상추 2키로 급해요","expect":{"type":"search","item_id":"item_lettuce","qty_kg":2,"urgency":"now","fulfillment":null},"graders":["code"],"note":"기존 v2 비교 케이스"}
+{"id":"s04","category":"constraint","query":"상추 5키로 오늘 배달","expect":{"type":"search","item_id":"item_lettuce","qty_kg":5,"urgency":"today","fulfillment":"delivery"},"graders":["code"],"note":"기존 v2 비교 케이스"}
+{"id":"s05","category":"missing_condition","query":"적상추 1박스 내일까지","expect":{"type":"search","item_id":"item_lettuce","qty_kg":4,"urgency":"tomorrow","fulfillment":null},"graders":["code"],"note":"기존 v2 비교 케이스"}
+{"id":"s06","category":"constraint","query":"상치 3kg 지금 가지러 갈게요","expect":{"type":"search","item_id":"item_lettuce","qty_kg":3,"urgency":"now","fulfillment":"pickup"},"graders":["code"],"note":"기존 v2 비교 케이스"}
+{"id":"s07","category":"missing_condition","query":"청상추 좀 갖다줄 수 있어요?","expect":{"type":"search","item_id":"item_lettuce","qty_kg":null,"urgency":null,"fulfillment":"delivery"},"graders":["code"],"note":"기존 v2 비교 케이스"}
+{"id":"s08","category":"constraint","query":"상추 10킬로 내일 배달해 주세요","expect":{"type":"search","item_id":"item_lettuce","qty_kg":10,"urgency":"tomorrow","fulfillment":"delivery"},"graders":["code"],"note":"기존 v2 비교 케이스"}
+{"id":"s09","category":"missing_condition","query":"꽃상추 바로 필요해요","expect":{"type":"search","item_id":"item_lettuce","qty_kg":null,"urgency":"now","fulfillment":null},"graders":["code"],"note":"기존 v2 비교 케이스"}
+{"id":"s10","category":"missing_condition","query":"상추 직접 사러 갈게요","expect":{"type":"search","item_id":"item_lettuce","qty_kg":null,"urgency":null,"fulfillment":"pickup"},"graders":["code"],"note":"기존 v2 비교 케이스"}
+{"id":"s11","category":"missing_condition","query":"상추 다 떨어졌어요 오늘 안에 구해야 돼요","expect":{"type":"search","item_id":"item_lettuce","qty_kg":null,"urgency":"today","fulfillment":null},"graders":["code"],"note":"기존 v2 비교 케이스"}
+{"id":"s12","category":"missing_condition","query":"상추 1키로만","expect":{"type":"search","item_id":"item_lettuce","qty_kg":1,"urgency":null,"fulfillment":null},"graders":["code"],"note":"기존 v2 비교 케이스"}
+{"id":"s13","category":"missing_condition","query":"상추 반 키로 직접 갈게요","expect":{"type":"search","item_id":"item_lettuce","qty_kg":0.5,"urgency":null,"fulfillment":"pickup"},"graders":["code"],"note":"기존 v2 비교 케이스"}
+{"id":"s14","category":"missing_condition","query":"상추 4kg 내일","expect":{"type":"search","item_id":"item_lettuce","qty_kg":4,"urgency":"tomorrow","fulfillment":null},"graders":["code"],"note":"기존 v2 비교 케이스"}
+{"id":"s15","category":"missing_condition","query":"상추요","expect":{"type":"search","item_id":"item_lettuce","qty_kg":null,"urgency":null,"fulfillment":null},"graders":["code"],"note":"기존 v2 비교 케이스"}
+{"id":"s16","category":"missing_condition","query":"상추 3키로 배달 되나요","expect":{"type":"search","item_id":"item_lettuce","qty_kg":3,"urgency":null,"fulfillment":"delivery"},"graders":["code"],"note":"기존 v2 비교 케이스"}
+{"id":"o01","category":"out_of_scope_item","query":"대파 있어요?","expect":{"type":"notice","kind":"out_of_scope_item"},"graders":["code"],"note":"기존 v2 비교 케이스"}
+{"id":"o02","category":"out_of_scope_item","query":"깐양파 2키로","expect":{"type":"notice","kind":"out_of_scope_item"},"graders":["code"],"note":"기존 v2 비교 케이스"}
+{"id":"o03","category":"out_of_scope_item","query":"청양고추 급해요","expect":{"type":"notice","kind":"out_of_scope_item"},"graders":["code"],"note":"기존 v2 비교 케이스"}
+{"id":"o04","category":"out_of_scope_item","query":"깻잎 1박스","expect":{"type":"notice","kind":"out_of_scope_item"},"graders":["code"],"note":"기존 v2 비교 케이스"}
+{"id":"o05","category":"out_of_scope_item","query":"고수 있나요?","expect":{"type":"notice","kind":"out_of_scope_item"},"graders":["code"],"note":"기존 v2 비교 케이스"}
+{"id":"o06","category":"out_of_scope_item","query":"배추 5키로 배달","expect":{"type":"notice","kind":"out_of_scope_item"},"graders":["code"],"note":"기존 v2 비교 케이스"}
+{"id":"t01","category":"off_topic","query":"오늘 날씨 어때","expect":{"type":"notice","kind":"off_topic"},"graders":["code"],"note":"기존 v2 비교 케이스"}
+{"id":"t02","category":"off_topic","query":"안녕하세요","expect":{"type":"notice","kind":"off_topic"},"graders":["code"],"note":"기존 v2 비교 케이스"}
+{"id":"t03","category":"off_topic","query":"이 앱 누가 만들었어요?","expect":{"type":"notice","kind":"off_topic"},"graders":["code"],"note":"기존 v2 비교 케이스"}
+{"id":"t04","category":"off_topic","query":"가게 매출 올리는 법 알려줘","expect":{"type":"notice","kind":"off_topic"},"graders":["code"],"note":"기존 v2 비교 케이스"}
+{"id":"p01","category":"price","query":"상추 2키로 만원 부르던데","expect":{"type":"price","item_id":"item_lettuce","qty_kg":2,"amount_won":10000},"graders":["code"],"note":"기존 v2 비교 케이스"}
+{"id":"p02","category":"price","query":"상추 4kg에 15000원 샀어요","expect":{"type":"price","item_id":"item_lettuce","qty_kg":4,"amount_won":15000},"graders":["code"],"note":"기존 v2 비교 케이스"}
+{"id":"p03","category":"price","query":"적상추 1박스 만오천원이면 괜찮은 거예요?","expect":{"type":"price","item_id":"item_lettuce","qty_kg":4,"amount_won":15000},"graders":["code"],"note":"기존 v2 비교 케이스"}
+{"id":"p04","category":"price","query":"상추 500g에 3천원 비싼가요","expect":{"type":"price","item_id":"item_lettuce","qty_kg":0.5,"amount_won":3000},"graders":["code"],"note":"기존 v2 비교 케이스"}
+{"id":"p05","category":"price","query":"상추 만원이면 싼 거예요?","expect":{"type":"price","item_id":"item_lettuce","qty_kg":null,"amount_won":10000},"graders":["code"],"note":"기존 v2 비교 케이스"}
+{"id":"p06","category":"price","query":"상추 3키로 얼마가 적당해요","expect":{"type":"price","item_id":"item_lettuce","qty_kg":3,"amount_won":null},"graders":["code"],"note":"기존 v2 비교 케이스"}

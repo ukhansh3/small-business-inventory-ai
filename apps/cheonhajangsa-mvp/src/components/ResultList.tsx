@@ -22,7 +22,7 @@ export function ResultList({ results, stores, location }: { results: SearchResul
             {g.title} <Text style={styles.count}>{g.count}</Text>
           </Text>
           {g.items.map((c) => (
-            <CompactStoreCard key={c.vendor_id} location={location} store={stores.find((store) => store.store_id === c.vendor_id) ?? {
+            <CompactStoreCard key={c.vendor_id} location={location} deliveryLabel={c.delivery.display} store={stores.find((store) => store.store_id === c.vendor_id) ?? {
               store_id: c.vendor_id, name: c.name, category: c.kind, distance_m: c.distance.meters,
             }} />
           ))}

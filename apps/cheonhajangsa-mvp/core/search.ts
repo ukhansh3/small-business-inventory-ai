@@ -39,7 +39,7 @@ const GROUP_ORDER: GroupKey[] = ["available", "no_delivery", "unavailable_time"]
 const TITLES: Record<GroupKey, Record<SearchCondition["urgency"], string>> = {
   available: { now: "지금 갈 수 있는 곳", today: "오늘 갈 수 있는 곳", tomorrow: "내일 갈 수 있는 곳" },
   unavailable_time: { now: "지금은 닫힌 곳", today: "오늘은 안 여는 곳", tomorrow: "내일은 안 여는 곳" },
-  no_delivery: { now: "배달이 안 되는 곳", today: "배달이 안 되는 곳", tomorrow: "배달이 안 되는 곳" },
+  no_delivery: { now: "이 지역 배송 불가·미확인", today: "이 지역 배송 불가·미확인", tomorrow: "이 지역 배송 불가·미확인" },
 };
 
 // R-06: 급함에 맞는 시간인가
@@ -77,13 +77,25 @@ function restock(o: Offer, now: SeoulNow): VendorCard["restock"] {
 
 const RESTOCK_RANK = { restocked_today: 0, expected_today: 1, none: 2 } as const;
 
-// R-07
-function delivery(v: Vendor, c: SearchCondition, loc: Location): VendorCard["delivery"] {
-  if (c.fulfillment === "pickup") return { state: "not_requested", display: null, note: null };
-  if (v.delivery_available && v.delivery_dongs.includes(loc.dong)) {
-    return { state: "available", display: "배달 가능", note: v.delivery_note };
+// AC04: 업체의 배송 지원과 이번 검색의 목적지 판정을 구분한다.
+function deliveryInfo(v: Vendor, fulfillment: SearchCondition["fulfillment"], dong: string):
+  Pick<VendorCard, "delivery" | "deliveryStatus" | "destinationConfirmationRequired" | "deliveryTerms"> {
+  const deliveryStatus = v.delivery_available === null ? "unknown" : v.delivery_available ? "supported" : "pickup_only";
+  const deliveryTerms = deliveryStatus === "supported" ? v.delivery_note : null;
+  const base = { deliveryStatus, deliveryTerms } as const;
+  if (fulfillment === "pickup") {
+    return { ...base, destinationConfirmationRequired: false, delivery: { state: "not_requested", display: null, note: null } };
   }
-  return { state: "unavailable", display: "배달 안 됨", note: null };
+  if (deliveryStatus === "supported" && v.delivery_dongs.includes(dong)) {
+    return { ...base, destinationConfirmationRequired: true,
+      delivery: { state: "available", display: "이 지역 배송 지원 · 상세 주소 확인 필요", note: deliveryTerms } };
+  }
+  const areaUnknown = deliveryStatus === "supported" && v.delivery_dongs.length === 0;
+  const display = deliveryStatus === "pickup_only" ? "픽업 전용"
+    : deliveryStatus === "unknown" ? "배송 미확인"
+    : areaUnknown ? "배송 지역 미확인" : "이 지역은 배송 범위 밖";
+  return { ...base, destinationConfirmationRequired: deliveryStatus === "unknown" || areaUnknown,
+    delivery: { state: "unavailable", display, note: null } };
 }
 
 function validate(data: Dataset, c: SearchCondition): Location {
@@ -131,7 +143,7 @@ export function buildCard(vendor: Vendor, offer: Offer, c: SearchCondition, loc:
     distance: distanceDisplay(distanceMeters(loc, vendor)),
     open_status: openStatus(vendor, now),
     restock: restock(offer, now),
-    delivery: delivery(vendor, c, loc),
+    ...deliveryInfo(vendor, c.fulfillment, loc.dong),
     price: priceDisplay(offer),
     min_sale: minSaleDisplay(offer.min_sale_kg),
     phone: vendor.phone,

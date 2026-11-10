@@ -5,7 +5,7 @@ import { VendorArtwork } from "./VendorArtwork";
 import { AppIcon } from "./AppIcon";
 import { color } from "./theme";
 
-export function CompactStoreCard({ store, location }: { store: Pick<Store, "store_id" | "name" | "category" | "distance_m" | "used_count" | "saved_count" | "vendor_card" | "demo_service">; location?: string }) {
+export function CompactStoreCard({ store, location, deliveryLabel }: { store: Pick<Store, "store_id" | "name" | "category" | "distance_m" | "used_count" | "saved_count" | "vendor_card" | "demo_service">; location?: string; deliveryLabel?: string | null }) {
   const router = useRouter();
   const distance = store.distance_m < 1000
     ? Math.round(store.distance_m) + "m"
@@ -18,6 +18,7 @@ export function CompactStoreCard({ store, location }: { store: Pick<Store, "stor
       <View style={styles.copy}>
         <Text style={styles.name}>{store.name}</Text>
         <Text style={styles.meta}>{store.category} · {distance}</Text>
+        {deliveryLabel && <Text style={styles.meta}>{deliveryLabel}</Text>}
         <View style={styles.badges}>
           <Text style={[styles.badge, styles.used]}>사용 {store.used_count ?? "–"}명</Text>
           <Text style={[styles.badge, styles.saved]}>저장 {store.saved_count ?? "–"}명</Text>
