@@ -1,0 +1,50 @@
+{
+  "name": "cheonhajangsa-mvp",
+  "version": "1.0.0",
+  "main": "expo-router/entry",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^1.4.0",
+    "@expo/metro-runtime": "~58.0.17",
+    "@supabase/supabase-js": "^2.118.0",
+    "expo": "~58.0.23",
+    "expo-constants": "~58.0.15",
+    "expo-linking": "~58.0.16",
+    "expo-router": "~58.0.30",
+    "expo-secure-store": "~58.0.2",
+    "expo-status-bar": "~58.0.4",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "react-native": "0.88.1",
+    "react-native-safe-area-context": "~5.11.1",
+    "react-native-screens": "~4.30.1",
+    "react-native-web": "^0.21.4",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.1",
+    "@types/node": "^26.6.6",
+    "@types/react": "~19.3.0",
+    "eslint": "^9.0.0",
+    "eslint-config-expo": "~58.0.4",
+    "tsx": "^4.23.15",
+    "typescript": "~6.0.3",
+    "vitest": "^5.1.0"
+  },
+  "scripts": {
+    "start": "expo start",
+    "web": "expo start --web",
+    "dev:api": "tsx server/dev-server.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "check:data": "tsx scripts/check-data.ts",
+    "build:web": "expo export -p web",
+    "evals": "tsx scripts/run-evals.ts",
+    "e2e": "playwright test",
+    "evals:images": "tsx scripts/run-image-evals.ts",
+    "lint": "eslint ."
+  },
+  "private": true,
+  "engines": {
+    "node": "24.x"
+  }
+}

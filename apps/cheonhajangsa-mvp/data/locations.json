@@ -1,0 +1,26 @@
+[
+  {
+    "id": "loc_ajou_main",
+    "name": "아주대 정문",
+    "dong": "원천동",
+    "lat": 37.2795,
+    "lng": 127.0438,
+    "is_default": true
+  },
+  {
+    "id": "loc_ajou_junction",
+    "name": "아주대 삼거리",
+    "dong": "우만동",
+    "lat": 37.2768,
+    "lng": 127.0412,
+    "is_default": false
+  },
+  {
+    "id": "loc_maetan",
+    "name": "매탄동 주민센터 앞",
+    "dong": "매탄동",
+    "lat": 37.2702,
+    "lng": 127.0466,
+    "is_default": false
+  }
+]

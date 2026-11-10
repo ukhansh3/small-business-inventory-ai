@@ -1,0 +1,29 @@
+# Vercel에 올리지 않는 것. 비밀값·개인 기획 문서·로컬 산출물은 제외한다.
+.env*
+!.env.example
+.claude
+.expo
+.git
+dist
+node_modules
+docs
+tests
+supabase
+scripts
+AGENTS.md
+CLAUDE.md
+vitest.config.mts
+e2e
+evals
+playwright.config.ts
+test-results
+playwright-report
+
+# data/에는 앱이 쓰는 JSON만 올린다. 공공데이터 원본(약 1.7GB)은 이름의 유니코드 형태(NFC/NFD)가 섞여
+# 이름 패턴으로는 놓칠 수 있어 허용 목록으로 막는다(2026-11-05)
+data/*
+!data/items.json
+!data/locations.json
+!data/vendors.json
+!data/offers.json
+!data/public_stores.json

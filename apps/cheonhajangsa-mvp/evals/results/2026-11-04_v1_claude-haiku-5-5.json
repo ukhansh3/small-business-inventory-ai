@@ -1,0 +1,548 @@
+{
+  "summary": {
+    "run_at": "2026-11-04T11:54:26.819Z",
+    "model": "claude-haiku-5-5",
+    "prompt_version": "v1",
+    "cases_version": "v1",
+    "cases": 26,
+    "condition_accuracy": 1,
+    "field_accuracy": 1,
+    "fabricated": 0,
+    "scope_accuracy": 1,
+    "errors": 0,
+    "latency_ms": {
+      "median": 1333,
+      "max": 2372
+    }
+  },
+  "target": {
+    "conditionAccuracy": 0.9,
+    "fabricated": 0,
+    "scopeAccuracy": 1
+  },
+  "ok": true,
+  "rows": [
+    {
+      "id": "s01",
+      "text": "상추",
+      "expect": {
+        "type": "search",
+        "item_id": "item_lettuce",
+        "qty_kg": null,
+        "urgency": null,
+        "fulfillment": null
+      },
+      "got": {
+        "type": "search",
+        "item_id": "item_lettuce",
+        "qty_kg": null,
+        "urgency": null,
+        "fulfillment": null
+      },
+      "pass": true,
+      "wrong": [],
+      "fabricated": [],
+      "ms": 1711
+    },
+    {
+      "id": "s02",
+      "text": "상추 2키로",
+      "expect": {
+        "type": "search",
+        "item_id": "item_lettuce",
+        "qty_kg": 2,
+        "urgency": null,
+        "fulfillment": null
+      },
+      "got": {
+        "type": "search",
+        "item_id": "item_lettuce",
+        "qty_kg": 2,
+        "urgency": null,
+        "fulfillment": null
+      },
+      "pass": true,
+      "wrong": [],
+      "fabricated": [],
+      "ms": 1689
+    },
+    {
+      "id": "s03",
+      "text": "상추 2키로 급해요",
+      "expect": {
+        "type": "search",
+        "item_id": "item_lettuce",
+        "qty_kg": 2,
+        "urgency": "now",
+        "fulfillment": null
+      },
+      "got": {
+        "type": "search",
+        "item_id": "item_lettuce",
+        "qty_kg": 2,
+        "urgency": "now",
+        "fulfillment": null
+      },
+      "pass": true,
+      "wrong": [],
+      "fabricated": [],
+      "ms": 2328
+    },
+    {
+      "id": "s04",
+      "text": "상추 5키로 오늘 배달",
+      "expect": {
+        "type": "search",
+        "item_id": "item_lettuce",
+        "qty_kg": 5,
+        "urgency": "today",
+        "fulfillment": "delivery"
+      },
+      "got": {
+        "type": "search",
+        "item_id": "item_lettuce",
+        "qty_kg": 5,
+        "urgency": "today",
+        "fulfillment": "delivery"
+      },
+      "pass": true,
+      "wrong": [],
+      "fabricated": [],
+      "ms": 2051
+    },
+    {
+      "id": "s05",
+      "text": "적상추 1박스 내일까지",
+      "expect": {
+        "type": "search",
+        "item_id": "item_lettuce",
+        "qty_kg": 4,
+        "urgency": "tomorrow",
+        "fulfillment": null
+      },
+      "got": {
+        "type": "search",
+        "item_id": "item_lettuce",
+        "qty_kg": 4,
+        "urgency": "tomorrow",
+        "fulfillment": null
+      },
+      "pass": true,
+      "wrong": [],
+      "fabricated": [],
+      "ms": 2372
+    },
+    {
+      "id": "s06",
+      "text": "상치 3kg 지금 가지러 갈게요",
+      "expect": {
+        "type": "search",
+        "item_id": "item_lettuce",
+        "qty_kg": 3,
+        "urgency": "now",
+        "fulfillment": "pickup"
+      },
+      "got": {
+        "type": "search",
+        "item_id": "item_lettuce",
+        "qty_kg": 3,
+        "urgency": "now",
+        "fulfillment": "pickup"
+      },
+      "pass": true,
+      "wrong": [],
+      "fabricated": [],
+      "ms": 1160
+    },
+    {
+      "id": "s07",
+      "text": "청상추 좀 갖다줄 수 있어요?",
+      "expect": {
+        "type": "search",
+        "item_id": "item_lettuce",
+        "qty_kg": null,
+        "urgency": null,
+        "fulfillment": "delivery"
+      },
+      "got": {
+        "type": "search",
+        "item_id": "item_lettuce",
+        "qty_kg": null,
+        "urgency": null,
+        "fulfillment": "delivery"
+      },
+      "pass": true,
+      "wrong": [],
+      "fabricated": [],
+      "ms": 1728
+    },
+    {
+      "id": "s08",
+      "text": "상추 10킬로 내일 배달해 주세요",
+      "expect": {
+        "type": "search",
+        "item_id": "item_lettuce",
+        "qty_kg": 10,
+        "urgency": "tomorrow",
+        "fulfillment": "delivery"
+      },
+      "got": {
+        "type": "search",
+        "item_id": "item_lettuce",
+        "qty_kg": 10,
+        "urgency": "tomorrow",
+        "fulfillment": "delivery"
+      },
+      "pass": true,
+      "wrong": [],
+      "fabricated": [],
+      "ms": 1031
+    },
+    {
+      "id": "s09",
+      "text": "꽃상추 바로 필요해요",
+      "expect": {
+        "type": "search",
+        "item_id": "item_lettuce",
+        "qty_kg": null,
+        "urgency": "now",
+        "fulfillment": null
+      },
+      "got": {
+        "type": "search",
+        "item_id": "item_lettuce",
+        "qty_kg": null,
+        "urgency": "now",
+        "fulfillment": null
+      },
+      "pass": true,
+      "wrong": [],
+      "fabricated": [],
+      "ms": 1593
+    },
+    {
+      "id": "s10",
+      "text": "상추 직접 사러 갈게요",
+      "expect": {
+        "type": "search",
+        "item_id": "item_lettuce",
+        "qty_kg": null,
+        "urgency": null,
+        "fulfillment": "pickup"
+      },
+      "got": {
+        "type": "search",
+        "item_id": "item_lettuce",
+        "qty_kg": null,
+        "urgency": null,
+        "fulfillment": "pickup"
+      },
+      "pass": true,
+      "wrong": [],
+      "fabricated": [],
+      "ms": 1117
+    },
+    {
+      "id": "s11",
+      "text": "상추 다 떨어졌어요 오늘 안에 구해야 돼요",
+      "expect": {
+        "type": "search",
+        "item_id": "item_lettuce",
+        "qty_kg": null,
+        "urgency": "today",
+        "fulfillment": null
+      },
+      "got": {
+        "type": "search",
+        "item_id": "item_lettuce",
+        "qty_kg": null,
+        "urgency": "today",
+        "fulfillment": null
+      },
+      "pass": true,
+      "wrong": [],
+      "fabricated": [],
+      "ms": 1132
+    },
+    {
+      "id": "s12",
+      "text": "상추 1키로만",
+      "expect": {
+        "type": "search",
+        "item_id": "item_lettuce",
+        "qty_kg": 1,
+        "urgency": null,
+        "fulfillment": null
+      },
+      "got": {
+        "type": "search",
+        "item_id": "item_lettuce",
+        "qty_kg": 1,
+        "urgency": null,
+        "fulfillment": null
+      },
+      "pass": true,
+      "wrong": [],
+      "fabricated": [],
+      "ms": 1945
+    },
+    {
+      "id": "s13",
+      "text": "상추 반 키로 직접 갈게요",
+      "expect": {
+        "type": "search",
+        "item_id": "item_lettuce",
+        "qty_kg": 0.5,
+        "urgency": null,
+        "fulfillment": "pickup"
+      },
+      "got": {
+        "type": "search",
+        "item_id": "item_lettuce",
+        "qty_kg": 0.5,
+        "urgency": null,
+        "fulfillment": "pickup"
+      },
+      "pass": true,
+      "wrong": [],
+      "fabricated": [],
+      "ms": 1333
+    },
+    {
+      "id": "s14",
+      "text": "상추 4kg 내일",
+      "expect": {
+        "type": "search",
+        "item_id": "item_lettuce",
+        "qty_kg": 4,
+        "urgency": "tomorrow",
+        "fulfillment": null
+      },
+      "got": {
+        "type": "search",
+        "item_id": "item_lettuce",
+        "qty_kg": 4,
+        "urgency": "tomorrow",
+        "fulfillment": null
+      },
+      "pass": true,
+      "wrong": [],
+      "fabricated": [],
+      "ms": 1022
+    },
+    {
+      "id": "s15",
+      "text": "상추요",
+      "expect": {
+        "type": "search",
+        "item_id": "item_lettuce",
+        "qty_kg": null,
+        "urgency": null,
+        "fulfillment": null
+      },
+      "got": {
+        "type": "search",
+        "item_id": "item_lettuce",
+        "qty_kg": null,
+        "urgency": null,
+        "fulfillment": null
+      },
+      "pass": true,
+      "wrong": [],
+      "fabricated": [],
+      "ms": 1946
+    },
+    {
+      "id": "s16",
+      "text": "상추 3키로 배달 되나요",
+      "expect": {
+        "type": "search",
+        "item_id": "item_lettuce",
+        "qty_kg": 3,
+        "urgency": null,
+        "fulfillment": "delivery"
+      },
+      "got": {
+        "type": "search",
+        "item_id": "item_lettuce",
+        "qty_kg": 3,
+        "urgency": null,
+        "fulfillment": "delivery"
+      },
+      "pass": true,
+      "wrong": [],
+      "fabricated": [],
+      "ms": 2006
+    },
+    {
+      "id": "o01",
+      "text": "대파 있어요?",
+      "expect": {
+        "type": "notice",
+        "kind": "out_of_scope_item"
+      },
+      "got": {
+        "type": "notice",
+        "kind": "out_of_scope_item",
+        "item_name": "대파"
+      },
+      "pass": true,
+      "wrong": [],
+      "fabricated": [],
+      "ms": 1681
+    },
+    {
+      "id": "o02",
+      "text": "깐양파 2키로",
+      "expect": {
+        "type": "notice",
+        "kind": "out_of_scope_item"
+      },
+      "got": {
+        "type": "notice",
+        "kind": "out_of_scope_item",
+        "item_name": "깐양파"
+      },
+      "pass": true,
+      "wrong": [],
+      "fabricated": [],
+      "ms": 1022
+    },
+    {
+      "id": "o03",
+      "text": "청양고추 급해요",
+      "expect": {
+        "type": "notice",
+        "kind": "out_of_scope_item"
+      },
+      "got": {
+        "type": "notice",
+        "kind": "out_of_scope_item",
+        "item_name": "청양고추"
+      },
+      "pass": true,
+      "wrong": [],
+      "fabricated": [],
+      "ms": 1248
+    },
+    {
+      "id": "o04",
+      "text": "깻잎 1박스",
+      "expect": {
+        "type": "notice",
+        "kind": "out_of_scope_item"
+      },
+      "got": {
+        "type": "notice",
+        "kind": "out_of_scope_item",
+        "item_name": "깻잎"
+      },
+      "pass": true,
+      "wrong": [],
+      "fabricated": [],
+      "ms": 1208
+    },
+    {
+      "id": "o05",
+      "text": "고수 있나요?",
+      "expect": {
+        "type": "notice",
+        "kind": "out_of_scope_item"
+      },
+      "got": {
+        "type": "notice",
+        "kind": "out_of_scope_item",
+        "item_name": "고수"
+      },
+      "pass": true,
+      "wrong": [],
+      "fabricated": [],
+      "ms": 1213
+    },
+    {
+      "id": "o06",
+      "text": "배추 5키로 배달",
+      "expect": {
+        "type": "notice",
+        "kind": "out_of_scope_item"
+      },
+      "got": {
+        "type": "notice",
+        "kind": "out_of_scope_item",
+        "item_name": "배추"
+      },
+      "pass": true,
+      "wrong": [],
+      "fabricated": [],
+      "ms": 1065
+    },
+    {
+      "id": "t01",
+      "text": "오늘 날씨 어때",
+      "expect": {
+        "type": "notice",
+        "kind": "off_topic"
+      },
+      "got": {
+        "type": "notice",
+        "kind": "off_topic",
+        "item_name": null
+      },
+      "pass": true,
+      "wrong": [],
+      "fabricated": [],
+      "ms": 1511
+    },
+    {
+      "id": "t02",
+      "text": "안녕하세요",
+      "expect": {
+        "type": "notice",
+        "kind": "off_topic"
+      },
+      "got": {
+        "type": "notice",
+        "kind": "off_topic",
+        "item_name": null
+      },
+      "pass": true,
+      "wrong": [],
+      "fabricated": [],
+      "ms": 1024
+    },
+    {
+      "id": "t03",
+      "text": "이 앱 누가 만들었어요?",
+      "expect": {
+        "type": "notice",
+        "kind": "off_topic"
+      },
+      "got": {
+        "type": "notice",
+        "kind": "off_topic",
+        "item_name": null
+      },
+      "pass": true,
+      "wrong": [],
+      "fabricated": [],
+      "ms": 1024
+    },
+    {
+      "id": "t04",
+      "text": "가게 매출 올리는 법 알려줘",
+      "expect": {
+        "type": "notice",
+        "kind": "off_topic"
+      },
+      "got": {
+        "type": "notice",
+        "kind": "off_topic",
+        "item_name": null
+      },
+      "pass": true,
+      "wrong": [],
+      "fabricated": [],
+      "ms": 1022
+    }
+  ]
+}
