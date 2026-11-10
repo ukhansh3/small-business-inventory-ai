@@ -8,9 +8,9 @@
 - [ADR-006: 업체 직접 등록과 운영자 검토 후 공개](ADR-006-vendor-self-registration-and-review.md)
 - [ADR-007: Android·iOS 공통 모바일 앱으로 전환](ADR-007-cross-platform-mobile-app.md)
 - [ADR-008: 업체 등록 DB 규칙 구현](ADR-008-implement-vendor-registration-db.md)
-
-ADR은 당시 이용 가능한 증거로 내린 결정을 기록합니다. 새로운 인터뷰 결과가 나오면 기존 파일을 지우지 않고 새 ADR에서 변경 이유를 남깁니다.
-
 - [ADR-009 공공 업체 원문과 가상 거래 정보의 MVP 분리](ADR-009-public-vendor-mvp.md)
-- [ADR-010 가상 업체 200곳을 별도 시연 테이블로 관리](ADR-010-synthetic-vendor-demo.md)
-- [ADR-011 아주대 반경 8km 시연 및 현재 위치 지도](ADR-011-ajou-demo-radius-and-location.md)
+- [ADR-010 가상 업체 200곳은 별도 시연 테이블로 관리](ADR-010-synthetic-vendor-demo.md) — 이전 앱의 채택 기록
+- [ADR-011 아주대 반경 8km 시연 및 현재 위치 지도](ADR-011-ajou-demo-radius-and-location.md) — 이전 앱의 채택 기록
+- [ADR-012 지도형 공급업체 탐색을 제한된 MVP 실험으로 명시](ADR-012-vendor-discovery-experiment.md) — 팀 검토안
+
+ADR은 당시 이용 가능한 증거로 내린 결정을 기록합니다. 새로운 인터뷰 결과가 나오면 기존 파일을 지우지 않고 새 ADR에서 변경 이유를 남깁니다. `팀 검토안`은 승인 전까지 채택된 결정이 아닙니다.

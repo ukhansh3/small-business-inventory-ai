@@ -1,0 +1,57 @@
+[
+  {
+    "id": "item_lettuce",
+    "name": "상추",
+    "aliases": [
+      "청상추",
+      "적상추",
+      "꽃상추",
+      "상치"
+    ],
+    "category": "채소",
+    "active": true,
+    "default_unit": "kg"
+  },
+  {
+    "id": "item_green_onion",
+    "name": "대파",
+    "aliases": [
+      "파",
+      "쪽파"
+    ],
+    "category": "채소",
+    "active": false,
+    "default_unit": "kg"
+  },
+  {
+    "id": "item_onion",
+    "name": "양파",
+    "aliases": [
+      "깐양파"
+    ],
+    "category": "채소",
+    "active": false,
+    "default_unit": "kg"
+  },
+  {
+    "id": "item_perilla_leaf",
+    "name": "깻잎",
+    "aliases": [
+      "들깻잎"
+    ],
+    "category": "채소",
+    "active": false,
+    "default_unit": "kg"
+  },
+  {
+    "id": "item_chili",
+    "name": "고추",
+    "aliases": [
+      "청양고추",
+      "풋고추"
+    ],
+    "category": "채소",
+    "active": false,
+    "default_unit": "kg"
+  }
+]

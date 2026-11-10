@@ -1,0 +1,17 @@
+{
+  "version": "v1",
+  "note": "사진 읽기 evals(V2-7). 합성 이미지(evals/make_images.py, 가상 상호·가짜 번호). 상추 줄만 채점: 무게(kg)와 금액(원). 목표: 상추 줄 추출 정확도 90% 이상, 지어낸 상추 금액·무게 0, 영수증 아님 판별 100%(feature-v2 3절).",
+  "cases": [
+    { "id": "r01", "file": "r01_paper_lettuce.png", "receipt": true, "lettuce": [{ "weight_kg_total": 2, "amount_won": 10000 }] },
+    { "id": "r02", "file": "r02_paper_bag.png", "receipt": true, "lettuce": [{ "weight_kg_total": null, "amount_won": 6000 }] },
+    { "id": "r03", "file": "r03_platform.png", "receipt": true, "lettuce": [{ "weight_kg_total": 4, "amount_won": 14900 }], "delivery_fee_won": 3000 },
+    { "id": "r04", "file": "r04_not_receipt.png", "receipt": false, "lettuce": [] },
+    { "id": "r05", "file": "r05_mobile.png", "receipt": true, "lettuce": [{ "weight_kg_total": 1, "amount_won": 4500 }] },
+    { "id": "r06", "file": "r06_invoice.png", "receipt": true, "lettuce": [{ "weight_kg_total": 8, "amount_won": 30000 }] },
+    { "id": "r07", "file": "r07_product.png", "receipt": true, "lettuce": [{ "weight_kg_total": 2, "amount_won": 9900 }] },
+    { "id": "r08", "file": "r08_paper_grams.png", "receipt": true, "lettuce": [{ "weight_kg_total": 1, "amount_won": 5000 }] },
+    { "id": "r09", "file": "r09_paper_mixed.png", "receipt": true, "lettuce": [{ "weight_kg_total": 1, "amount_won": 4200 }, { "weight_kg_total": 3, "amount_won": 11400 }] },
+    { "id": "r10", "file": "r10_mobile_many.png", "receipt": true, "lettuce": [{ "weight_kg_total": 4, "amount_won": 13200 }] },
+    { "id": "r11", "file": "r11_signboard.png", "receipt": false, "lettuce": [] }
+  ]
+}
