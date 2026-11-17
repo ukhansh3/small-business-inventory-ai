@@ -47,6 +47,7 @@ yarn-error.*
 # Playwright
 test-results/
 playwright-report/
+golden-report.json
 
 # data/에는 앱이 쓰는 JSON만 올린다. 공공데이터 원본(약 1.7GB)은 이름의 유니코드 형태(NFC/NFD)가 섞여
 # 이름 패턴으로는 놓칠 수 있어 허용 목록으로 막는다(2026-11-05)

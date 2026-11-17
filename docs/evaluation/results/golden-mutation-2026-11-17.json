@@ -1,0 +1,43 @@
+{
+  "run_at": "2026-11-17T07:53:39.298Z",
+  "base_commit": "3848120b828cff2a5349498722a41bea561b02d8",
+  "working_tree": "local evaluation remediation, not pushed",
+  "external_services": "stubbed",
+  "baseline": {
+    "exit_code": 0,
+    "passed": 10,
+    "failed_cases": []
+  },
+  "mutations": [
+    {
+      "id": "unit_price_zero",
+      "file": "core/price.ts",
+      "before": "return Math.round(amount_won / qty_kg);",
+      "after": "return 0; // temporary mutation",
+      "must_fail": "MVP-G24",
+      "exit_code": 1,
+      "passed": 9,
+      "failed_cases": [
+        "MVP-G24"
+      ]
+    },
+    {
+      "id": "delivery_unconditionally_available",
+      "file": "core/search.ts",
+      "before": "if (deliveryStatus === \"supported\" && v.delivery_dongs.includes(dong)) {",
+      "after": "if (fulfillment === \"delivery\") { // temporary mutation",
+      "must_fail": "MVP-G04",
+      "exit_code": 1,
+      "passed": 9,
+      "failed_cases": [
+        "MVP-G04"
+      ]
+    }
+  ],
+  "restored": {
+    "exit_code": 0,
+    "passed": 10,
+    "failed_cases": []
+  },
+  "source_restored": true
+}

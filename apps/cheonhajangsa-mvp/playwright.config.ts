@@ -10,7 +10,8 @@ export default defineConfig({
   reporter: "list",
   use: {
     baseURL: process.env.E2E_BASE_URL ?? "http://localhost:8081",
-    channel: "chrome",
+    channel: process.env.E2E_CHROME_PATH ? undefined : "chrome",
+    launchOptions: process.env.E2E_CHROME_PATH ? { executablePath: process.env.E2E_CHROME_PATH } : {},
     viewport: { width: 390, height: 844 },
     locale: "ko-KR",
     // 기록에서 팀원·테스트 기기로 구분(API 명세 1.6)

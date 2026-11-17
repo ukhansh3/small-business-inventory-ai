@@ -1,9 +1,8 @@
-import { useCallback, useEffect, useReducer, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useReducer, useRef, useState } from "react";
 import { Dimensions } from "react-native";
 import vendors from "../../data/vendors.json";
 import type { VendorCard } from "../../core/search-types";
-import type { AiFailureDetail, AskSlot, Option, PartialCondition, Slot } from "../lib/api-types";
-import type { Location } from "../lib/api-types";
+import type { AiFailureDetail, AskSlot, Location, Option, PartialCondition, Slot } from "../lib/api-types";
 import {
   ApiError,
   getLocations,
@@ -30,7 +29,7 @@ export function useAssist() {
   const [state, dispatch] = useReducer(reduce, null, () => initialState(BUNDLED_EXAMPLE, getSavedLocation()));
   const [locations, setLocations] = useState<Location[]>([]);
   const ref = useRef(state);
-  ref.current = state;
+  useLayoutEffect(() => { ref.current = state; }, [state]);
   const retryRef = useRef<(() => void) | null>(null);
 
   // WF-01 기기 등록(API-06). 이 브라우저에 내 위치가 없으면 서버에 저장된 위치를 쓴다. 실패는 무시한다.
@@ -63,14 +62,14 @@ export function useAssist() {
   }, []);
 
   const turn = useCallback(
-    async (input: Parameters<typeof sendTurn>[1]) => {
+    async function retryableTurn(input: Parameters<typeof sendTurn>[1]) {
       const s = ref.current;
       dispatch({ type: "loading" });
       try {
         const res = await sendTurn({ session_id: s.sessionId, turn_seq: s.turnSeq, condition: s.condition, field_source: s.fieldSource }, input);
         dispatch({ type: "turn_ok", res });
       } catch (e) {
-        fail(e, () => void turn(input));
+        fail(e, () => void retryableTurn(input));
       }
     },
     [fail],
@@ -99,7 +98,7 @@ export function useAssist() {
 
   // WF-08: 칩으로 조건을 고치면 AI 없이 /search(AC-14)
   const editCondition = useCallback(
-    async (changes: Partial<PartialCondition>) => {
+    async function retryableSearch(changes: Partial<PartialCondition>) {
       const s = ref.current;
       const next = { ...s.condition, ...changes };
       if (!s.sessionId || !isSearchable(next)) {
@@ -116,7 +115,7 @@ export function useAssist() {
         });
         dispatch({ type: "search_ok", res });
       } catch (e) {
-        fail(e, () => void editCondition(changes));
+        fail(e, () => void retryableSearch(changes));
       }
     },
     [fail],

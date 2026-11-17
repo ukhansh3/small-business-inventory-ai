@@ -1,7 +1,7 @@
-# 천하장사 공급업체 탐색 MVP — SPEC v0.3
+# 천하장사 공급업체 탐색 MVP — SPEC v0.4
 
-- 상태는 현행 시연 코드와 대조한 팀 검토안이다.
-- 기준은 `main`의 앱 통합 커밋 `06e83e5`다. 시연 앱은 `apps/cheonhajangsa-mvp/`의 Expo 웹 앱이다.
+- 상태는 2026-11-17 사용자가 승인한 평가 보완안이다. 후속 승인에 따라 루트 README를 제외한 변경을 main에 반영한다. Vercel 배포·운영 DB 변경은 포함하지 않는다.
+- 구현 대조 기준은 `main`의 `3848120b828cff2a5349498722a41bea561b02d8`다. 시연 앱은 `apps/cheonhajangsa-mvp/`의 Expo 웹 앱이다.
 - 문제 근거와 도메인 용어는 [문제 정의](PROBLEM.md), [온톨로지](ontology.yaml)를 따른다.
 - 현행 구현과 검증 기록은 [구현 현황](product/implementation-status.md)에 정리한다.
 
@@ -64,7 +64,7 @@
 ## 4. 핵심 흐름
 
 1. 웹 앱의 **지도**에서 핀이나 하단 목록으로 업체를 고르고 출처가 표시된 카드를 확인한다.
-2. **AI 도우미**에서 `상추`를 보내고 수량·필요 시점·수령 방법을 고른다. 문장에 있는 조건은 재사용한다.
+2. **AI 도우미**에서 `상추`를 보내고 필요 시점·수령 방법을 고른다. 수량이 없으면 `null`로 두고 검색하며 수량부터 되묻지 않는다. 문장에 있는 조건은 재사용한다.
 3. 결과 목록의 판매처와 조건을 확인한다. 조건 칩을 수정하면 AI를 다시 호출하지 않고 검색하고, **검색 결과 지도에서 보기**로 이동할 수 있다.
 4. 새 대화에서 `상추 2키로 만원 부르던데`를 보내면 kg당 5,000원을 확인한다. 비교 자료가 있을 때 시세 비교가 표시된다.
 
@@ -98,6 +98,26 @@
 - 보호된 회원 작업의 사용자 ID와 권한은 검증한 세션과 서버 데이터로 결정한다.
 
 ## 8. 수용 기준
+
+### 이번 MVP에 포함되는 AC
+
+평가 대상은 아래 **포함** 기준이다. 개별 입력·기대 결과는 [앱 수용 기준](../apps/cheonhajangsa-mvp/docs/acceptance-criteria.md)에 정의한다. 앱 AC에는 하이픈을 사용한다. 구현과 배포 실연결 검증은 [검증 기록](evaluation/midterm-2-readiness.md)에서 구분한다.
+
+| 기능 | MVP 여부 | 대상 AC | 구현 위치 | 확인 방법 |
+|---|---|---|---|---|
+| 상추 검색·조건·실패 대체 | 포함 | AC-1, AC-2, AC-4~AC-16 | `core/search.ts`, `server/handlers/assist.ts`, `server/handlers/search.ts` | 단위·API·상태 테스트, 골든, E2E |
+| 텍스트·사진 단가 진단 | 포함. 사진은 실시간 모델 필요 | AC-17~AC-26 | `core/price.ts`, `server/handlers/price-checks.ts` | 단위·API 테스트, 텍스트/사진 Evals |
+| 지도·업체 조회 | 포함 | AC-27~AC-30 | `server/handlers/stores.ts`, `src/components/KakaoMap.web.tsx`, `app/index.tsx` | 데이터·핀 테스트, 지도/목록 화면 확인 |
+| 계정·프로필 | 포함. Supabase 필요 | AC-M01 | `server/handlers/members.ts`, `src/lib/members.tsx` | 회원 API 테스트. 인증 메일 실연결은 별도 |
+| 커뮤니티·댓글·신고 | 포함. Supabase 필요 | AC-M02, AC-M03 | `server/handlers/members.ts`, `src/components/MemberScreens.tsx` | 회원 API·화면 테스트 |
+| 게시글 반응·저장, 업체 저장 | 포함. Supabase 필요 | AC-M04, AC-M05 | `server/handlers/members.ts`, `src/components/SaveVendorButton.tsx` | 회원 API·저장 화면 테스트 |
+| 업체 리뷰·문의 | 포함. 해당 테이블·업체 소유자 연결 필요 | AC-M06 | `server/handlers/members.ts`, `src/components/VendorReviews.tsx`, `src/components/VendorConversations.tsx` | 권한·경계 검사. 복수 계정 실연결은 별도 |
+| 과거 업체 등록·revision·운영자 승인 | 제외 | 이전 AC01, AC02, AC09, AC10 및 자기 승인 부분 | 과거 계약 보존 | 현행 통과 집계 제외 |
+| 루트 AC13 안전성 반복 실험 | 제외. 향후 확장 평가 | 10절의 20건×3회 | 제안 보존 | 32문장 기준선으로 대체하지 않음 |
+| 주문·결제·실시간 재고·사업자 인증·네이티브 앱 배포 | 제외 | 신규 AC 없음 | 완료 주장 없음 | 현재 범위 밖 |
+
+코드 경로는 `apps/cheonhajangsa-mvp/` 기준이다. `AC-3`은 과거 번호의 빈 자리로 사용하지 않는다. 회원 기능은 `AC-M01~AC-M06`으로 구분한다. 아래 이월 기준 `AC01~AC16` 전체를 이번 MVP 필수로 지정한 것이 아니며, 현재 앱과의 대응을 보존한 것이다.
+
 
 현행 앱은 [앱 수용 기준](../apps/cheonhajangsa-mvp/docs/acceptance-criteria.md)의 하이픈이 있는 `AC-*`를 사용한다. 예를 들어 `AC-5`는 질문 순서, `AC-14`는 AI 없이 조건 재검색, `AC-24`는 상추 단가 진단, `AC-28~30`은 지도와 결과 표시 기준이다. 테스트·Evals가 존재하는 범위와 배포본에서 다시 확인한 결과를 구분한다.
 
@@ -192,7 +212,7 @@
 
 ## 13. 승인
 
-v0.3은 현행 코드와 문서의 정합화다. 팀 승인 전 새 기능과 범위 변경의 확정 근거로 사용하지 않는다. 아래 표는 v0.2 검토 이력이다.
+v0.4는 현재 기능과 평가 기준의 정합화다. 2026-11-17 사용자가 로컬 수정·검증 후 루트 README를 제외한 main 반영을 승인했다. 다른 팀원의 검토·배포 승인을 대신하지 않는다. 아래 표는 v0.2 검토 이력이다.
 
 | 역할 | 이름 | 검토 | 날짜 |
 |---|---|---|---|
