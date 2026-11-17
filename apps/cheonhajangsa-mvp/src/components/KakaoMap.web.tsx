@@ -50,9 +50,10 @@ export function KakaoMap({ center, pins, focusIds, selectedId, height, onPinPres
   const map = useRef<KMap | null>(null);
   const overlays = useRef<Overlay[]>([]);
   const press = useRef(onPinPress);
-  press.current = onPinPress;
+  useEffect(() => { press.current = onPinPress; }, [onPinPress]);
   const [error, setError] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
+  const [initialCenter] = useState(center);
 
   // 지도 만들기(한 번)
   useEffect(() => {
@@ -61,14 +62,14 @@ export function KakaoMap({ center, pins, focusIds, selectedId, height, onPinPres
       .then((k) => {
         if (cancelled || !box.current) return;
         kakao.current = k;
-        map.current = new k.maps.Map(box.current as unknown as HTMLElement, { center: new k.maps.LatLng(center.lat, center.lng), level: 4 });
+        map.current = new k.maps.Map(box.current as unknown as HTMLElement, { center: new k.maps.LatLng(initialCenter.lat, initialCenter.lng), level: 4 });
         setReady(true);
       })
       .catch(() => !cancelled && setError("지도를 불러오지 못했어요. 아래 목록을 이용해 주세요."));
     return () => {
       cancelled = true;
     };
-  }, []); // 지도는 한 번만 만든다. 이후 중심은 아래 효과에서 맞춘다
+  }, [initialCenter]); // 지도는 한 번만 만든다. 이후 중심은 아래 효과에서 맞춘다
 
   // 핀 다시 그리기 + 강조 핀이 보이게 맞추기
   useEffect(() => {

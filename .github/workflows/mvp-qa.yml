@@ -25,5 +25,10 @@ jobs:
       - run: npm ci
       - run: npm run typecheck
       - run: npm run check:data
+      - run: npm run lint
       - run: npm test -- --reporter=default --reporter=json --outputFile="$RUNNER_TEMP/mvp-vitest.json"
       - run: npm exec -- tsx scripts/check-golden-report.ts "$RUNNER_TEMP/mvp-vitest.json"
+      - run: npm exec -- tsx scripts/check-golden-mutations.ts
+      - run: npm run build:web
+        env:
+          EXPO_NO_TELEMETRY: '1'

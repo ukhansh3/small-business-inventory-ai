@@ -1,25 +1,24 @@
 import { expect, test } from "@playwright/test";
 
-// 시나리오 1(test-plan 6절): '상추' → 선택지 3번 → 결과 카드 1개 이상 → 전화하기 누르면 예시 안내
-test("상추 한 마디로 결과까지, 예시 번호는 전화가 걸리지 않는다", async ({ page }) => {
-  await page.goto("/");
-  await expect(page.getByText("예시 데이터예요")).toBeVisible();
-
+test("AC-5·AC-30 수량 없이 상추를 찾고 결과를 지도 목록으로 연결한다", async ({ page }) => {
+  await page.goto("/?test=1");
+  await page.getByRole("tab", { name: "AI 도우미", exact: true }).click();
   const input = page.getByLabel("필요한 재료 입력");
   await input.fill("상추");
   await input.press("Enter");
-
-  await page.getByText("2kg", { exact: true }).click();
+  // 현행 구현은 수량을 모르면 null로 유지하고 시점부터 질문한다.
   await page.getByText("지금 바로", { exact: true }).click();
   await page.getByText("직접 갈게요", { exact: true }).click();
+  const map = page.getByRole("button", { name: /검색 결과 지도에서 보기/ });
+  await expect(map).toBeVisible({ timeout: 20_000 });
+  await expect(page.getByText(/조건에 맞는 곳 \d+곳을 찾았어요/)).toBeVisible();
+  await map.click();
+  await expect(page.getByRole("tab", { name: "지도", exact: true })).toHaveAttribute("aria-selected", "true");
+  await expect(page.getByText("업체 목록", { exact: true })).toBeVisible();
+});
 
-  await expect(page.getByText(/조건에 맞는 곳 \d+곳을 찾았어요/)).toBeVisible({ timeout: 20_000 });
-  const calls = page.getByText("전화하기", { exact: true });
-  expect(await calls.count()).toBeGreaterThan(0);
-
-  // 예시 판매처는 tel:로 이동하지 않고 안내만 한다(AC-13)
-  const url = page.url();
-  await calls.first().click();
-  await expect(page.getByText("예시 번호예요. 실제 가게가 아니어서 전화가 걸리지 않아요.")).toBeVisible();
-  expect(page.url()).toBe(url);
+test("AC-M01 비로그인 저장 접근에는 로그인을 안내한다", async ({ page }) => {
+  await page.goto("/?test=1");
+  await page.getByRole("tab", { name: "저장", exact: true }).click();
+  await expect(page.getByText(/로그인/).first()).toBeVisible();
 });

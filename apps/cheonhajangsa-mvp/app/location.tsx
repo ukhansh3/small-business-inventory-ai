@@ -19,9 +19,8 @@ export default function LocationScreen() {
   const back = () => (router.canGoBack() ? router.back() : router.replace("/"));
 
   const load = () => {
-    setError(null);
     getLocations()
-      .then((r) => setList(r.locations))
+      .then((r) => { setError(null); setList(r.locations); })
       .catch(() => setError("위치 목록을 불러오지 못했어요."));
   };
   useEffect(load, []);

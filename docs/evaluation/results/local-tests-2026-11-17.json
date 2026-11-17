@@ -1,0 +1,54 @@
+{
+  "source": "Vitest JSON reporter; local working tree",
+  "base_commit": "3848120b828cff2a5349498722a41bea561b02d8",
+  "node": "v24.14.0",
+  "started_at": "2026-11-17T07:55:11.921Z",
+  "success": true,
+  "files": 21,
+  "total": 173,
+  "passed": 173,
+  "failed": 0,
+  "pending": 0,
+  "golden": [
+    {
+      "id": "MVP-G04",
+      "status": "passed"
+    },
+    {
+      "id": "MVP-G04-PICKUP",
+      "status": "passed"
+    },
+    {
+      "id": "MVP-G01",
+      "status": "passed"
+    },
+    {
+      "id": "MVP-G03",
+      "status": "passed"
+    },
+    {
+      "id": "MVP-G24",
+      "status": "passed"
+    },
+    {
+      "id": "MVP-G18",
+      "status": "passed"
+    },
+    {
+      "id": "MVP-G15",
+      "status": "passed"
+    },
+    {
+      "id": "MVP-G10",
+      "status": "passed"
+    },
+    {
+      "id": "MVP-G25",
+      "status": "passed"
+    },
+    {
+      "id": "MVP-G13",
+      "status": "passed"
+    }
+  ]
+}

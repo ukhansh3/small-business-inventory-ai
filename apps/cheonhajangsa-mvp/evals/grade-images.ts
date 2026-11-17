@@ -23,8 +23,13 @@ export function gradeImage(e: ImageExpect, got: PurchaseRead | { error: string }
     }
     // 금액이 기대에 없거나, 없던 무게를 지어냄
     const sameAmount = left.findIndex((x) => x.amount_won === l.amount_won);
-    if (sameAmount < 0) fabricated++, notes.push(`기대에 없는 상추 금액 ${l.amount_won}`);
-    else if (left[sameAmount]!.weight_kg_total === null && l.weight_kg_total !== null) fabricated++, notes.push(`없는 무게를 지어냄 ${l.weight_kg_total}`);
+    if (sameAmount < 0) {
+      fabricated++;
+      notes.push(`기대에 없는 상추 금액 ${l.amount_won}`);
+    } else if (left[sameAmount]!.weight_kg_total === null && l.weight_kg_total !== null) {
+      fabricated++;
+      notes.push(`없는 무게를 지어냄 ${l.weight_kg_total}`);
+    }
     else notes.push(`무게 다름 ${l.weight_kg_total} (기대 ${left[sameAmount]!.weight_kg_total})`);
   }
   if (e.delivery_fee_won !== undefined && got.delivery_fee_won !== e.delivery_fee_won) notes.push(`배송비 ${got.delivery_fee_won} (기대 ${e.delivery_fee_won})`);
