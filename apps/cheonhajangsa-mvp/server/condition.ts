@@ -39,7 +39,7 @@ export function chips(c: SearchCondition, data: Dataset) {
   const item = data.items.find((i) => i.id === c.item_id);
   const loc = data.locations.find((l) => l.id === c.location_id);
   return [
-    { slot: "item_id", label: item?.name ?? c.item_id, editable: false },
+    { slot: "item_id", label: item?.name ?? c.item_id, editable: true }, // v3: 품목도 칩에서 바꾼다
     { slot: "qty_kg", label: qtyLabel(c.qty_kg), editable: true },
     { slot: "urgency", label: URGENCY_LABEL[c.urgency], editable: true },
     { slot: "fulfillment", label: FULFILLMENT_LABEL[c.fulfillment], editable: true },

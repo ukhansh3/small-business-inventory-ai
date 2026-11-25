@@ -13,9 +13,11 @@ import { ChatLog } from "../src/components/ChatLog";
 import { ChipEditor } from "../src/components/ChipEditor";
 import { ConditionChips } from "../src/components/ConditionChips";
 import { KakaoMap } from "../src/components/KakaoMap";
+import { useHere } from "../src/lib/here";
 import { MarketLine } from "../src/components/MarketLine";
 import { NoticeCard } from "../src/components/NoticeCard";
 import { PriceCheckCard } from "../src/components/PriceCheckCard";
+import { RecommendationCard } from "../src/components/RecommendationCard";
 import { ResultList } from "../src/components/ResultList";
 import { color, font, radius } from "../src/components/theme";
 import type { Store } from "../src/lib/api-types";
@@ -26,6 +28,7 @@ import { isTestDevice } from "../src/lib/device";
 import { focusFor, pinsFor } from "../src/lib/map-pins";
 import { AppIcon, type IconName } from "../src/components/AppIcon";
 import { CompactStoreCard } from "../src/components/CompactStoreCard";
+import { StoreRows } from "../src/components/StoreRows";
 import { CommunityScreen, SavedScreen, ProfileScreen } from '../src/components/MemberScreens';
 
 const IS_PHONE = Platform.OS !== "web" || isPhoneUserAgent(globalThis.navigator?.userAgent ?? "");
@@ -56,23 +59,31 @@ export default function HomeScreen() {
   const st = useStores(s.condition.location_id ?? a.currentLocation?.location_id ?? null);
   const me = a.currentLocation;
   const { retry: reloadStores } = st;
+  // v3 실시간 내 위치(R-25): 허용하면 지도 점·지도 중심·거리 기준이 지금 위치를 따른다(15m 넘게 움직일 때 갱신)
+  const { here, status: hereStatus } = useHere();
+  const hereOn = here !== null;
+  useEffect(() => { if (hereOn) reloadStores(); }, [hereOn, reloadStores]);
+  const dot = here ? { lat: here.lat, lng: here.lng, name: "실시간" } : me ? { lat: me.lat, lng: me.lng, name: me.name } : null;
   useFocusEffect(useCallback(() => reloadStores(), [reloadStores]));
   const visibleStores = useMemo(() => {
     const keyword = storeQuery.toLowerCase();
     const produceQuery = /^(야채|채소|과일|청과)$/.test(keyword);
     return st.stores.filter((store) => {
       if (selectedCategory) return store.category === selectedCategory;
-      const description = [store.name, store.category, store.vendor_card?.kind, store.demo_service].join(" ").toLowerCase();
+      const description = [store.name, store.category, store.vendor_card?.kind].join(" ").toLowerCase();
       return description.replace(/\s+/g, "").includes(keyword.replace(/\s+/g, "")) ||
         (produceQuery && /채소|야채|과일|청과|시장점포/.test(description));
     });
   }, [st.stores, storeQuery, selectedCategory]);
   const categories = [...new Set(st.stores.map((store) => store.category))];
   const mapStores = showAiResults ? st.stores : visibleStores;
-  const pins = useMemo(() => pinsFor(mapStores, me ? { lat: me.lat, lng: me.lng, name: me.name } : null), [mapStores, me]);
+  const pins = useMemo(() => pinsFor(mapStores, dot), [mapStores, dot?.lat, dot?.lng, dot?.name]); // eslint-disable-line react-hooks/exhaustive-deps
   const focusIds = useMemo(
-    () => focusFor(null, showAiResults ? s.results : null, showAiResults ? s.priceCheck : null),
-    [showAiResults, s.results, s.priceCheck],
+    // v3(ADR-013 검토안): 추천이 있으면 추천한 곳들을 강조한다
+    () => showAiResults && s.recommendation
+      ? [s.recommendation.primary, ...s.recommendation.others].map((p) => p.id)
+      : focusFor(null, showAiResults ? s.results : null, showAiResults ? s.priceCheck : null),
+    [showAiResults, s.results, s.priceCheck, s.recommendation],
   );
   const selected = selectedId ? mapStores.find((store) => store.store_id === selectedId) ?? null : null;
   const mapHeight = mapStageHeight;
@@ -118,7 +129,6 @@ export default function HomeScreen() {
     const terms = st.stores.flatMap((store) => [
       store.name,
       ...store.category.split("·"),
-      ...(store.demo_service?.split("·") ?? []),
     ]);
     const matchedTerm = terms
       .map((term) => term.trim())
@@ -131,7 +141,7 @@ export default function HomeScreen() {
     if (keyword) {
       const normalized = keyword.toLowerCase().replace(/\s/g, "");
       const stores = st.stores.filter((store) =>
-        [store.name, store.category, store.demo_service].some((value) => value?.toLowerCase().replace(/\s/g, "").includes(normalized)),
+        [store.name, store.category].some((value) => value?.toLowerCase().replace(/\s/g, "").includes(normalized)),
       );
       setStoreReplies((previous) => [...previous, { after: s.messages.length, text, stores }]);
       return;
@@ -146,7 +156,7 @@ export default function HomeScreen() {
         {tab === "map" ? (
           <>
             <View style={styles.mapTools}>
-              <Pressable accessibilityRole="button" accessibilityHint="눌러서 내 위치 바꾸기" onPress={openLocation} style={styles.locationBar}><AppIcon name="locate" size={16} color={color.green}/><Text style={styles.locationText}>{a.currentLocation?.name ?? "기본 위치"} 주변</Text><AppIcon name="chevron" size={14}/></Pressable>
+              <Pressable accessibilityRole="button" accessibilityHint="눌러서 내 위치 바꾸기" onPress={openLocation} style={styles.locationBar}><AppIcon name="locate" size={16} color={color.green}/><Text style={styles.locationText}>{here ? `실시간 내 위치 주변(±${here.accuracy_m}m)` : `${a.currentLocation?.name ?? "기본 위치"} 주변${hereStatus === "denied" ? " · 위치 권한 꺼짐" : ""}`}</Text><AppIcon name="chevron" size={14}/></Pressable>
               <View style={styles.searchBar}><AppIcon name="search" size={20} color={color.sub}/><TextInput value={query} onChangeText={setQuery} accessibilityLabel="업체명 또는 업종 입력" placeholder="업체명이나 업종을 검색하세요" placeholderTextColor={color.faint} returnKeyType="search" onSubmitEditing={() => searchStores(query.trim())} style={styles.searchInput}/><Pressable accessibilityRole="button" accessibilityLabel="업체 검색" onPress={() => searchStores(query.trim())}><AppIcon name="arrow" size={20} color={color.green}/></Pressable></View>
               <View style={styles.filterRow}>
                 <Pressable accessibilityRole="button" onPress={() => { searchStores(""); setCategoriesOpen(false); }}
@@ -175,7 +185,7 @@ export default function HomeScreen() {
             )}
             <View style={styles.mapStage} onLayout={(event)=>setMapStageHeight(Math.round(event.nativeEvent.layout.height))}>
             <View style={styles.mapWrap}>
-              {me ? <KakaoMap center={{ lat: me.lat, lng: me.lng }} pins={pins} focusIds={focusIds} selectedId={selectedId} height={mapHeight} coveredBottom={sheetHeight} onVisibleCountChange={setVisiblePinCount} onPinPress={(id) => { setSelectedId(id); setSheetMode("preview"); }} /> : <View style={[styles.mapWait, { height: mapHeight }]} />}
+              {me ? <KakaoMap center={here ? { lat: here.lat, lng: here.lng } : { lat: me.lat, lng: me.lng }} pins={pins} focusIds={focusIds} selectedId={selectedId} height={mapHeight} coveredBottom={sheetHeight} onVisibleCountChange={setVisiblePinCount} onPinPress={(id) => { setSelectedId(id); setSheetMode("preview"); }} /> : <View style={[styles.mapWait, { height: mapHeight }]} />}
             </View>
             <Pressable accessibilityRole="button" accessibilityLabel="내 위치 기준으로 다시 보기" onPress={()=>{setSelectedId(null);st.retry();}} style={[styles.locateButton,{bottom:sheetHeight+16}]}><AppIcon name="locate" size={22}/></Pressable>
             <View style={[styles.sheet,{height:sheetHeight}]}>
@@ -184,14 +194,14 @@ export default function HomeScreen() {
               setSheetMode(sheetOpen || showPreview ? "collapsed" : "list");
             }} style={styles.handle}>
               <View style={styles.grip} />
-              <View style={styles.sheetHeading}><View><Text style={styles.sheetTitle}>{showPreview ? "선택하신 업체" : sheetOpen ? "업체 목록" : visiblePinCount === null ? "지도 업체" : `화면 속 업체 ${visiblePinCount}곳`}</Text></View><Text style={styles.sheetLink}>{sheetOpen || showPreview ? "↓ 접기" : "↑ 목록 보기"}</Text></View>
+              <View style={styles.sheetHeading}><View><Text style={styles.sheetTitle}>{showPreview ? "선택하신 업체" : sheetOpen ? "업체 목록" : visiblePinCount === null ? "지도 업체" : showAiResults && s.results ? `화면 속 검색 결과 ${visiblePinCount}곳` : `화면 속 업체 ${visiblePinCount}곳`}</Text></View><Text style={styles.sheetLink}>{sheetOpen || showPreview ? "↓ 접기" : "↑ 목록 보기"}</Text></View>
             </Pressable>
             {showPreview && <ScrollView style={styles.body} contentContainerStyle={styles.mapContent} keyboardShouldPersistTaps="handled">
               <CompactStoreCard key={selected.store_id} store={selected} location={me?.location_id}/>
             </ScrollView>}
             {sheetOpen && <ScrollView style={styles.body} contentContainerStyle={styles.mapContent} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
               {selected && <CompactStoreCard store={selected} location={me?.location_id}/>}
-              {showAiResults && s.results ? <ResultList results={s.results} stores={st.stores} location={me?.location_id} /> : st.error ? <ErrorRow message={st.error} onRetry={st.retry} /> : visibleStores.length === 0 ? <Text style={styles.sheetSub}>조건에 맞는 근처 업체가 없어요.</Text> : visibleStores.filter(store=>store.store_id!==selectedId).slice(0, storeQuery ? undefined : 30).map(store=><CompactStoreCard key={store.store_id} store={store} location={me?.location_id}/>)}
+              {showAiResults && s.results && s.recommendation ? <RecommendationCard rec={s.recommendation} /> : showAiResults && s.results ? <ResultList results={s.results} stores={st.stores} location={me?.location_id} /> : st.error ? <ErrorRow message={st.error} onRetry={st.retry} /> : visibleStores.length === 0 ? <Text style={styles.sheetSub}>조건에 맞는 근처 업체가 없어요.</Text> : <StoreRows location={me?.location_id} rows={visibleStores.filter(store=>store.store_id!==selectedId).slice(0, storeQuery ? undefined : 30).map(store=>({ store }))}/>}
             </ScrollView>}
             </View>
           </View>
@@ -207,7 +217,7 @@ export default function HomeScreen() {
                     { id: -(index * 2 + 1), role: "owner", text: reply.text },
                     { id: -(index * 2 + 2), role: "ai", text: reply.stores.length ? `관련 업체 ${reply.stores.length}곳을 찾았어요.` : "조건에 맞는 근처 업체가 없어요." },
                   ]} loading={false} />
-                  {reply.stores.map((store) => <CompactStoreCard key={store.store_id} store={store} location={me?.location_id} />)}
+                  <StoreRows location={me?.location_id} rows={reply.stores.map((store) => ({ store }))} />
                 </Fragment>
               ))}
               <ChatLog messages={s.messages.slice(storeReplies.at(-1)?.after ?? 0)} loading={s.loading} />
@@ -218,9 +228,10 @@ export default function HomeScreen() {
                 {s.chips && <ConditionChips chips={s.chips} disabled={s.loading} onEdit={a.openEditor} onLocation={openLocation} />}
                 {s.editor !== "closed" && <ChipEditor key={s.editor} editor={s.editor} condition={s.condition} disabled={s.loading} onSubmit={a.editCondition} onClose={() => a.openEditor("closed")} />}
               </View>
+              {s.recommendation && s.results && <RecommendationCard rec={s.recommendation} />}
               {s.market && s.results && <MarketLine market={s.market} />}
-              {s.results && <><Pressable accessibilityRole="button" onPress={() => { setSelectedId(null); setShowAiResults(true); setSheetMode("list"); setTab("map"); }} style={styles.exampleChip}><Text style={styles.sheetLink}>⌖ 검색 결과 지도에서 보기</Text></Pressable><ResultList results={s.results} stores={st.stores} location={me?.location_id} /></>}
-              {s.priceCheck && !s.loading && <View key={s.priceCheck.check_id} onLayout={(event) => { priceY.current = event.nativeEvent.layout.y; scroll.current?.scrollTo({ y: Math.max(priceY.current - 80, 0), animated: true }); }}><PriceCheckCard check={s.priceCheck} share={s.share} disabled={s.loading} onShare={a.sharePrice} onSearch={a.searchLettuce} onCall={onCall} onDetail={openDetail} /></View>}
+              {s.results && <><Pressable accessibilityRole="button" onPress={() => { setSelectedId(null); setShowAiResults(true); setSheetMode("list"); setTab("map"); }} style={styles.exampleChip}><Text style={styles.sheetLink}>{s.recommendation ? "⌖ 추천한 곳 지도에서 보기" : "⌖ 검색 결과 지도에서 보기"}</Text></Pressable>{!s.recommendation && <ResultList results={s.results} stores={st.stores} location={me?.location_id} />}</>}
+              {s.priceCheck && !s.loading && <View key={s.priceCheck.check_id} onLayout={(event) => { priceY.current = event.nativeEvent.layout.y; scroll.current?.scrollTo({ y: Math.max(priceY.current - 80, 0), animated: true }); }}><PriceCheckCard check={s.priceCheck} share={s.share} disabled={s.loading} onShare={a.sharePrice} onSearch={a.searchItem} onCall={onCall} onDetail={openDetail} /></View>}
             </ScrollView>
             <ChatInput disabled={s.loading} error={s.inputError} onSend={sendAssistantText} onPhoto={a.sendPhoto} />
           </>
@@ -235,17 +246,17 @@ export default function HomeScreen() {
 }
 
 function Welcome({ onExample }: { onExample: (text: string) => void }) {
-  const examples = ["근처 상추 파는 곳 찾아줘", "상추 2kg 오늘 배달해 주는 곳", "상추 2kg 1만원이면 비싼가요?"];
-  return <View style={styles.welcome}><View style={styles.botMark}><Text style={styles.botMarkText}>✦</Text></View><Text style={styles.welcomeTitle}>무엇을 찾아드릴까요?</Text><Text style={styles.welcomeSub}>등록된 거래 정보만 근거로, 가격과 배송 조건을 함께 비교해 드려요.</Text><View style={styles.examples}>{examples.map((text) => <Pressable key={text} onPress={() => onExample(text)} style={styles.exampleChip}><Text style={styles.exampleText}>{text}</Text></Pressable>)}</View></View>;
+  const examples = ["상추 2키로 급해요", "상추 5키로 오늘 배달", "상추 2키로 만원 부르던데"];
+  return <View style={styles.welcome}><View style={styles.botMark}><Text style={styles.botMarkText}>✦</Text></View><Text style={styles.welcomeTitle}>무엇을 찾아드릴까요?</Text><Text style={styles.welcomeSub}>상추·양파·대파·감자의 수원 시세와 근처 판매처를 찾아 드려요. 가격을 적으면 비싼지도 알려 드려요.</Text><View style={styles.examples}>{examples.map((text) => <Pressable key={text} onPress={() => onExample(text)} style={styles.exampleChip}><Text style={styles.exampleText}>{text}</Text></Pressable>)}</View></View>;
 }
 
 function Header({ tab, test, stored, started, loading, onRestart }: { tab: ActiveTab; test: boolean; stored: boolean; started: boolean; loading: boolean; onRestart: () => void }) {
   const titles={map:"천하장사",assistant:"AI 도우미",messages:"대화",community:"사장님 커뮤니티",saved:"저장",profile:"내 정보"};
-  return <View style={styles.header}><View style={styles.brandMark}><AppIcon name={tab==="assistant"?"bot":"store"} size={20} color="#ffffff"/></View><View><Text style={styles.brand}>{titles[tab]}</Text>{tab === "assistant" && <Text style={styles.brandSub}>등록된 거래 정보로 찾아드려요</Text>}</View><View style={styles.spacer} />{stored && <Text style={styles.status}>저장 응답</Text>}{tab === "assistant" && started ? <Pressable accessibilityLabel="새 대화" disabled={loading} onPress={onRestart} style={styles.iconButton}><AppIcon name="edit" size={21}/></Pressable> : <View style={styles.iconButton}><AppIcon name="bell" size={21}/></View>}</View>;
+  return <View style={styles.header}><View style={styles.brandMark}><AppIcon name={tab==="assistant"?"bot":"store"} size={20} color="#ffffff"/></View><View><Text style={styles.brand}>{titles[tab]}</Text>{tab === "assistant" && <Text style={styles.brandSub}>등록된 거래 정보로 찾아드려요</Text>}</View><View style={styles.spacer} />{stored && <Text style={styles.status}>저장 응답</Text>}{tab === "assistant" && started ? <Pressable accessibilityLabel="새 대화" disabled={loading} onPress={onRestart} style={styles.iconButton}><AppIcon name="edit" size={21}/></Pressable> : null}</View>;
 }
 
 function BottomNav({ active, onChange }: { active: ActiveTab; onChange:(tab:ActiveTab)=>void }) {
-  const tabs: {key:ActiveTab;icon:IconName;label:string}[] = [{ key: "map", icon: "map", label: "지도" }, { key: "assistant", icon: "bot", label: "AI 도우미" }, { key: "messages", icon: "edit", label: "대화" }, { key: "community", icon: "users", label: "커뮤니티" }, { key: "saved", icon: "bookmark", label: "저장" }, { key: "profile", icon: "user", label: "내 정보" }];
+  const tabs: {key:ActiveTab;icon:IconName;label:string}[] = [{ key: "map", icon: "map", label: "지도" }, { key: "assistant", icon: "bot", label: "AI 도우미" }, { key: "messages", icon: "chat", label: "대화" }, { key: "community", icon: "users", label: "커뮤니티" }, { key: "saved", icon: "bookmark", label: "저장" }, { key: "profile", icon: "user", label: "내 정보" }];
   return <View style={styles.nav}>{tabs.map((item) => { const selected = active === item.key; return <Pressable key={item.key} accessibilityRole="tab" accessibilityState={{ selected }} onPress={()=>onChange(item.key)} style={styles.navItem}><AppIcon name={item.icon} size={21} color={selected?color.green:color.sub}/><Text style={[styles.navLabel, selected && styles.navOn]}>{item.label}</Text><View style={[styles.navDot, selected && styles.navDotOn]} /></Pressable>; })}</View>;
 }
 
@@ -274,6 +285,6 @@ const styles = StyleSheet.create({
   handle: { paddingTop: 8, paddingHorizontal: 18, paddingBottom: 8,backgroundColor:color.surface }, grip: { width: 38, height: 4, alignSelf: "center", marginBottom: 12, borderRadius: 2, backgroundColor: color.line }, sheetHeading: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" }, sheetTitle: { fontSize: 16, fontWeight: "600", color: color.ink }, sheetSub: { marginTop: 3, fontSize: 11, color: color.sub }, sheetLink: { color: color.green, fontSize: 12, fontWeight: "500" },
   body: { flex: 1 }, mapContent: { paddingHorizontal: 16, paddingTop: 6, paddingBottom: 24, gap: 12 }, aiContent: { paddingHorizontal: 16, paddingTop: 10, paddingBottom: 24, gap: 14 }, selected: { gap: 8 }, selectedHead: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" }, selectedTitle: { color: color.sub, fontSize: font.small, fontWeight: "700" }, close: { color: color.green, fontSize: font.small, fontWeight: "700" },
   welcome: { alignItems: "center", paddingVertical: 28, gap: 9 }, botMark: { width: 50, height: 50, borderRadius: 17, alignItems: "center", justifyContent: "center", backgroundColor: color.greenSoft }, botMarkText: { color: color.green, fontSize: 22, fontWeight: "800" }, welcomeTitle: { marginTop: 5, color: color.ink, fontSize: 22, fontWeight: "800", letterSpacing: -0.5 }, welcomeSub: { maxWidth: 310, color: color.sub, fontSize: 13, lineHeight: 19, textAlign: "center" }, examples: { width: "100%", marginTop: 10, gap: 8 }, exampleChip: { minHeight: 42, justifyContent: "center", paddingHorizontal: 14, borderRadius: 14, backgroundColor: color.soft }, exampleText: { color: color.ink, fontSize: 13 }, conditions: { gap: 10 },
-  nav: { height: 72, flexDirection: "row", paddingHorizontal: 4, paddingTop: 6, paddingBottom: 8, borderTopWidth: 1, borderTopColor: color.line, backgroundColor: color.surface }, navItem: { flex: 1, alignItems: "center", justifyContent: "center", gap: 2 }, navIcon: { color: color.sub, fontSize: 20, lineHeight: 23 }, navLabel: { color: color.sub, fontSize: 10, fontWeight: "600" }, navOn: { color: color.green }, navDot: { width: 4, height: 4, borderRadius: 2, backgroundColor: "transparent" }, navDotOn: { backgroundColor: color.green },
+  nav: { height: 72, flexDirection: "row", paddingHorizontal: 4, paddingTop: 6, paddingBottom: 8, borderTopWidth: 1, borderTopColor: color.line, backgroundColor: color.surface }, navItem: { flex: 1, alignItems: "center", justifyContent: "center", gap: 2 }, navIcon: { color: color.sub, fontSize: 20, lineHeight: 23 }, navLabel: { color: color.sub, fontSize: 12, fontWeight: "600" }, navOn: { color: color.green }, navDot: { width: 4, height: 4, borderRadius: 2, backgroundColor: "transparent" }, navDotOn: { backgroundColor: color.green },
   netErr: { flexDirection: "row", alignItems: "center", gap: 10, padding: 12, borderRadius: radius, backgroundColor: color.redSoft }, netErrText: { flex: 1, fontSize: font.body, color: color.red }, retry: { paddingVertical: 8, paddingHorizontal: 12, borderRadius: 12, backgroundColor: color.red }, retryLabel: { color: "#ffffff", fontWeight: "700", fontSize: font.small },
 });

@@ -43,27 +43,34 @@ async function turn(ai: AiClient, body: unknown): Promise<{ status: number; body
 const next = (prev: Turn, input: unknown) => ({ session_id: prev.session_id, turn_seq: prev.turn_seq, input, condition: prev.condition, field_source: prev.field_source });
 
 describe("AC-5 되묻기 순서", () => {
-  it("'상추' 한 마디 → urgency → fulfillment → 결과. AI는 첫 턴 1번만", async () => {
+  // v3(ADR-013 검토안): 받는 방식은 묻지 않고 상황으로 정한다(지금+거래 단위 미만 → 직접, 그 밖 → 배달)
+  it("'상추' 한 마디 → urgency → 결과. 받는 방식은 묻지 않음. AI는 첫 턴 1번만", async () => {
     const ai = fakeAi(async () => ({ type: "search", item_id: "item_lettuce", qty_kg: null, urgency: null, fulfillment: null }));
     const t1 = await turn(ai, { session_id: null, input: { type: "text", text: "상추" } });
     expect(t1.status).toBe(200);
     expect(t1.body.type).toBe("ask");
     expect(t1.body.ask?.slot).toBe("urgency");
     const t3 = await turn(ai, next(t1.body, { type: "choice", slot: "urgency", value: "now" }));
-    expect(t3.body.ask?.slot).toBe("fulfillment");
-    const t4 = await turn(ai, next(t3.body, { type: "choice", slot: "fulfillment", value: "pickup" }));
-    expect(t4.body.type).toBe("results");
-    expect(t4.body.results?.total).toBe(1);
-    expect(t4.body.session_id).toBe(t1.body.session_id);
-    expect(t4.body.condition?.field_source).toMatchObject({ item_id: "said", qty_kg: "default", urgency: "asked", fulfillment: "asked", location_id: "default" });
+    expect(t3.body.type).toBe("results");
+    expect(t3.body.results?.total).toBe(1);
+    expect(t3.body.session_id).toBe(t1.body.session_id);
+    expect(t3.body.condition).toMatchObject({ fulfillment: "pickup" });
+    expect(t3.body.condition?.field_source).toMatchObject({ item_id: "said", qty_kg: "default", urgency: "asked", fulfillment: "default", location_id: "default" });
     expect(ai.calls).toBe(1);
   });
 
-  it("'상추 2키로 급해요'면 qty·urgency는 묻지 않고 fulfillment부터", async () => {
+  it("'상추 2키로 급해요'면 되묻지 않고 바로 결과(급한 소량 → 직접)", async () => {
     const ai = fakeAi(async () => ({ type: "search", item_id: "item_lettuce", qty_kg: 2, urgency: "now", fulfillment: null }));
     const t1 = await turn(ai, { session_id: null, input: { type: "text", text: "상추 2키로 급해요" } });
-    expect(t1.body.ask?.slot).toBe("fulfillment");
-    expect(t1.body.field_source).toMatchObject({ qty_kg: "said", urgency: "said" });
+    expect(t1.body.type).toBe("results");
+    expect(t1.body.condition).toMatchObject({ qty_kg: 2, urgency: "now", fulfillment: "pickup" });
+  });
+
+  it("오늘 안에 필요하면 배달로 정하고, 말한 받는 방식은 그대로 둔다", async () => {
+    const today = fakeAi(async () => ({ type: "search", item_id: "item_lettuce", qty_kg: 2, urgency: "today", fulfillment: null }));
+    expect((await turn(today, { session_id: null, input: { type: "text", text: "상추 2키로 오늘" } })).body.condition).toMatchObject({ fulfillment: "delivery" });
+    const said = fakeAi(async () => ({ type: "search", item_id: "item_lettuce", qty_kg: 2, urgency: "today", fulfillment: "pickup" }));
+    expect((await turn(said, { session_id: null, input: { type: "text", text: "상추 2키로 오늘 가지러 갈게요" } })).body.condition).toMatchObject({ fulfillment: "pickup" });
   });
 
   it("'잘 모르겠어요'(null)도 양에 답한 것으로 본다", async () => {

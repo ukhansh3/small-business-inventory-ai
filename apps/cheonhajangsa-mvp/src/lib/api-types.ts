@@ -35,6 +35,20 @@ export type Market = {
   samples: number;
   includes_example: boolean;
   display: string;
+  // v3(R-23): 수원 실제 시세. 있으면 판정 기준
+  reference?: {
+    wholesale_per_kg: number;
+    wholesale_date: string;
+    retail_per_kg: number;
+    retail_date: string;
+    traditional_market_per_kg: number | null;
+    large_retailer_per_kg: number | null;
+    week_ago_per_kg?: number | null;
+    week_ago_date?: string | null;
+  } | null;
+  trend?: string | null; // v3(R-27): 일주일 전 대비 한 줄
+  weeks?: { week_start: string; per_kg: number }[] | null; // v3(R-27): 주간 도매 중앙값
+  ladder?: import("../../core/market-prices").Ladder | null; // v3(R-28): 상자 단위 가격 사다리
 };
 export type PriceLine = {
   line_no: number;
@@ -48,6 +62,8 @@ export type PriceLine = {
   reason: string | null;
   verdict: "cheaper" | "normal" | "pricier" | null;
   verdict_display: string | null;
+  verdict_title?: string | null; // v3(R-28)
+  box_won?: number | null; // v3(R-28)
   cheaper: import("../../core/search-types").VendorCard[];
 };
 export type PriceCheck = {
@@ -75,6 +91,7 @@ export type TurnResponse =
       chips: Chip[];
       results: SearchResult;
       market?: Market;
+      recommendation?: import("../../core/recommend").Recommendation | null; // v3(ADR-013 검토안)
     });
 
 export type SearchResponse = {
@@ -82,6 +99,7 @@ export type SearchResponse = {
   chips: Chip[];
   results: SearchResult;
   market?: Market;
+  recommendation?: import("../../core/recommend").Recommendation | null; // v3(ADR-013 검토안)
   ai_mode: "live" | "stored";
   example_data: boolean;
 };
@@ -115,10 +133,11 @@ export type Store = {
   distance_m: number;
   used_count?: number;
   saved_count?: number;
-  demo_service?: string;
   vendor_card?: import("../../core/search-types").VendorCard;
   source?: string;
   source_date?: string;
+  phone?: string | null;
+  hours?: string; // v3: 주간 영업시간 한 줄(판매처만)
 };
 
 // 503 AI_UNAVAILABLE의 detail

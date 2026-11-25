@@ -166,7 +166,7 @@ export function useAssist() {
     dispatch({ type: "share", state: "sending", message: null });
     try {
       const r = await sharePriceCheck(c.check_id);
-      dispatch({ type: "share", state: "done", message: r.shared_lines > 0 ? "보태 주셔서 고마워요. 가게 이름 없이 동네 시세에 반영돼요." : "비교할 수 있는 상추 줄이 없어 보탤 값이 없어요." });
+      dispatch({ type: "share", state: "done", message: r.shared_lines > 0 ? "보태 주셔서 고마워요. 가게 이름 없이 kg당 가격만 기록했어요. 모이면 사장님들이 실제로 산 가격으로 보여 드릴게요." : "비교할 수 있는 줄이 없어 보탤 값이 없어요." });
     } catch (e) {
       dispatch({ type: "share", state: "failed", message: e instanceof ApiError ? e.message : "지금은 저장할 수 없어요. 잠시 뒤 다시 눌러 주세요." });
     }
@@ -214,6 +214,7 @@ export function useAssist() {
     editCondition,
     requestItem,
     searchLettuce: useCallback(() => sendText("상추"), [sendText]),
+    searchItem: useCallback((name: string) => sendText(name), [sendText]),
     openEditor: useCallback((editor: EditorState) => dispatch({ type: "open_editor", editor }), []),
     retry: useCallback(() => retryRef.current?.(), []),
   };

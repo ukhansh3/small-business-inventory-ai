@@ -5,7 +5,7 @@ import type { AiFailureDetail, Ask, Chip, FieldSourceMap, Market, Notice, Partia
 
 export type ChatMessage = { id: number; role: "owner" | "ai"; text: string };
 // recover: AI 실패 후 조건 전체를 직접 고르는 편집(WF-12). Slot 이름: 칩 하나 편집(WF-08)
-export type EditorState = "closed" | "recover" | "qty_kg" | "urgency" | "fulfillment";
+export type EditorState = "closed" | "recover" | "item_id" | "qty_kg" | "urgency" | "fulfillment";
 export type RequestState = "idle" | "sending" | "done" | "failed";
 
 export type AssistState = {
@@ -22,6 +22,7 @@ export type AssistState = {
   chips: Chip[] | null;
   results: SearchResult | null;
   market: Market | null; // 결과 위 동네 시세 한 줄(v2 R-18)
+  recommendation: import("../../core/recommend").Recommendation | null; // v3(ADR-013 검토안) 구매 상황별 한 곳
   priceCheck: PriceCheck | null; // 단가 진단 결과(v2)
   share: { state: RequestState; message: string | null }; // 시세에 보태기(API-16)
   editor: EditorState;
@@ -50,6 +51,7 @@ export function initialState(exampleData: boolean, locationId: string | null = n
     chips: null,
     results: null,
     market: null,
+    recommendation: null,
     priceCheck: null,
     share: { state: "idle", message: null },
     editor: "closed",
@@ -84,8 +86,14 @@ function conditionOnly(c: PartialCondition): PartialCondition {
   return { item_id: c.item_id, qty_kg: c.qty_kg, urgency: c.urgency, fulfillment: c.fulfillment, location_id: c.location_id };
 }
 
-function resultLine(r: SearchResult): string {
-  return r.total > 0 ? `조건에 맞는 곳 ${r.total}곳을 찾았어요.` : "조건에 맞는 곳이 없어요.";
+// 결과 말풍선. "조건에 맞는 곳"은 조건을 다 맞춘 묶음(available)만 센다(v3: 배달 0곳인데 78곳이라 하지 않게)
+export function resultLine(r: SearchResult): string {
+  if (r.total === 0) return "조건에 맞는 곳이 없어요.";
+  const ok = r.groups.find((g) => g.key === "available")?.count ?? 0;
+  if (ok > 0) return `조건에 맞는 곳 ${ok}곳을 찾았어요.`;
+  const noDelivery = r.groups.find((g) => g.key === "no_delivery")?.count ?? 0;
+  if (noDelivery > 0) return `배달이 확인된 곳은 아직 없어요. 직접 가실 수 있는 곳 ${noDelivery}곳을 보여 드려요. 배달해 주는 식자재 납품업체는 지도 탭에서 볼 수 있어요.`;
+  return `고른 시간에 여는 곳은 없어요. 다른 시간에 여는 곳 ${r.total}곳을 보여 드려요.`;
 }
 
 export function reduce(s: AssistState, a: AssistAction): AssistState {
@@ -99,17 +107,18 @@ export function reduce(s: AssistState, a: AssistAction): AssistState {
       const r = a.res;
       const base = { ...s, loading: false, sessionId: r.session_id, turnSeq: r.turn_seq, aiMode: r.ai_mode, exampleData: r.example_data };
       if (r.type === "ask") {
-        return { ...base, ...say(s, "ai", r.ask.question), ask: r.ask, notice: null, condition: conditionOnly(r.condition), fieldSource: r.field_source };
+        // 새 질문이 이전 가격 카드 위에 끼지 않게 카드를 거둔다(카드 요약은 말풍선에 남아 있음)
+        return { ...base, ...say(s, "ai", r.ask.question), ask: r.ask, notice: null, priceCheck: null, condition: conditionOnly(r.condition), fieldSource: r.field_source };
       }
       if (r.type === "price_check") {
         return { ...base, ...priceState(s, r.price_check) };
       }
       if (r.type === "notice") {
-        return { ...base, ...say(s, "ai", r.notice.message), ask: null, notice: r.notice, request: { state: "idle", message: null } };
+        return { ...base, ...say(s, "ai", r.notice.message), ask: null, notice: r.notice, priceCheck: null, request: { state: "idle", message: null } };
       }
       return {
         ...base,
-        ...say(s, "ai", resultLine(r.results)),
+        ...say(s, "ai", r.recommendation ? `${r.recommendation.headline}.` : resultLine(r.results)),
         ask: null,
         notice: null,
         condition: conditionOnly(r.condition),
@@ -118,6 +127,7 @@ export function reduce(s: AssistState, a: AssistAction): AssistState {
         chips: r.chips,
         results: r.results,
         market: r.market ?? null,
+        recommendation: r.recommendation ?? null,
         priceCheck: null,
         editor: "closed",
       };
@@ -137,6 +147,7 @@ export function reduce(s: AssistState, a: AssistAction): AssistState {
         chips: r.chips,
         results: r.results,
         market: r.market ?? null,
+        recommendation: r.recommendation ?? null,
         priceCheck: null,
         editor: "closed",
       };
@@ -192,6 +203,7 @@ function priceState(s: AssistState, c: PriceCheck): Partial<AssistState> {
     results: null,
     chips: null,
     market: null,
+    recommendation: null,
     editor: "closed",
   };
 }

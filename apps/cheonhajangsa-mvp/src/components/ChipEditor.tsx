@@ -1,14 +1,16 @@
 import { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { FULFILLMENT_OPTIONS, QTY_OPTIONS, URGENCY_OPTIONS } from "../../core/options";
+import { FULFILLMENT_OPTIONS, ITEM_OPTIONS, qtyOptionsFor, URGENCY_OPTIONS } from "../../core/options";
 import type { Option, PartialCondition } from "../lib/api-types";
 import { type EditorState, isSearchable } from "../lib/assist-state";
 import { OptionButtons } from "./OptionButtons";
 import { color, font, radius } from "./theme";
 
-type EditSlot = "qty_kg" | "urgency" | "fulfillment";
-const GROUPS: { slot: EditSlot; title: string; options: readonly Option[] }[] = [
-  { slot: "qty_kg", title: "양", options: QTY_OPTIONS },
+type EditSlot = "item_id" | "qty_kg" | "urgency" | "fulfillment";
+// 양 선택지는 고른 품목의 거래 단위를 따른다(v3)
+const groupsFor = (itemId: string | null): { slot: EditSlot; title: string; options: readonly Option[] }[] => [
+  { slot: "item_id", title: "품목", options: ITEM_OPTIONS as unknown as readonly Option[] },
+  { slot: "qty_kg", title: "양", options: qtyOptionsFor(itemId) as unknown as readonly Option[] },
   { slot: "urgency", title: "언제까지", options: URGENCY_OPTIONS },
   { slot: "fulfillment", title: "받는 방식", options: FULFILLMENT_OPTIONS },
 ];
@@ -31,7 +33,7 @@ export function ChipEditor({
   const [draft, setDraft] = useState<Partial<PartialCondition>>({});
 
   if (editor !== "recover") {
-    const g = GROUPS.find((x) => x.slot === editor)!;
+    const g = groupsFor(condition.item_id ?? null).find((x) => x.slot === editor)!;
     return (
       <View style={styles.box}>
         <Text style={styles.title}>{g.title} 바꾸기</Text>
@@ -47,6 +49,7 @@ export function ChipEditor({
   // 양은 '잘 모르겠어요'(null)도 고른 값이다. 아직 안 고른 칸만 미선택으로 본다.
   const picked = (slot: EditSlot) => (slot in draft ? merged[slot] : condition[slot] ?? undefined);
   const ready = isSearchable(merged);
+  const GROUPS = groupsFor(merged.item_id ?? null);
   return (
     <View style={styles.box}>
       <Text style={styles.title}>조건을 직접 골라 주세요</Text>

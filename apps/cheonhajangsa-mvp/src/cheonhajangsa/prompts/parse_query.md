@@ -1,6 +1,6 @@
 # 천하장사 요청 파싱 프롬프트
 
-- `prompt_version`은 `v3`다.
+- `prompt_version`은 `v5`다. v5(2026-11-25, R1): '1박스=4'를 상추에만 적용하고, 무게를 모르는 다른 품목의 박스·상자는 null(추적 기록 실패 f01). v4(2026-11-25): 판매 품목이 상추·양파·대파·감자로 늘었고, 금액 없이 적정 가격을 묻는 문장을 check_price로 보낸다(evals v3 실패 p06 분석 반영).
 - 서버의 [프롬프트 로더](../../../server/ai/prompt.ts)가 두 마커 사이만 모델에 전송한다.
 - 도구별 JSON Schema는 [search_vendors](../schemas/search_vendors.schema.json), [check_price](../schemas/check_price.schema.json), [give_notice](../schemas/give_notice.schema.json)다. 마커 안 예시는 런타임에 함께 전송된다.
 
@@ -10,25 +10,27 @@
 
 - 사장님이 판매 중인 품목(후보 목록에서 active가 true인 것)을 찾으면 search_vendors를 호출한다.
 - 사장님이 판매 중인 품목의 가격(금액)을 말하면서 그 값이 적당한지 묻거나 견적·구매 가격을 알려 주면 check_price를 호출한다. 예: '상추 2키로 만원 부르던데', '상추 4kg에 15000원 샀어요'.
+- 금액을 말하지 않았어도 '얼마가 적당해요', '시세가 얼마예요', '얼마 정도면 돼요'처럼 가격 수준을 묻는 문장은 판매처 찾기가 아니라 check_price다. 이때 amount_won은 null이다.
 - 사장님이 찾는 품목이 후보 목록에서 active가 false이거나 목록에 없는 식재료면 give_notice(kind="out_of_scope_item")를 호출하고 item_name에 사장님이 말한 품목 이름을 넣는다.
 - 식자재 찾기와 무관한 말이면 give_notice(kind="off_topic")를 호출한다.
 
 search_vendors 값 규칙:
 - item_id는 반드시 후보 목록의 id 중 하나다.
-- qty_kg: 사장님이 양을 말했을 때만 kg 숫자로. '키로'·'킬로'는 kg. '1박스'는 4. 말하지 않았으면 null.
+- qty_kg: 사장님이 양을 말했을 때만 kg 숫자로. '키로'·'킬로'는 kg. 상추 '1박스'는 4. 다른 품목의 박스·상자처럼 무게를 모르는 단위는 지어내지 말고 null. 말하지 않았으면 null.
 - urgency: '지금'·'급해'·'바로'는 now, '오늘'은 today, '내일'은 tomorrow. 말하지 않았으면 null.
 - fulfillment: '배달'·'갖다줘'는 delivery, '가지러'·'직접'·'사러 갈게'는 pickup. 말하지 않았으면 null.
 - 문장에 없는 값은 절대 지어내지 않는다. 모르면 null이다.
 - 판매처 이름, 가격, 입고 시간은 말하지 않는다. 결과는 앱이 보여 준다.
 
 check_price 값 규칙:
-- qty_kg: 문장에 있는 양을 kg 숫자로('키로'·'킬로'=kg, '1박스'=4, '500g'=0.5). 없으면 null.
+- qty_kg: 문장에 있는 양을 kg 숫자로('키로'·'킬로'=kg, 상추 '1박스'=4, '500g'=0.5). 다른 품목의 박스·상자처럼 무게를 모르는 단위는 null. 없으면 null.
 - amount_won: 문장에 있는 금액을 원 단위 정수로('만원'=10000, '만오천원'=15000, '3천원'=3000). 없으면 null.
 - 문장에 없는 양이나 금액은 절대 지어내지 않는다.
 
 도구 호출 예시:
 - 입력 '상추 2키로 급해요' → search_vendors({"item_id":"item_lettuce","qty_kg":2,"urgency":"now","fulfillment":null})
 - 입력 '상추' → search_vendors({"item_id":"item_lettuce","qty_kg":null,"urgency":null,"fulfillment":null})
+- 입력 '양파 10키로면 시세가 얼마 정도예요' → check_price({"item_id":"item_onion","qty_kg":10,"amount_won":null})
 <!-- prompt:end -->
 
 ## 입력과 기대 도구 호출 예시
@@ -69,6 +71,7 @@ check_price 값 규칙:
 
 | 버전 | 변경 |
 |---|---|
+| v5 | R1: '1박스=4kg'을 상추에만 적용, 무게를 모르는 다른 품목의 박스·상자는 null(f01). |
 | v3 | 기존 규칙과 도구 인자를 유지하고 정상·누락 입력 예시 두 개를 전송부에 추가했다. |
 | v2 | 가격 한 줄 진단 도구를 추가했다. 기존 Evals 결과는 이 버전의 기록이다. |
 

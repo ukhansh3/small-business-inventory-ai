@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from "react-native";
 import type { SearchResult } from "../../core/search-types";
 import { color, font } from "./theme";
-import { CompactStoreCard } from "./CompactStoreCard";
+import { StoreRows } from "./StoreRows";
 import type { Store } from "../lib/api-types";
 
 export function ResultList({ results, stores, location }: { results: SearchResult; stores: Store[]; location?: string }) {
@@ -21,11 +21,12 @@ export function ResultList({ results, stores, location }: { results: SearchResul
           <Text style={styles.groupTitle}>
             {g.title} <Text style={styles.count}>{g.count}</Text>
           </Text>
-          {g.items.map((c) => (
-            <CompactStoreCard key={c.vendor_id} location={location} deliveryLabel={c.delivery.display} store={stores.find((store) => store.store_id === c.vendor_id) ?? {
-              store_id: c.vendor_id, name: c.name, category: c.kind, distance_m: c.distance.meters,
-            }} />
-          ))}
+          <StoreRows location={location} rows={g.items.map((c) => ({
+            deliveryLabel: c.delivery.display,
+            store: stores.find((store) => store.store_id === c.vendor_id) ?? {
+              store_id: c.vendor_id, kind: "vendor" as const, name: c.name, category: c.kind, address: "", lat: 0, lng: 0, distance_m: c.distance.meters, vendor_card: c,
+            },
+          }))} />
         </View>
       ))}
     </View>

@@ -91,7 +91,11 @@ function useResource<T>(path: string | null) {
     refresh: () => setTick((n) => n + 1),
   };
 }
-export function LoginGate({ children }: { children: React.ReactNode }) {
+// 탭마다 로그인하면 무엇을 할 수 있는지 먼저 보여 준다(v3 화면 정리, 첫 방문자 기준 문구)
+export type GateIntro = { title: string; body: string; points: string[] };
+const DEFAULT_INTRO: GateIntro = { title: "로그인이 필요해요", body: "로그인하면 글을 나누고 업체를 저장할 수 있어요.", points: [] };
+
+export function LoginGate({ children, intro = DEFAULT_INTRO }: { children: React.ReactNode; intro?: GateIntro }) {
   const member = useMember(),
     [signup, setSignup] = useState(false),
     [email, setEmail] = useState(""),
@@ -99,13 +103,15 @@ export function LoginGate({ children }: { children: React.ReactNode }) {
     [passwordVisible, setPasswordVisible] = useState(false),
     [nickname, setNickname] = useState(""),
     [busy, setBusy] = useState(false),
-    [notice, setNotice] = useState("");
+    [notice, setNotice] = useState(""),
+    [tried, setTried] = useState(false);
   if (member.initializing)
     return (
       <Empty title="로그인 확인 중" body="저장된 계정을 확인하고 있어요." />
     );
   if (member.profile) return <>{children}</>;
   const submit = async () => {
+    setTried(true);
     setBusy(true);
     setNotice("");
     try {
@@ -127,10 +133,16 @@ export function LoginGate({ children }: { children: React.ReactNode }) {
       <View style={s.emptyIcon}>
         <AppIcon name="user" size={32} color={color.green} />
       </View>
-      <Text style={s.title}>
-        {signup ? "사장님, 반가워요" : "다시 만나서 반가워요"}
-      </Text>
-      <Text style={s.sub}>로그인하면 글을 나누고 업체를 저장할 수 있어요.</Text>
+      <Text style={s.title}>{signup ? "회원가입" : intro.title}</Text>
+      <Text style={s.sub}>{intro.body}</Text>
+      {!signup && intro.points.length > 0 && (
+        <View style={s.points}>
+          {intro.points.map((p) => (
+            <Text key={p} style={s.point}>· {p}</Text>
+          ))}
+        </View>
+      )}
+      {signup && <Text style={s.fieldLabel}>닉네임</Text>}
       {signup && (
         <TextInput
           accessibilityLabel="닉네임"
@@ -141,6 +153,7 @@ export function LoginGate({ children }: { children: React.ReactNode }) {
           style={s.input}
         />
       )}
+      <Text style={s.fieldLabel}>이메일</Text>
       <TextInput
         accessibilityLabel="이메일"
         placeholder="이메일"
@@ -150,6 +163,7 @@ export function LoginGate({ children }: { children: React.ReactNode }) {
         keyboardType="email-address"
         style={s.input}
       />
+      <Text style={s.fieldLabel}>비밀번호</Text>
       <View style={s.passwordRow}>
         <TextInput
           accessibilityLabel="비밀번호"
@@ -180,7 +194,7 @@ export function LoginGate({ children }: { children: React.ReactNode }) {
         }
         onPress={() => void submit()}
       />
-      <Action
+      {tried && <Action
         secondary
         label="인증 메일 다시 보내기"
         disabled={busy || !email.trim()}
@@ -192,10 +206,10 @@ export function LoginGate({ children }: { children: React.ReactNode }) {
             .catch((e) => setNotice(message(e)))
             .finally(() => setBusy(false));
         }}
-      />
+      />}
       <Action
         secondary
-        label={signup ? "이미 계정이 있어요" : "회원가입하기"}
+        label={signup ? "이미 계정이 있어요" : "처음이에요 · 회원가입하기"}
         onPress={() => {
           setSignup(!signup);
           setPasswordVisible(false);
@@ -260,7 +274,7 @@ function PostCard({
 
 export function CommunityScreen() {
   return (
-    <LoginGate>
+    <LoginGate intro={{ title: "로그인하고 함께 나눠요", body: "근처 사장님들과 구매처 정보를 나누는 곳이에요. 로그인하면 글을 보고 쓸 수 있어요.", points: ["어디서 사는지 묻는 구매처 질문", "산 가격을 알려 주는 가격 제보", "거래해 본 경험 후기"] }}>
       <CommunityContent />
     </LoginGate>
   );
@@ -627,7 +641,7 @@ function CommunityContent() {
 type Saved = { vendor_id: string; saved_at: string; store: Store | null };
 export function SavedScreen() {
   return (
-    <LoginGate>
+    <LoginGate intro={{ title: "로그인하고 업체를 저장해요", body: "자주 가는 업체를 저장해 두고 바로 찾을 수 있어요.", points: [] }}>
       <SavedContent />
     </LoginGate>
   );
@@ -741,7 +755,7 @@ export function ProfileScreen({
   location: string;
 }) {
   return (
-    <LoginGate>
+    <LoginGate intro={{ title: "로그인", body: "계정이 있으면 글쓰기·업체 저장·문의를 쓸 수 있어요. 지도와 AI 도우미는 로그인 없이도 쓸 수 있어요.", points: [] }}>
       <ProfileContent
         onSaved={onSaved}
         onLocation={onLocation}
@@ -879,6 +893,9 @@ const s = StyleSheet.create({
   flex: { flex: 1 },
   page: { padding: 18, paddingBottom: 32, gap: 14 },
   login: { padding: 24, paddingTop: 45, gap: 14 },
+  points: { gap: 4, marginTop: -4, marginBottom: 6 },
+  point: { fontSize: 14, color: color.ink, lineHeight: 21 },
+  fieldLabel: { fontSize: 13, fontWeight: "600", color: color.ink, marginBottom: -8 },
   title: {
     fontSize: 22,
     fontWeight: "700",

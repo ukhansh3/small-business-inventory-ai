@@ -486,8 +486,17 @@ v0.2(2026-11-04): MVP는 서버에 세션 저장소가 없어 조건 상태를 �
 ### API-17 동네 시세 — `GET /market?item_id=&location_id=`
 응답 `200`: Market. API-01·API-02 결과 응답에도 `market` 칸으로 같이 싣는다.
 
+### v3 추천 — API-01·API-02 결과 응답의 `recommendation` 칸 (ADR-013 팀 검토안, 2026-11-25)
+결과 응답(`type=results`, API-02 응답)에 `recommendation: Recommendation | null`을 더 싣는다. 앱이 구매 상황에 맞는 한 곳을 고르고 이유를 말한다.
+`Recommendation = { situation: "urgent_small"|"bulk_delivery"|"bulk_pickup", label, headline, reasons: string[], primary: Place, others: Place[], benchmark: string|null, extra: string|null }`,
+`Place = { id, name, kind, address, lat, lng, distance_m, distance_text, phone: string|null }`.
+- `urgent_small`: 양이 품목 거래 단위 미만(또는 모름)이고 지금 바로 → 가장 가까운 동네 채소 가게·마트(공공데이터) 3곳. 값은 수원 소매 범위만, 가게별 가격은 붙이지 않는다
+- `bulk_delivery`: 그 밖 → 전화번호가 있는 식자재 납품업체 가까운 3곳 + `benchmark`(서울 가락 상회 값으로 만든 적정 견적 범위) + `extra`(새벽 도매시장 직접 방문 한 줄)
+- `bulk_pickup`: 사장님이 직접 가겠다고 말한 대량 → 수원 농수산물도매시장(중도매인 묶음 한 곳)
+- 받는 방식(fulfillment)을 말하지 않았으면 더 묻지 않고 위 규칙으로 채운다(`field_source.fulfillment = "default"`, 칩으로 바꿀 수 있음)
+
 ### API-18 지도용 가게 — `GET /stores?location_id=&bbox=minLng,minLat,maxLng,maxLat&item_id=`
-`location_id`(거리 기준, 비면 기본 위치), `bbox`·`item_id`는 선택(v0.9). 응답 `200`: `{ location_id, stores: Store[] }`(거리순), `Store = { store_id, kind: "vendor"|"public", name, category, address, lat, lng, distance_m, vendor_card?: VendorCard, source?: "소상공인시장진흥공단 상가(상권)정보", source_date?: "YYYY-MM-DD" }`. 판매처는 `vendor_card`가 있고, 공공데이터 가게는 가격·입고·번호가 없다(R-22).
+`location_id`(거리 기준, 비면 기본 위치), `bbox`·`item_id`는 선택(v0.9). 응답 `200`: `{ location_id, stores: Store[] }`(거리순), `Store = { store_id, kind: "vendor"|"public", name, category, address, lat, lng, distance_m, vendor_card?: VendorCard, source?: string, source_date?: "YYYY-MM-DD", phone?: string|null, hours?: string }`. v3(11/25): 판매처에도 `source`(예: 수원시 농수산물도매시장 중도매인 명단)·`source_date`(확인일)·`hours`(주간 영업시간 한 줄)·`phone`(예시 판매처는 null), 식자재 납품업체(R-26)는 `phone`(등록 번호 있을 때). 판매처는 `vendor_card`가 있고, 공공데이터 가게는 가격·입고·번호가 없다(R-22).
 
 ## 4. 내부 도구 `search_vendors` (AI 전용, 외부 API 아님)
 
@@ -583,7 +592,7 @@ PATCH 요청 칸
 | AC-1 최소 판매량 | API-02 | qty_kg 1 → A 없음, 2 → A 있음 |
 | AC-2 배달 지역 | API-02 | B가 `no_delivery` 묶음, `delivery.state=unavailable` |
 | AC-4 가격 표시 | API-02, API-03 | C `price.display`·`per_kg_display` 문자열 일치, D `"가격 정보 없음"` |
-| AC-5 되묻기 순서 | API-01 | '상추' → ask.slot qty_kg → urgency → fulfillment. '상추 2키로 급해요' → 첫 ask.slot이 fulfillment |
+| AC-5 되묻기 순서 | API-01 | '상추' → ask.slot qty_kg → urgency → fulfillment. '상추 2키로 급해요' → 첫 ask.slot이 fulfillment. v3 검토안(ADR-013): fulfillment는 묻지 않고 상황으로 정함('상추' → qty_kg → urgency → 결과, '상추 2키로 급해요' → 바로 결과) |
 | AC-6 지어내지 않기 | API-01~03 | 응답의 모든 값이 데이터 파일에 있음(골든), AI 문장에 가게·가격 없음(evals) |
 | AC-7 영업 판정 | API-02 + `X-Debug-Now` | 21:00에 E가 `unavailable_time`, `"지금은 닫힘 · 내일 07:00"` |
 | AC-8 입고 판정 | API-02 + `X-Debug-Now` | F `restocked_today`, G `expected_today` 15:00 |

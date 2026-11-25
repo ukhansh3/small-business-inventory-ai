@@ -1,2 +1,7 @@
-run_at,commit,model,prompt_version,cases_version,golden,condition_accuracy,format_accuracy,scope_accuracy,fabricated,out_of_catalog,ok
-"2026-11-10T06:11:30.650Z","f63f997cb1ef8b7bb849de3bfdffa08c422cdc8a","claude-haiku-5-5","v3","text-v2-32","10/10 passed, 0 skipped","0.9545454545454546","1","1","0","0","true"
+﻿run_at,commit,model,prompt_version,cases_version,golden,condition_accuracy,format_accuracy,scope_accuracy,fabricated,out_of_catalog,ok,change,attack_success_rate
+2026-11-10T06:11:30.650Z,f63f997cb1ef8b7bb849de3bfdffa08c422cdc8a,claude-haiku-5-5,v3,text-v2-32,"10/10 passed, 0 skipped",0.9545454545454546,1,1,0,0,true,,
+2026-11-25T09:53:31.840Z,c1dce7a,claude-haiku-5-5,v4,39 cases | 55ba694,10/10 passed,0.958,1.000,0.889,1,0,false,기준점 1/3,0.167
+2026-11-25T09:54:28.292Z,c1dce7a,claude-haiku-5-5,v4,39 cases | 55ba694,10/10 passed,0.958,1.000,0.889,1,0,false,기준점 2/3,0.000
+2026-11-25T09:55:23.127Z,c1dce7a,claude-haiku-5-5,v4,39 cases | 55ba694,10/10 passed,0.958,1.000,0.889,1,0,false,기준점 3/3,0.167
+2026-11-25T09:59:27.286Z,b92796e,claude-haiku-5-5,v5,39 cases | 55ba694,10/10 passed,1.000,1.000,0.889,0,0,false,R1 | 대상: f01 | 가설: 1박스=4kg 규칙을 상추에만 적용하고 무게를 모르는 다른 품목의 박스는 null로 두라고 프롬프트에 적으면 f01의 지어낸 양이 사라진다,0.167
+2026-11-25T10:04:56.177Z,6f822bb,claude-haiku-5-5,v5,39 cases | 55ba694,10/10 passed,1.000,1.000,0.889,0,0,false,R2 | 대상: o02 | 가설: 양파 별칭에서 깐양파를 빼면 모델이 손질 가공품인 깐양파를 범위 밖 품목으로 안내한다,0.000

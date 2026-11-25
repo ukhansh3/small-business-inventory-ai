@@ -6,7 +6,11 @@ import { applyChoice, applyDecision, ASK_ORDER, partialCondition, type Partial, 
 import type { Dataset } from "../../core/types";
 import { PROMPT_VERSION } from "../ai/prompt";
 import { findCandidates } from "../ai/retrieval";
-import { buildPriceCheck, marketFor } from "../price-check";
+import { buildPriceCheck, marketFor, type PriceCheckDeps } from "../price-check";
+import { buildRecommendation, type RecommendDeps } from "../recommend";
+import { autoFulfillment } from "../../core/recommend";
+import { hasExplicitWeight, mentionedItem, unitQtyKg } from "../../core/units";
+import { withHere } from "../here";
 import { type AiClient, type AiDecision, AiUnavailableError } from "../ai/types";
 import { chips, type FieldSource, fieldSourceSchema, hasExampleData, type Slot } from "../condition";
 import type { ServerEnv } from "../env";
@@ -30,7 +34,12 @@ const bodySchema = z.strictObject({
   field_source: fieldSourceSchema.optional(),
 });
 
-export type AssistDeps = { data: Dataset; env: ServerEnv; ai: AiClient; clock?: () => Date; log?: Logger; dataVersion?: string };
+export type AssistDeps = {
+  data: Dataset; env: ServerEnv; ai: AiClient; clock?: () => Date; log?: Logger; dataVersion?: string;
+  // v3 시세(가격 진단·결과 시세 카드). 배포에서는 defaultDeps가 넣는다
+  prices?: PriceCheckDeps["prices"]; loadPrices?: PriceCheckDeps["loadPrices"]; history?: PriceCheckDeps["history"];
+  publicStores?: RecommendDeps["publicStores"]; supplyVendors?: RecommendDeps["supplyVendors"];
+};
 
 const EMPTY: Partial = { item_id: null, qty_kg: null, urgency: null, fulfillment: null, location_id: null };
 
@@ -93,17 +102,30 @@ export function handleAssistTurn(req: Request, deps: AssistDeps): Promise<Respon
         if (aiBlocked) throw new AiUnavailableError("호출 한도");
         decision = await deps.ai.decide({ text, candidates: findCandidates(text, deps.data.items) });
       } catch (e) {
-        if (e instanceof AiUnavailableError) {
-          // WF-12: 지금까지의 조건을 돌려줘 앱이 칩 편집 → API-02로 이어 가게 한다(AC-15)
-          const message = "잠깐 문제가 있어요. 조건을 직접 골라 주세요.";
+        if (!(e instanceof AiUnavailableError)) throw e;
+        // v3: 문장에 다른 품목 이름이 있으면 이전 품목으로 검색하지 않는다(결정적 규칙, AI 프롬프트와 별개)
+        const said = mentionedItem(text, deps.data.items);
+        if (said && !said.active) {
+          decision = { type: "notice", kind: "out_of_scope_item", item_name: said.name };
+        } else {
+          const switched = !!said && said.id !== cond.item_id;
+          const itemId = said?.id ?? cond.item_id ?? "item_lettuce";
+          const fallbackCond = switched ? { ...cond, item_id: itemId, qty_kg: unitQtyKg(text, itemId) } : { ...cond, item_id: itemId };
+          const fallbackSrc: Record<string, FieldSource> = switched ? { ...src, item_id: "said" } : src;
+          if (switched) delete fallbackSrc.qty_kg;
+          const itemName = deps.data.items.find((i) => i.id === itemId)?.name ?? "";
+          // WF-12: 조건을 돌려줘 앱이 칩 편집 → API-02로 이어 가게 한다(AC-15). 어떤 품목인지 문구에 밝힌다
+          const message = `잠깐 문제가 있어요. ${itemName} 조건을 직접 골라 주세요.`;
           await record({ kind: "notice", text: message }, { outcome: "ai_failed", condition: null, tool_call: null });
-          throw new HttpError("AI_UNAVAILABLE", message, {
-            session_id: sessionId,
-            condition: { ...cond, item_id: cond.item_id ?? "item_lettuce" },
-            field_source: src,
-          });
+          throw new HttpError("AI_UNAVAILABLE", message, { session_id: sessionId, condition: fallbackCond, field_source: fallbackSrc });
         }
-        throw e;
+      }
+
+      // v3: 거래 단위만 쓴 양(한 단·한 망·한 박스)은 품목 단위로 kg 환산. 무게를 직접 쓰지 않았으면 AI 추정보다 우선
+      // (AI가 감자 한 박스를 상추 상자처럼 4kg으로 읽은 사례, 2026-11-25 실시간 점검)
+      if (decision.type === "search" || decision.type === "price") {
+        const kg = unitQtyKg(text, decision.item_id);
+        if (kg !== null && (decision.qty_kg === null || !hasExplicitWeight(text))) decision = { ...decision, qty_kg: kg };
       }
 
       // 서버가 다시 검증: AI가 고른 품목이 active가 아니면 범위 밖으로 본다(R-13)
@@ -117,13 +139,23 @@ export function handleAssistTurn(req: Request, deps: AssistDeps): Promise<Respon
 
       if (decision.type === "notice") {
         const name = decision.item_name;
+        const activeNames = deps.data.items.filter((i) => i.active).map((i) => i.name).join("·");
         const known = name ? deps.data.items.find((i) => i.name === name || i.aliases.includes(name)) : undefined;
+        // v3: 식재료·배달을 찾는 말인데 품목이 없으면 잡담 대신 품목을 묻고 배달 업체 위치를 알려 준다
+        const looksLikeSourcing = /식자재|식재료|채소|야채|농산물|납품|배달|도매|재료/.test(text);
         const notice =
           decision.kind === "off_topic"
-            ? { kind: "off_topic", message: "이 도우미에서는 식재료 판매처와 가격을 확인할 수 있어요. 업체나 업종은 지도에서 검색해 주세요.", recognized_item: null, actions: ["search_lettuce"] }
+            ? {
+                kind: "off_topic",
+                message: looksLikeSourcing
+                  ? `어떤 재료가 필요하세요? ${activeNames}는 판매처와 시세를 찾아 드려요. 배달해 주는 식자재 납품업체는 지도 탭에서 '식자재 납품업체'로 볼 수 있어요.`
+                  : "이 도우미에서는 식재료 판매처와 가격을 확인할 수 있어요. 업체나 업종은 지도에서 검색해 주세요.",
+                recognized_item: null,
+                actions: ["search_lettuce"],
+              }
             : {
                 kind: "out_of_scope_item",
-                message: name ? `아직 상추만 준비돼 있어요. ${name} 요청을 남겨 주시면 먼저 준비할게요.` : "아직 상추만 준비돼 있어요.",
+                message: name ? `아직 ${activeNames}만 준비돼 있어요. ${name} 요청을 남겨 주시면 먼저 준비할게요.` : `아직 ${activeNames}만 준비돼 있어요.`,
                 recognized_item: name ? { item_id: known?.id ?? null, name } : null,
                 actions: ["request_item", "search_lettuce"],
               };
@@ -135,7 +167,12 @@ export function handleAssistTurn(req: Request, deps: AssistDeps): Promise<Respon
       if (decision.type === "price") {
         const d = decision;
         const complete = d.qty_kg !== null && d.qty_kg > 0 && d.amount_won !== null && d.amount_won > 0;
-        const price_check = await buildPriceCheck(deps, {
+        const itemName = deps.data.items.find((i) => i.id === d.item_id)?.name ?? "";
+        // v3: 금액 없이 시세만 물으면 그 품목 시세 카드를 보여 준다(지어내지 않고 공공데이터만)
+        const incompleteMessage = d.amount_won === null || !(d.amount_won > 0)
+          ? `${itemName} 시세예요. 산 양과 금액을 같이 적으면 잘 샀는지 알려 드려요.`
+          : "양과 금액을 같이 적어 주세요. 예: 상추 2kg 1만원";
+        const price_check = await buildPriceCheck({ ...deps, data: withHere(deps.data, req) }, {
           device_id: deviceId,
           is_test: isTestDevice(req),
           session_id: sessionId,
@@ -149,7 +186,8 @@ export function handleAssistTurn(req: Request, deps: AssistDeps): Promise<Respon
           purchased_on: null,
           delivery_fee_won: null,
           lines: complete ? [{ raw_name: text, item_id: d.item_id, qty_kg: d.qty_kg, amount_won: Math.round(d.amount_won!) }] : [],
-          message: complete ? null : "양과 금액을 같이 적어 주세요. 예: 상추 2kg 1만원",
+          message: complete ? null : incompleteMessage,
+          market_item_id: d.item_id,
         });
         const line = price_check.lines[0];
         await record({ kind: "price_check", text: line?.verdict_display ?? line?.reason ?? price_check.message }, { outcome: "price_check", condition: null, tool_call: null });
@@ -164,6 +202,11 @@ export function handleAssistTurn(req: Request, deps: AssistDeps): Promise<Respon
 
     // 수량을 말하지 않아도 판매처를 검색할 수 있다.
     src.qty_kg ??= "default";
+    // v3(ADR-013 검토안): 받는 방식은 묻지 않고 상황으로 정한다(지금+거래 단위 미만이면 직접, 그 밖은 배달). 말했으면 그대로
+    if (src.fulfillment === undefined && src.urgency !== undefined && cond.item_id && cond.urgency) {
+      cond.fulfillment = autoFulfillment(cond.item_id, cond.qty_kg, cond.urgency as Urgency);
+      src.fulfillment = "default";
+    }
     const missing = ASK_ORDER.find((slot) => src[slot] === undefined);
     if (missing) {
       const q = QUESTIONS[missing];
@@ -187,7 +230,7 @@ export function handleAssistTurn(req: Request, deps: AssistDeps): Promise<Respon
     let results;
     const searchStarted = Date.now();
     try {
-      results = search(deps.data, full, requestNow(req, deps.env, deps.clock));
+      results = search(withHere(deps.data, req), full, requestNow(req, deps.env, deps.clock));
     } catch (e) {
       if (e instanceof SearchInputError) throw new HttpError(e.code, e.message);
       throw e;
@@ -215,6 +258,7 @@ export function handleAssistTurn(req: Request, deps: AssistDeps): Promise<Respon
       chips: chips(full, deps.data),
       results,
       market: await marketFor(deps, full.item_id), // v2 동네 시세 한 줄(R-18)
+      recommendation: await buildRecommendation(deps, withHere(deps.data, req), full, requestNow(req, deps.env, deps.clock)), // v3(ADR-013 검토안)
     });
   });
 }

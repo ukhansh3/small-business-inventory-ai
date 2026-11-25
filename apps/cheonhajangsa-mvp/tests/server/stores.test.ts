@@ -47,3 +47,25 @@ describe("API-18 지도용 가게", () => {
     expect((await get("location_id=loc_test", {})).status).toBe(401);
   });
 });
+
+describe("가상 시연 가게 제거(2026-11-25)", () => {
+  it("지도 응답에 가상 시연 가게가 없다", async () => {
+    const res = await handleStores(new Request("http://test/api/v1/stores?location_id=loc_test", { headers: { "x-device-id": DEVICE } }),
+      { data, publicStores, env: readEnv({}), clock: () => MON_1000 });
+    const b = (await res.json()) as { stores: Store[] };
+    expect(b.stores.some((s) => s.store_id.startsWith("demo-"))).toBe(false);
+    expect(b.stores.every((s) => !("demo_service" in s))).toBe(true);
+  });
+});
+
+describe("판매처 상세 핵심 정보(v3)", () => {
+  it("판매처에 출처·확인일·영업시간·전화를 붙이고, 공공데이터 가게에는 번호를 붙이지 않는다", async () => {
+    const b = (await (await get("location_id=loc_test")).json()) as { stores: Store[] };
+    const v = b.stores.find((s) => s.store_id === "v_601")!;
+    expect(typeof v.hours).toBe("string");
+    expect(v.hours!.length).toBeGreaterThan(0);
+    expect(v).toHaveProperty("source");
+    const p = b.stores.find((s) => s.store_id === "ps_A1")!;
+    expect(p.phone).toBeUndefined();
+  });
+});

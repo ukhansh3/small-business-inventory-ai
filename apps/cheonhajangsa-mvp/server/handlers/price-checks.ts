@@ -1,3 +1,6 @@
+import { withHere } from "../here";
+import type { MarketHistoryFile } from "../../core/market-history";
+import type { MarketPricesFile } from "../../core/market-prices";
 import { z } from "zod";
 import type { Dataset } from "../../core/types";
 import { seoulNow } from "../../core/time";
@@ -15,7 +18,7 @@ import { buildPriceCheck, marketFor } from "../price-check";
 
 export const MAX_IMAGE_BYTES = 3 * 1024 * 1024; // base64로 약 4MB. Vercel 함수 본문 한도 4.5MB
 
-export type PriceChecksDeps = { data: Dataset; env: ServerEnv; vision: VisionClient; clock?: () => Date; log?: Logger };
+export type PriceChecksDeps = { data: Dataset; env: ServerEnv; vision: VisionClient; clock?: () => Date; log?: Logger; prices?: MarketPricesFile | null; loadPrices?: () => Promise<MarketPricesFile>; history?: MarketHistoryFile | null };
 
 const photoSchema = z.strictObject({
   image: z.strictObject({ media_type: z.enum(["image/jpeg", "image/png", "image/webp"]), data: z.string().min(1) }),
@@ -65,7 +68,7 @@ export function handlePhotoCheck(req: Request, deps: PriceChecksDeps): Promise<R
     }
 
     const check = await buildPriceCheck(
-      { data: deps.data, log },
+      { data: withHere(deps.data, req), log, prices: deps.prices, loadPrices: deps.loadPrices, history: deps.history },
       {
         device_id: deviceId,
         is_test: isTestDevice(req),
@@ -107,7 +110,7 @@ export function handleMarket(req: Request, deps: { data: Dataset; log?: Logger }
     const itemId = new URL(req.url).searchParams.get("item_id");
     const item = deps.data.items.find((i) => i.id === itemId);
     if (!item) throw new HttpError("INVALID_INPUT", "품목이 필요해요.");
-    if (!item.active) throw new HttpError("ITEM_NOT_ACTIVE", "아직 상추만 준비돼 있어요.");
+    if (!item.active) throw new HttpError("ITEM_NOT_ACTIVE", `아직 ${deps.data.items.filter((i) => i.active).map((i) => i.name).join("·")}만 준비돼 있어요.`);
     return json(200, await marketFor(deps, item.id));
   });
 }

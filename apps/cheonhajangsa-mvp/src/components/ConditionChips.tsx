@@ -5,7 +5,7 @@ import { color, font } from "./theme";
 
 // S-02 조건 요약 칩. 칩을 누르면 그 조건만 고친다(WF-08).
 // 위치 칩은 위치 고르기 화면(S-06)으로 간다.
-const EDITABLE: Partial<Record<Chip["slot"], EditorState | "location">> = { qty_kg: "qty_kg", urgency: "urgency", fulfillment: "fulfillment", location_id: "location" };
+const EDITABLE: Partial<Record<Chip["slot"], EditorState | "location">> = { item_id: "item_id", qty_kg: "qty_kg", urgency: "urgency", fulfillment: "fulfillment", location_id: "location" };
 
 export function ConditionChips({
   chips,

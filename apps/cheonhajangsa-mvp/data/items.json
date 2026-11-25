@@ -17,20 +17,32 @@
     "name": "대파",
     "aliases": [
       "파",
-      "쪽파"
+      "대파 한단"
     ],
     "category": "채소",
-    "active": false,
+    "active": true,
     "default_unit": "kg"
   },
   {
     "id": "item_onion",
     "name": "양파",
     "aliases": [
-      "깐양파"
+      "깐양파",
+      "양파망"
     ],
     "category": "채소",
-    "active": false,
+    "active": true,
+    "default_unit": "kg"
+  },
+  {
+    "id": "item_potato",
+    "name": "감자",
+    "aliases": [
+      "수미감자",
+      "햇감자"
+    ],
+    "category": "채소",
+    "active": true,
     "default_unit": "kg"
   },
   {

@@ -32,7 +32,8 @@ describe("API-02 POST /search", () => {
     expect(res.status).toBe(200);
     const body = await res.json();
     // v0.7(v2): 결과에 동네 시세(market) 칸이 붙는다
-    expect(Object.keys(body).sort()).toEqual(["ai_mode", "chips", "condition", "example_data", "market", "results"]);
+    // v3(ADR-013 검토안): 구매 상황별 추천(recommendation)이 붙는다. 데이터가 없으면 null
+    expect(Object.keys(body).sort()).toEqual(["ai_mode", "chips", "condition", "example_data", "market", "recommendation", "results"]);
     expect(body.market).toMatchObject({ item_id: "item_lettuce", samples: expect.any(Number) });
     expect(body.condition).toMatchObject({ ...condition(2), version: 1 });
     expect(body.chips.map((c: { label: string }) => c.label)).toEqual(["상추", "2kg", "지금 바로", "직접", "테스트 위치"]);

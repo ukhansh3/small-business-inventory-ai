@@ -65,14 +65,17 @@ describe("AC-16 데이터 형식 검사", () => {
   });
 
   it("R-10 가격이 있는데 출처가 없으면 실패한다", () => {
+    // v3 실제 데이터는 가격이 없으므로, 가격만 있고 출처가 빠진 판매 정보를 만든다
     const d = clone();
-    d.offers[0]!.price_source = null;
+    Object.assign(d.offers[0]!, { price: 3000, price_unit_label: "1kg", unit_kg: 1, price_source: null, price_checked_on: "2026-11-25" });
     expectInvalid(d, "단위·출처·확인일");
   });
 
   it("예시 판매처의 가격 출처가 예시가 아니면 실패한다", () => {
     const d = clone();
-    d.offers[0]!.price_source = "현장확인";
+    const vid = d.offers[0]!.vendor_id;
+    d.vendors.find((v) => v.id === vid)!.data_status = "예시";
+    Object.assign(d.offers[0]!, { price: 3000, price_unit_label: "1kg", unit_kg: 1, price_source: "현장확인", price_checked_on: "2026-11-25" });
     expectInvalid(d, "예시 판매처");
   });
 
@@ -90,7 +93,8 @@ describe("AC-16 데이터 형식 검사", () => {
 
   it("배달을 안 하는데 배달 동네가 있으면 실패한다", () => {
     const d = clone();
-    const v = d.vendors.find((x) => x.delivery_available === false)!;
+    const v = d.vendors[0]!;
+    v.delivery_available = false;
     v.delivery_dongs = ["원천동"];
     expectInvalid(d, "배달 동네");
   });

@@ -22,7 +22,7 @@ function won(n: number): string {
   return n.toLocaleString("ko-KR");
 }
 
-function LineRow({ line }: { line: PriceLine }) {
+function LineRow({ line, judgedAbove }: { line: PriceLine; judgedAbove: boolean }) {
   const badge = line.verdict === "pricier" ? styles.pricier : line.verdict === "cheaper" ? styles.cheaper : styles.normal;
   return (
     <View style={styles.line}>
@@ -32,7 +32,7 @@ function LineRow({ line }: { line: PriceLine }) {
         {won(line.amount_won)}원
         {line.price_per_kg !== null && line.comparable ? ` → kg당 ${won(line.price_per_kg)}원` : ""}
       </Text>
-      {line.verdict_display ? (
+      {judgedAbove ? null : line.verdict_display ? (
         <Text style={[styles.badge, badge]}>{line.verdict_display}</Text>
       ) : (
         line.reason && <Text style={styles.reason}>{line.reason}</Text>
@@ -54,22 +54,25 @@ export function PriceCheckCard({
   share: { state: RequestState; message: string | null };
   disabled: boolean;
   onShare: () => void;
-  onSearch: () => void;
+  onSearch: (itemName: string) => void;
   onCall: (c: Card) => void;
   onDetail: (c: Card) => void;
 }) {
   const judged = check.lines.find((l) => l.cheaper.length > 0);
+  // 시세 카드 판정 띠에 쓸 줄(시세 품목과 같은 첫 판정 줄). 이 줄의 판정은 아래 목록에서 다시 쓰지 않는다
+  const mine = check.market ? check.lines.find((l) => l.comparable && l.verdict_title && l.item_id === check.market!.item_id) ?? null : null;
   const canShare = check.lines.some((l) => l.comparable);
+  const itemName = check.lines.find((l) => l.comparable && l.item_name)?.item_name ?? check.market?.ladder?.item_name ?? "상추";
   const meta = [DOC_LABEL[check.doc_type], SELLER_LABEL[check.seller_type], check.purchased_on].filter(Boolean).join(" · ");
   return (
     <View style={styles.card}>
       <Text style={styles.meta}>{meta}</Text>
-      {check.market && <MarketLine market={check.market} />}
+      {check.market && <MarketLine market={check.market} mine={mine} />}
       {check.lines.length > 0 && (
         <View style={styles.lines}>
           <Text style={styles.section}>이렇게 읽었어요</Text>
           {check.lines.map((l) => (
-            <LineRow key={l.line_no} line={l} />
+            <LineRow key={l.line_no} line={l} judgedAbove={!!check.market?.ladder && l === mine} />
           ))}
           {check.delivery_fee_won !== null && <Text style={styles.reason}>배송비 {won(check.delivery_fee_won)}원은 빼고 계산했어요.</Text>}
         </View>
@@ -85,15 +88,15 @@ export function PriceCheckCard({
       <View style={styles.actions}>
         {canShare && share.state !== "done" && (
           <Pressable accessibilityRole="button" disabled={disabled || share.state === "sending"} onPress={onShare} style={[styles.btn, styles.primary]}>
-            <Text style={[styles.btnLabel, styles.primaryLabel]}>{share.state === "sending" ? "보태는 중…" : "이 가격 동네 시세에 보태기"}</Text>
+            <Text style={[styles.btnLabel, styles.primaryLabel]}>{share.state === "sending" ? "보태는 중…" : "이 가격 기록에 보태기"}</Text>
           </Pressable>
         )}
-        <Pressable accessibilityRole="button" disabled={disabled} onPress={onSearch} style={styles.btn}>
-          <Text style={styles.btnLabel}>상추 판매처 찾기</Text>
+        <Pressable accessibilityRole="button" disabled={disabled} onPress={() => onSearch(itemName)} style={styles.btn}>
+          <Text style={styles.btnLabel}>{itemName} 판매처 찾기</Text>
         </Pressable>
       </View>
       {share.message && <Text style={[styles.shareMsg, share.state === "failed" && styles.fail]}>{share.message}</Text>}
-      {canShare && share.state !== "done" && <Text style={styles.note}>보태면 가게 이름 없이 kg당 가격만 동네 시세에 들어가요.</Text>}
+      {canShare && share.state !== "done" && <Text style={styles.note}>보태면 가게 이름 없이 kg당 가격만 기록돼요. 모이면 사장님들이 실제로 산 가격으로 보여 드려요.</Text>}
       {check.source === "photo" && <Text style={styles.note}>사진은 진단에만 쓰고 저장하지 않아요.</Text>}
     </View>
   );

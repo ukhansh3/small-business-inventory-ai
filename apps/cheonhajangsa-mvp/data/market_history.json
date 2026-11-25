@@ -1,0 +1,127 @@
+{
+  "region": "수원",
+  "built_on": "2026-11-25",
+  "source": "한국농수산식품유통공사 전국 공영도매시장 실시간 경매정보(수원 농수산물도매시장), kg당 낙찰가 중앙값",
+  "items": [
+    {
+      "item_id": "item_lettuce",
+      "weeks": [
+        {
+          "week_start": "2026-10-26",
+          "per_kg": 2750,
+          "trades": 235
+        },
+        {
+          "week_start": "2026-11-02",
+          "per_kg": 3750,
+          "trades": 257
+        },
+        {
+          "week_start": "2026-11-09",
+          "per_kg": 4500,
+          "trades": 231
+        },
+        {
+          "week_start": "2026-11-16",
+          "per_kg": 3538,
+          "trades": 258
+        },
+        {
+          "week_start": "2026-11-23",
+          "per_kg": 3500,
+          "trades": 116
+        }
+      ]
+    },
+    {
+      "item_id": "item_onion",
+      "weeks": [
+        {
+          "week_start": "2026-10-26",
+          "per_kg": 1187,
+          "trades": 65
+        },
+        {
+          "week_start": "2026-11-02",
+          "per_kg": 1200,
+          "trades": 51
+        },
+        {
+          "week_start": "2026-11-09",
+          "per_kg": 1333,
+          "trades": 34
+        },
+        {
+          "week_start": "2026-11-16",
+          "per_kg": 1347,
+          "trades": 54
+        },
+        {
+          "week_start": "2026-11-23",
+          "per_kg": 1400,
+          "trades": 24
+        }
+      ]
+    },
+    {
+      "item_id": "item_green_onion",
+      "weeks": [
+        {
+          "week_start": "2026-10-26",
+          "per_kg": 1300,
+          "trades": 120
+        },
+        {
+          "week_start": "2026-11-02",
+          "per_kg": 1200,
+          "trades": 134
+        },
+        {
+          "week_start": "2026-11-09",
+          "per_kg": 1060,
+          "trades": 131
+        },
+        {
+          "week_start": "2026-11-16",
+          "per_kg": 1150,
+          "trades": 123
+        },
+        {
+          "week_start": "2026-11-23",
+          "per_kg": 1550,
+          "trades": 63
+        }
+      ]
+    },
+    {
+      "item_id": "item_potato",
+      "weeks": [
+        {
+          "week_start": "2026-10-26",
+          "per_kg": 1150,
+          "trades": 161
+        },
+        {
+          "week_start": "2026-11-02",
+          "per_kg": 1200,
+          "trades": 133
+        },
+        {
+          "week_start": "2026-11-09",
+          "per_kg": 1138,
+          "trades": 130
+        },
+        {
+          "week_start": "2026-11-16",
+          "per_kg": 1050,
+          "trades": 115
+        },
+        {
+          "week_start": "2026-11-23",
+          "per_kg": 1300,
+          "trades": 29
+        }
+      ]
+    }
+  ]
+}
