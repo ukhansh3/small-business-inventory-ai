@@ -1,6 +1,6 @@
 // 지도 핀(v2 4절). 진한 색: 확인된 판매처 / 예시 판매처 / 흐린 색: 공공데이터 가게 / 내 위치
 export type PinKind = "vendor" | "example" | "public" | "me";
-export type Pin = { id: string; lat: number; lng: number; kind: PinKind; name: string };
+export type Pin = { id: string; lat: number; lng: number; kind: PinKind; name: string; tone?: import("../lib/store-tone").StoreTone };
 export type MapProps = {
   center: { lat: number; lng: number };
   pins: Pin[];
