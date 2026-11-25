@@ -62,7 +62,7 @@ export function PriceCheckCard({
   // 시세 카드 판정 띠에 쓸 줄(시세 품목과 같은 첫 판정 줄). 이 줄의 판정은 아래 목록에서 다시 쓰지 않는다
   const mine = check.market ? check.lines.find((l) => l.comparable && l.verdict_title && l.item_id === check.market!.item_id) ?? null : null;
   const canShare = check.lines.some((l) => l.comparable);
-  const itemName = check.lines.find((l) => l.comparable && l.item_name)?.item_name ?? "상추";
+  const itemName = check.lines.find((l) => l.comparable && l.item_name)?.item_name ?? check.market?.ladder?.item_name ?? "상추";
   const meta = [DOC_LABEL[check.doc_type], SELLER_LABEL[check.seller_type], check.purchased_on].filter(Boolean).join(" · ");
   return (
     <View style={styles.card}>

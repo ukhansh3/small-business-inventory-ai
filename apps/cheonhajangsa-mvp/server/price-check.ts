@@ -70,10 +70,11 @@ export async function buildPriceCheck(
     delivery_fee_won: number | null;
     lines: PurchaseLineInput[];
     message?: string | null;
+    market_item_id?: string | null; // v3: 진단할 줄이 없어도 이 품목 시세를 보여 준다(시세만 물을 때)
   },
 ): Promise<PriceCheck> {
   // 시세는 비교할 수 있는 품목(active)마다 한 번만 읽는다
-  const itemIds = [...new Set(input.lines.map((l) => l.item_id).filter((id): id is string => !!id && !!deps.data.items.find((i) => i.id === id && i.active)))];
+  const itemIds = [...new Set([...input.lines.map((l) => l.item_id), ...(input.lines.length === 0 ? [input.market_item_id ?? null] : [])].filter((id): id is string => !!id && !!deps.data.items.find((i) => i.id === id && i.active)))];
   const markets = new Map<string, Market>();
   for (const id of itemIds) markets.set(id, await marketFor(deps, id));
 

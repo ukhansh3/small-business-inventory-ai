@@ -84,8 +84,14 @@ function conditionOnly(c: PartialCondition): PartialCondition {
   return { item_id: c.item_id, qty_kg: c.qty_kg, urgency: c.urgency, fulfillment: c.fulfillment, location_id: c.location_id };
 }
 
-function resultLine(r: SearchResult): string {
-  return r.total > 0 ? `조건에 맞는 곳 ${r.total}곳을 찾았어요.` : "조건에 맞는 곳이 없어요.";
+// 결과 말풍선. "조건에 맞는 곳"은 조건을 다 맞춘 묶음(available)만 센다(v3: 배달 0곳인데 78곳이라 하지 않게)
+export function resultLine(r: SearchResult): string {
+  if (r.total === 0) return "조건에 맞는 곳이 없어요.";
+  const ok = r.groups.find((g) => g.key === "available")?.count ?? 0;
+  if (ok > 0) return `조건에 맞는 곳 ${ok}곳을 찾았어요.`;
+  const noDelivery = r.groups.find((g) => g.key === "no_delivery")?.count ?? 0;
+  if (noDelivery > 0) return `배달이 확인된 곳은 아직 없어요. 직접 가실 수 있는 곳 ${noDelivery}곳을 보여 드려요. 배달해 주는 식자재 납품업체는 지도 탭에서 볼 수 있어요.`;
+  return `고른 시간에 여는 곳은 없어요. 다른 시간에 여는 곳 ${r.total}곳을 보여 드려요.`;
 }
 
 export function reduce(s: AssistState, a: AssistAction): AssistState {
