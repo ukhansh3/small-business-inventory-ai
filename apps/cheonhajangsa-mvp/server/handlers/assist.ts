@@ -7,6 +7,8 @@ import type { Dataset } from "../../core/types";
 import { PROMPT_VERSION } from "../ai/prompt";
 import { findCandidates } from "../ai/retrieval";
 import { buildPriceCheck, marketFor, type PriceCheckDeps } from "../price-check";
+import { buildRecommendation, type RecommendDeps } from "../recommend";
+import { autoFulfillment } from "../../core/recommend";
 import { hasExplicitWeight, mentionedItem, unitQtyKg } from "../../core/units";
 import { withHere } from "../here";
 import { type AiClient, type AiDecision, AiUnavailableError } from "../ai/types";
@@ -36,6 +38,7 @@ export type AssistDeps = {
   data: Dataset; env: ServerEnv; ai: AiClient; clock?: () => Date; log?: Logger; dataVersion?: string;
   // v3 시세(가격 진단·결과 시세 카드). 배포에서는 defaultDeps가 넣는다
   prices?: PriceCheckDeps["prices"]; loadPrices?: PriceCheckDeps["loadPrices"]; history?: PriceCheckDeps["history"];
+  publicStores?: RecommendDeps["publicStores"]; supplyVendors?: RecommendDeps["supplyVendors"];
 };
 
 const EMPTY: Partial = { item_id: null, qty_kg: null, urgency: null, fulfillment: null, location_id: null };
@@ -199,6 +202,11 @@ export function handleAssistTurn(req: Request, deps: AssistDeps): Promise<Respon
 
     // 수량을 말하지 않아도 판매처를 검색할 수 있다.
     src.qty_kg ??= "default";
+    // v3(ADR-013 검토안): 받는 방식은 묻지 않고 상황으로 정한다(지금+거래 단위 미만이면 직접, 그 밖은 배달). 말했으면 그대로
+    if (src.fulfillment === undefined && src.urgency !== undefined && cond.item_id && cond.urgency) {
+      cond.fulfillment = autoFulfillment(cond.item_id, cond.qty_kg, cond.urgency as Urgency);
+      src.fulfillment = "default";
+    }
     const missing = ASK_ORDER.find((slot) => src[slot] === undefined);
     if (missing) {
       const q = QUESTIONS[missing];
@@ -250,6 +258,7 @@ export function handleAssistTurn(req: Request, deps: AssistDeps): Promise<Respon
       chips: chips(full, deps.data),
       results,
       market: await marketFor(deps, full.item_id), // v2 동네 시세 한 줄(R-18)
+      recommendation: await buildRecommendation(deps, withHere(deps.data, req), full, requestNow(req, deps.env, deps.clock)), // v3(ADR-013 검토안)
     });
   });
 }

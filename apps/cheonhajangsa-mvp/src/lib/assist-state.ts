@@ -22,6 +22,7 @@ export type AssistState = {
   chips: Chip[] | null;
   results: SearchResult | null;
   market: Market | null; // 결과 위 동네 시세 한 줄(v2 R-18)
+  recommendation: import("../../core/recommend").Recommendation | null; // v3(ADR-013 검토안) 구매 상황별 한 곳
   priceCheck: PriceCheck | null; // 단가 진단 결과(v2)
   share: { state: RequestState; message: string | null }; // 시세에 보태기(API-16)
   editor: EditorState;
@@ -50,6 +51,7 @@ export function initialState(exampleData: boolean, locationId: string | null = n
     chips: null,
     results: null,
     market: null,
+    recommendation: null,
     priceCheck: null,
     share: { state: "idle", message: null },
     editor: "closed",
@@ -116,7 +118,7 @@ export function reduce(s: AssistState, a: AssistAction): AssistState {
       }
       return {
         ...base,
-        ...say(s, "ai", resultLine(r.results)),
+        ...say(s, "ai", r.recommendation ? `${r.recommendation.headline}.` : resultLine(r.results)),
         ask: null,
         notice: null,
         condition: conditionOnly(r.condition),
@@ -125,6 +127,7 @@ export function reduce(s: AssistState, a: AssistAction): AssistState {
         chips: r.chips,
         results: r.results,
         market: r.market ?? null,
+        recommendation: r.recommendation ?? null,
         priceCheck: null,
         editor: "closed",
       };
@@ -144,6 +147,7 @@ export function reduce(s: AssistState, a: AssistAction): AssistState {
         chips: r.chips,
         results: r.results,
         market: r.market ?? null,
+        recommendation: r.recommendation ?? null,
         priceCheck: null,
         editor: "closed",
       };
@@ -199,6 +203,7 @@ function priceState(s: AssistState, c: PriceCheck): Partial<AssistState> {
     results: null,
     chips: null,
     market: null,
+    recommendation: null,
     editor: "closed",
   };
 }

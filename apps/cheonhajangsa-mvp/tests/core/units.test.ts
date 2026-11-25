@@ -1,8 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { mentionedItem, unitQtyKg } from "../../core/units";
+import { mentionedItem, unitQtyKg, hasExplicitWeight } from "../../core/units";
 import items from "../../data/items.json";
 import type { Item } from "../../core/types";
-import { resultLine } from "../../src/lib/assist-state";
+import { resultLine, initialState, reduce } from "../../src/lib/assist-state";
+import { ITEM_OPTIONS, qtyOptionsFor } from "../../core/options";
 
 // v3 문장 보조 규칙(결정적): 거래 단위 → kg, 문장 속 품목 찾기, 결과 말풍선
 
@@ -41,7 +42,6 @@ describe("결과 말풍선", () => {
   });
 });
 
-import { hasExplicitWeight } from "../../core/units";
 describe("무게 직접 표기", () => {
   it("숫자+무게 단위가 있으면 참", () => {
     expect(hasExplicitWeight("감자 20키로 한 박스")).toBe(true);
@@ -50,7 +50,6 @@ describe("무게 직접 표기", () => {
   });
 });
 
-import { ITEM_OPTIONS, qtyOptionsFor } from "../../core/options";
 describe("칩 편집 선택지(v3)", () => {
   it("품목은 비교 품목 4가지", () => {
     expect(ITEM_OPTIONS.map((o) => o.label)).toEqual(expect.arrayContaining(["상추", "양파", "대파", "감자"]));
@@ -62,7 +61,6 @@ describe("칩 편집 선택지(v3)", () => {
   });
 });
 
-import { initialState, reduce } from "../../src/lib/assist-state";
 describe("새 질문이 오면 이전 가격 카드를 거둔다(v3)", () => {
   it("가격 진단 뒤 되묻기가 오면 카드가 사라지고 요약은 말풍선에 남는다", () => {
     const check = { check_id: "c1", source: "text", doc_type: "text", seller_type: "unknown", purchased_on: null, delivery_fee_won: null, lines: [], market: null, message: "양파 시세예요.", example_data: false, ai_mode: "stored" } as never;

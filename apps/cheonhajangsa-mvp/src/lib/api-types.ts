@@ -91,6 +91,7 @@ export type TurnResponse =
       chips: Chip[];
       results: SearchResult;
       market?: Market;
+      recommendation?: import("../../core/recommend").Recommendation | null; // v3(ADR-013 검토안)
     });
 
 export type SearchResponse = {
@@ -98,6 +99,7 @@ export type SearchResponse = {
   chips: Chip[];
   results: SearchResult;
   market?: Market;
+  recommendation?: import("../../core/recommend").Recommendation | null; // v3(ADR-013 검토안)
   ai_mode: "live" | "stored";
   example_data: boolean;
 };

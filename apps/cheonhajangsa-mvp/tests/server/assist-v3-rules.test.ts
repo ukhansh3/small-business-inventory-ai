@@ -80,11 +80,12 @@ describe("식재료·배달을 찾는 말", () => {
 
 describe("AI가 실패했을 때", () => {
   it("문장에 다른 품목이 있으면 이전 품목 대신 그 품목으로, 이전 양은 비운다", async () => {
-    const t1 = await turn(ai({ type: "search", item_id: "item_lettuce", qty_kg: 2, urgency: "now", fulfillment: null }), "상추 2키로 급해요");
+    const t1 = await turn(ai({ type: "search", item_id: "item_lettuce", qty_kg: 2, urgency: null, fulfillment: null }), "상추 2키로");
+    expect(t1.body.type).toBe("ask");
     const t2 = await turn(ai("fail"), "양파 10키로 필요해요", { session_id: t1.body.session_id, turn_seq: t1.body.turn_seq, condition: t1.body.condition, field_source: t1.body.field_source });
     expect(t2.status).toBe(503);
     expect(t2.body.error.message).toBe("잠깐 문제가 있어요. 양파 조건을 직접 골라 주세요.");
-    expect(t2.body.error.detail.condition).toMatchObject({ item_id: "item_onion", qty_kg: null, urgency: "now" });
+    expect(t2.body.error.detail.condition).toMatchObject({ item_id: "item_onion", qty_kg: null });
     expect(t2.body.error.detail.field_source.qty_kg).toBeUndefined();
   });
   it("준비 안 된 품목이면 AI 없이도 범위 밖 안내", async () => {

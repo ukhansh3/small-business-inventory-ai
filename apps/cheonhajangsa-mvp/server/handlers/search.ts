@@ -8,6 +8,7 @@ import { handle, HttpError, isTestDevice, isUuid, json, readJson, requestAiMode,
 import type { Logger } from "../log/logger";
 import { noopLogger } from "../log/noop";
 import { marketFor } from "../price-check";
+import { buildRecommendation, type RecommendDeps } from "../recommend";
 import { withHere } from "../here";
 
 // API-02 조건 검색: POST /api/v1/search. AI를 부르지 않는다(AC-14).
@@ -18,7 +19,7 @@ const bodySchema = z.strictObject({
   changed: z.array(z.enum(SLOTS)).optional(),
 });
 
-export type SearchDeps = { data: Dataset; env: ServerEnv; clock?: () => Date; log?: Logger; dataVersion?: string };
+export type SearchDeps = { data: Dataset; env: ServerEnv; clock?: () => Date; log?: Logger; dataVersion?: string } & Omit<RecommendDeps, "data">;
 
 export function handleSearch(req: Request, deps: SearchDeps): Promise<Response> {
   return handle(async () => {
@@ -66,6 +67,8 @@ export function handleSearch(req: Request, deps: SearchDeps): Promise<Response> 
       chips: chips(values, deps.data),
       results,
       market: await marketFor(deps, values.item_id), // v2 동네 시세 한 줄(R-18)
+      // v3(ADR-013 검토안): 구매 상황별 한 곳 추천
+      recommendation: await buildRecommendation(deps, withHere(deps.data, req), values, requestNow(req, deps.env, deps.clock)),
       ai_mode: aiMode,
       example_data: hasExampleData(deps.data),
     });

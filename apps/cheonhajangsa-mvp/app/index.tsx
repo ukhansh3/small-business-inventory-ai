@@ -17,6 +17,7 @@ import { useHere } from "../src/lib/here";
 import { MarketLine } from "../src/components/MarketLine";
 import { NoticeCard } from "../src/components/NoticeCard";
 import { PriceCheckCard } from "../src/components/PriceCheckCard";
+import { RecommendationCard } from "../src/components/RecommendationCard";
 import { ResultList } from "../src/components/ResultList";
 import { color, font, radius } from "../src/components/theme";
 import type { Store } from "../src/lib/api-types";
@@ -78,8 +79,11 @@ export default function HomeScreen() {
   const mapStores = showAiResults ? st.stores : visibleStores;
   const pins = useMemo(() => pinsFor(mapStores, dot), [mapStores, dot?.lat, dot?.lng, dot?.name]); // eslint-disable-line react-hooks/exhaustive-deps
   const focusIds = useMemo(
-    () => focusFor(null, showAiResults ? s.results : null, showAiResults ? s.priceCheck : null),
-    [showAiResults, s.results, s.priceCheck],
+    // v3(ADR-013 검토안): 추천이 있으면 추천한 곳들을 강조한다
+    () => showAiResults && s.recommendation
+      ? [s.recommendation.primary, ...s.recommendation.others].map((p) => p.id)
+      : focusFor(null, showAiResults ? s.results : null, showAiResults ? s.priceCheck : null),
+    [showAiResults, s.results, s.priceCheck, s.recommendation],
   );
   const selected = selectedId ? mapStores.find((store) => store.store_id === selectedId) ?? null : null;
   const mapHeight = mapStageHeight;
@@ -198,7 +202,7 @@ export default function HomeScreen() {
             </ScrollView>}
             {sheetOpen && <ScrollView style={styles.body} contentContainerStyle={styles.mapContent} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
               {selected && <CompactStoreCard store={selected} location={me?.location_id}/>}
-              {showAiResults && s.results ? <ResultList results={s.results} stores={st.stores} location={me?.location_id} /> : st.error ? <ErrorRow message={st.error} onRetry={st.retry} /> : visibleStores.length === 0 ? <Text style={styles.sheetSub}>조건에 맞는 근처 업체가 없어요.</Text> : <StoreRows location={me?.location_id} rows={visibleStores.filter(store=>store.store_id!==selectedId).slice(0, storeQuery ? undefined : 30).map(store=>({ store }))}/>}
+              {showAiResults && s.results && s.recommendation ? <RecommendationCard rec={s.recommendation} /> : showAiResults && s.results ? <ResultList results={s.results} stores={st.stores} location={me?.location_id} /> : st.error ? <ErrorRow message={st.error} onRetry={st.retry} /> : visibleStores.length === 0 ? <Text style={styles.sheetSub}>조건에 맞는 근처 업체가 없어요.</Text> : <StoreRows location={me?.location_id} rows={visibleStores.filter(store=>store.store_id!==selectedId).slice(0, storeQuery ? undefined : 30).map(store=>({ store }))}/>}
             </ScrollView>}
             </View>
           </View>
@@ -225,8 +229,9 @@ export default function HomeScreen() {
                 {s.chips && <ConditionChips chips={s.chips} disabled={s.loading} onEdit={a.openEditor} onLocation={openLocation} />}
                 {s.editor !== "closed" && <ChipEditor key={s.editor} editor={s.editor} condition={s.condition} disabled={s.loading} onSubmit={a.editCondition} onClose={() => a.openEditor("closed")} />}
               </View>
+              {s.recommendation && s.results && <RecommendationCard rec={s.recommendation} />}
               {s.market && s.results && <MarketLine market={s.market} />}
-              {s.results && <><Pressable accessibilityRole="button" onPress={() => { setSelectedId(null); setShowAiResults(true); setSheetMode("list"); setTab("map"); }} style={styles.exampleChip}><Text style={styles.sheetLink}>⌖ 검색 결과 지도에서 보기</Text></Pressable><ResultList results={s.results} stores={st.stores} location={me?.location_id} /></>}
+              {s.results && <><Pressable accessibilityRole="button" onPress={() => { setSelectedId(null); setShowAiResults(true); setSheetMode("list"); setTab("map"); }} style={styles.exampleChip}><Text style={styles.sheetLink}>{s.recommendation ? "⌖ 추천한 곳 지도에서 보기" : "⌖ 검색 결과 지도에서 보기"}</Text></Pressable>{!s.recommendation && <ResultList results={s.results} stores={st.stores} location={me?.location_id} />}</>}
               {s.priceCheck && !s.loading && <View key={s.priceCheck.check_id} onLayout={(event) => { priceY.current = event.nativeEvent.layout.y; scroll.current?.scrollTo({ y: Math.max(priceY.current - 80, 0), animated: true }); }}><PriceCheckCard check={s.priceCheck} share={s.share} disabled={s.loading} onShare={a.sharePrice} onSearch={a.searchItem} onCall={onCall} onDetail={openDetail} /></View>}
             </ScrollView>
             <ChatInput disabled={s.loading} error={s.inputError} onSend={sendAssistantText} onPhoto={a.sendPhoto} />

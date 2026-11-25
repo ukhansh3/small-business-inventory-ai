@@ -82,9 +82,11 @@ export function storesDeps(): StoresDeps {
   };
 }
 
-export function defaultDeps(): { data: Dataset; prices: MarketPricesFile; loadPrices: () => Promise<MarketPricesFile>; history: MarketHistoryFile; env: ServerEnv; log: Logger; dataVersion: string } {
+export function defaultDeps(): { data: Dataset; prices: MarketPricesFile; loadPrices: () => Promise<MarketPricesFile>; history: MarketHistoryFile; env: ServerEnv; log: Logger; dataVersion: string; publicStores: PublicStoresFile; supplyVendors?: SupplyVendorsFile } {
   const { data, prices, loadPrices, history, env, log, dataVersion } = base();
-  return { data, prices, loadPrices, history, env, log, dataVersion };
+  // v3(ADR-013 검토안): AI 도우미 추천에 동네 가게·납품업체를 쓴다
+  const { publicStores, supplyVendors } = storesDeps();
+  return { data, prices, loadPrices, history, env, log, dataVersion, publicStores, supplyVendors };
 }
 
 // AI_MODE(또는 허용된 경우 X-AI-Mode 헤더)에 따라 실시간·저장된 응답을 고른다
