@@ -133,6 +133,7 @@ export type Store = {
   source?: string;
   source_date?: string;
   phone?: string | null;
+  hours?: string; // v3: 주간 영업시간 한 줄(판매처만)
 };
 
 // 503 AI_UNAVAILABLE의 detail

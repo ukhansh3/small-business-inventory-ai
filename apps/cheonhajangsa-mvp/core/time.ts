@@ -98,3 +98,29 @@ export function dayLabel(offset: number, day: Day): string {
 export function dayKo(day: Day): string {
   return DAY_KO[day];
 }
+
+const DAY_NAMES: Record<Day, string> = { mon: "월", tue: "화", wed: "수", thu: "목", fri: "금", sat: "토", sun: "일" };
+const WEEK: Day[] = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
+
+// 주간 영업시간 한 줄(v3 업체 상세). 예: "월~토 03:00~19:00 · 일 휴무", "매일 09:00~21:00"
+export function hoursSummary(hours: OpeningHours): string {
+  const slot = (d: Day) => {
+    const h = hours[d];
+    return h === "closed" || !h ? null : `${h.open}~${h.close}`;
+  };
+  const groups: { days: Day[]; slot: string | null }[] = [];
+  for (const d of WEEK) {
+    const s = slot(d);
+    const last = groups.at(-1);
+    if (last && last.slot === s) last.days.push(d);
+    else groups.push({ days: [d], slot: s });
+  }
+  const open = groups.filter((g) => g.slot !== null);
+  const closed = WEEK.filter((d) => slot(d) === null);
+  if (open.length === 0) return "영업시간 정보 없음";
+  if (open.length === 1 && open[0]!.days.length === 7) return `매일 ${open[0]!.slot}`;
+  const range = (days: Day[]) => (days.length === 1 ? DAY_NAMES[days[0]!] : `${DAY_NAMES[days[0]!]}~${DAY_NAMES[days.at(-1)!]}`);
+  const parts = open.map((g) => `${range(g.days)} ${g.slot}`);
+  if (closed.length) parts.push(`${closed.map((d) => DAY_NAMES[d]).join("·")} 휴무`);
+  return parts.join(" · ");
+}

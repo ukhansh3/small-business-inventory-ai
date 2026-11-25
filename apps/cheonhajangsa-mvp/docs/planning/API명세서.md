@@ -487,7 +487,7 @@ v0.2(2026-11-04): MVP는 서버에 세션 저장소가 없어 조건 상태를 �
 응답 `200`: Market. API-01·API-02 결과 응답에도 `market` 칸으로 같이 싣는다.
 
 ### API-18 지도용 가게 — `GET /stores?location_id=&bbox=minLng,minLat,maxLng,maxLat&item_id=`
-`location_id`(거리 기준, 비면 기본 위치), `bbox`·`item_id`는 선택(v0.9). 응답 `200`: `{ location_id, stores: Store[] }`(거리순), `Store = { store_id, kind: "vendor"|"public", name, category, address, lat, lng, distance_m, vendor_card?: VendorCard, source?: "소상공인시장진흥공단 상가(상권)정보", source_date?: "YYYY-MM-DD" }`. 판매처는 `vendor_card`가 있고, 공공데이터 가게는 가격·입고·번호가 없다(R-22).
+`location_id`(거리 기준, 비면 기본 위치), `bbox`·`item_id`는 선택(v0.9). 응답 `200`: `{ location_id, stores: Store[] }`(거리순), `Store = { store_id, kind: "vendor"|"public", name, category, address, lat, lng, distance_m, vendor_card?: VendorCard, source?: string, source_date?: "YYYY-MM-DD", phone?: string|null, hours?: string }`. v3(11/25): 판매처에도 `source`(예: 수원시 농수산물도매시장 중도매인 명단)·`source_date`(확인일)·`hours`(주간 영업시간 한 줄)·`phone`(예시 판매처는 null), 식자재 납품업체(R-26)는 `phone`(등록 번호 있을 때). 판매처는 `vendor_card`가 있고, 공공데이터 가게는 가격·입고·번호가 없다(R-22).
 
 ## 4. 내부 도구 `search_vendors` (AI 전용, 외부 API 아님)
 

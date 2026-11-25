@@ -62,3 +62,15 @@ describe("가상 시연 가게 정리(2026-11-25)", () => {
     expect(b.stores.find((s) => s.name === "가상청소")).toMatchObject({ demo_service: "주방 청소" });
   });
 });
+
+describe("판매처 상세 핵심 정보(v3)", () => {
+  it("판매처에 출처·확인일·영업시간·전화를 붙이고, 공공데이터 가게에는 번호를 붙이지 않는다", async () => {
+    const b = (await (await get("location_id=loc_test")).json()) as { stores: Store[] };
+    const v = b.stores.find((s) => s.store_id === "v_601")!;
+    expect(typeof v.hours).toBe("string");
+    expect(v.hours!.length).toBeGreaterThan(0);
+    expect(v).toHaveProperty("source");
+    const p = b.stores.find((s) => s.store_id === "ps_A1")!;
+    expect(p.phone).toBeUndefined();
+  });
+});

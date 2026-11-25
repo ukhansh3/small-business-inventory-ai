@@ -4,7 +4,7 @@ import type { PublicStoresFile } from "../../core/public-stores";
 import { SUPPLY_CATEGORY, type SupplyVendorsFile } from "../../core/supply-vendors";
 import { buildCard } from "../../core/search";
 import type { VendorCard } from "../../core/search-types";
-import { seoulNow } from "../../core/time";
+import { hoursSummary, seoulNow } from "../../core/time";
 import type { Dataset } from "../../core/types";
 import type { ServerEnv } from "../env";
 import { handle, HttpError, json, requestNow, requireDevice } from "../http";
@@ -13,6 +13,7 @@ import { handle, HttpError, json, requestNow, requireDevice } from "../http";
 // 판매처(예시·확인)는 결과 카드와 같은 카드를 붙이고, 공공데이터 가게는 공개 정보만(R-22). 거리순.
 
 export const PUBLIC_SOURCE = "소상공인시장진흥공단 상가(상권)정보";
+const VENDOR_SOURCES: Record<string, string> = { 공공명단: "수원시 농수산물도매시장 중도매인 명단" };
 
 export type Store = {
   store_id: string;
@@ -30,6 +31,7 @@ export type Store = {
   source?: string;
   source_date?: string;
   phone?: string | null;
+  hours?: string; // v3: 주간 영업시간 한 줄(판매처만)
 };
 
 // 가상 시연 가게 중 이 업종은 지도에 내지 않는다(2026-11-25 사용자 결정).
@@ -64,7 +66,15 @@ export function handleStores(req: Request, deps: StoresDeps): Promise<Response> 
       const v = deps.data.vendors.find((x) => x.id === o.vendor_id);
       if (!v || !inBox(v.lat, v.lng)) continue;
       const card = buildCard(v, o, { item_id: itemId, qty_kg: null, urgency: "now", fulfillment: "pickup", location_id: loc.id }, loc, sn);
-      stores.push({ store_id: v.id, kind: "vendor", name: v.name, category: v.kind, address: v.address, lat: v.lat, lng: v.lng, distance_m: card.distance.meters, vendor_card: { ...card, rank: 0 } });
+      stores.push({
+        store_id: v.id, kind: "vendor", name: v.name, category: v.kind, address: v.address, lat: v.lat, lng: v.lng,
+        distance_m: card.distance.meters, vendor_card: { ...card, rank: 0 },
+        // v3: 상세 화면 핵심 정보(출처·확인일·영업시간·전화). 예시 판매처는 번호를 내지 않는다
+        source: VENDOR_SOURCES[v.data_status] ?? v.data_status,
+        source_date: v.checked_on ?? undefined,
+        hours: hoursSummary(v.opening_hours),
+        phone: card.is_example ? null : v.phone,
+      });
     }
     for (const p of deps.publicStores.stores) {
       if (!inBox(p.lat, p.lng)) continue;

@@ -5,6 +5,7 @@ import { Linking, Pressable, ScrollView, StyleSheet, Text, View } from "react-na
 import { VendorReviews } from "../../src/components/VendorReviews";
 import { color } from "../../src/components/theme";
 import { useStores } from "../../src/hooks/useStores";
+import { displayName, toneOf, TONES } from "../../src/lib/store-tone";
 import { getSavedLocation } from "../../src/lib/location";
 
 export default function StoreDetail() {
@@ -19,6 +20,8 @@ export default function StoreDetail() {
 
   const [availability, setAvailability] = useState<{ vendorId: string; available: boolean }>();
   const vendorId = store?.store_id;
+  const tone = store ? toneOf(store) : "shop";
+  const phone = store?.phone ?? (store?.vendor_card && !store.vendor_card.is_example ? store.vendor_card.phone : null);
   const canInquire = availability?.vendorId !== vendorId || availability?.available !== false;
 
   useEffect(() => {
@@ -50,41 +53,56 @@ export default function StoreDetail() {
   return (
     <>
       <Stack.Screen options={{ headerShown: true, title: "업체 상세" }} />
-      <ScrollView contentContainerStyle={styles.page}>
+      <ScrollView style={styles.scroll} contentContainerStyle={styles.page}>
         {store ? (
           <>
-            <Text style={styles.title}>{store.name}</Text>
-            <Text style={styles.body}>{store.category}</Text>
-            <Text style={styles.body}>{store.demo_service
-              ? "시연용 업체예요. 제공 서비스는 " + store.demo_service + "입니다."
-              : store.name + "은(는) " + store.category + " 업체예요."}</Text>
-            {!store.demo_service && !!store.address && <Text style={styles.body}>{store.address}</Text>}
-            {!!store.source && <Text style={styles.body}>정보 출처 · {store.source}{store.source_date ? ` (${store.source_date} 기준)` : ""}</Text>}
-            {!store.demo_service && (
-              <Pressable accessibilityRole="link" onPress={() =>
-                void Linking.openURL("https://map.kakao.com/link/map/" + encodeURIComponent(store.name) + "," + store.lat + "," + store.lng)}>
-                <Text style={styles.link}>카카오맵에서 위치 보기</Text>
-              </Pressable>
-            )}
-            {!!store.vendor_card?.phone && !store.vendor_card.is_example && (
-              <Pressable accessibilityRole="link" onPress={() => void Linking.openURL("tel:" + store.vendor_card?.phone)}>
-                <Text style={styles.link}>업체에 전화하기</Text>
-              </Pressable>
-            )}
-            {!!store.phone && (
-              <Pressable accessibilityRole="link" onPress={() => void Linking.openURL("tel:" + store.phone)}>
-                <Text style={styles.link}>전화하기 {store.phone} · 공공데이터 등록 번호</Text>
-              </Pressable>
-            )}
-            <View style={styles.inquiryCard}>
-              <Text style={styles.inquiryTitle}>사장님에게 문의</Text>
-              <Text style={styles.inquiryDescription}>견적이나 이용 가능 시간을 메시지로 물어보세요. 답장은 하단 대화 탭에서 확인할 수 있어요.</Text>
-              <Pressable accessibilityRole="button" disabled={opening || !canInquire} onPress={() => void inquire(store.store_id)} style={[styles.inquire, !canInquire && styles.unavailable]}>
-                <Text style={styles.inquiryButtonText}>{!canInquire ? "메시지 문의 준비 중" : opening ? "대화 여는 중…" : "문의하기"}</Text>
-              </Pressable>
-              {!canInquire && <Text style={styles.inquiryDescription}>아직 문의를 받을 사장님 계정이 연결되지 않았어요.</Text>}
-              {!!notice && <Text accessibilityLiveRegion="polite" style={styles.body}>{notice}</Text>}
+            <Text style={styles.title}>{displayName(store.name)}</Text>
+            <View style={styles.toneRow}>
+              <View style={[styles.dot, { backgroundColor: TONES[tone].color }]} />
+              <Text style={styles.toneText}>{tone === "demo" ? `가상 시연 · ${store.category}` : TONES[tone].label}{tone === "shop" ? ` · ${store.category}` : ""}</Text>
             </View>
+            {!!store.demo_service && <Text style={styles.body}>시연용 가상 업체예요. 제공 서비스: {store.demo_service}</Text>}
+
+            {/* 핵심 정보(v3): 거리·영업시간·전화·가격·주소·출처 */}
+            <View style={styles.info}>
+              <InfoRow label="거리" value={distanceText(store.distance_m)} />
+              {(!!store.hours || !!store.vendor_card) && (
+                <InfoRow label="영업" value={[store.vendor_card?.open_status.display, store.hours].filter(Boolean).join(" · ")} />
+              )}
+              {!!phone && <InfoRow label="전화" value={phone} />}
+              {!!store.vendor_card && (
+                <InfoRow label="가격" value={store.vendor_card.price.has_price ? store.vendor_card.price.display : "가격 미등록 · 전화로 확인"} />
+              )}
+              {!store.demo_service && !!store.address && <InfoRow label="주소" value={store.address} />}
+              {!!store.source && <InfoRow label="출처" value={store.source + (store.source_date ? ` (${store.source_date} 기준)` : "")} muted />}
+            </View>
+
+            <View style={styles.actions}>
+              {!!phone && (
+                <Pressable accessibilityRole="link" onPress={() => void Linking.openURL("tel:" + phone)} style={styles.primary}>
+                  <Text style={styles.primaryText}>전화하기</Text>
+                </Pressable>
+              )}
+              {!store.demo_service && (
+                <Pressable accessibilityRole="link" onPress={() =>
+                  void Linking.openURL("https://map.kakao.com/link/map/" + encodeURIComponent(store.name) + "," + store.lat + "," + store.lng)} style={phone || canInquire ? styles.secondary : styles.primary}>
+                  <Text style={phone || canInquire ? styles.secondaryText : styles.primaryText}>카카오맵에서 위치 보기</Text>
+                </Pressable>
+              )}
+            </View>
+
+            {canInquire ? (
+              <View style={styles.inquiryCard}>
+                <Text style={styles.inquiryTitle}>사장님에게 문의</Text>
+                <Text style={styles.inquiryDescription}>견적이나 이용 가능 시간을 메시지로 물어보세요. 답장은 하단 대화 탭에서 확인할 수 있어요.</Text>
+                <Pressable accessibilityRole="button" disabled={opening} onPress={() => void inquire(store.store_id)} style={styles.inquire}>
+                  <Text style={styles.inquiryButtonText}>{opening ? "대화 여는 중…" : "문의하기"}</Text>
+                </Pressable>
+                {!!notice && <Text accessibilityLiveRegion="polite" style={styles.body}>{notice}</Text>}
+              </View>
+            ) : (
+              <Text style={styles.note}>메시지 문의는 사장님 계정이 연결되면 열려요.{phone ? " 지금은 전화로 물어보세요." : ""}</Text>
+            )}
             <VendorReviews key={store.store_id} vendorId={store.store_id} />
           </>
         ) : <Text style={styles.body}>{error ?? (stores.length ? "업체를 찾지 못했어요." : "업체 정보를 불러오는 중이에요.")}</Text>}
@@ -93,7 +111,35 @@ export default function StoreDetail() {
   );
 }
 
+function distanceText(m: number): string {
+  return m < 1000 ? `${Math.round(m)}m` : `${(m / 1000).toFixed(1)}km`;
+}
+
+function InfoRow({ label, value, muted = false }: { label: string; value: string; muted?: boolean }) {
+  return (
+    <View style={styles.infoRow}>
+      <Text style={styles.infoLabel}>{label}</Text>
+      <Text style={[styles.infoValue, muted && styles.infoMuted]}>{value}</Text>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
+  scroll: { backgroundColor: color.bg },
+  toneRow: { flexDirection: "row", alignItems: "center", gap: 6, marginTop: -6 },
+  dot: { width: 8, height: 8, borderRadius: 4 },
+  toneText: { fontSize: 14, color: color.sub },
+  info: { borderWidth: 1, borderColor: color.line, borderRadius: 16, paddingHorizontal: 14, paddingVertical: 4, backgroundColor: color.surface },
+  infoRow: { flexDirection: "row", gap: 12, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: color.soft },
+  infoLabel: { width: 36, fontSize: 14, color: color.sub },
+  infoValue: { flex: 1, fontSize: 15, lineHeight: 22, color: color.ink },
+  infoMuted: { fontSize: 13, lineHeight: 19, color: color.sub },
+  actions: { gap: 8 },
+  primary: { minHeight: 48, borderRadius: 12, alignItems: "center", justifyContent: "center", backgroundColor: color.green },
+  primaryText: { color: "#fff", fontSize: 16, fontWeight: "700" },
+  secondary: { minHeight: 48, borderRadius: 12, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: color.line, backgroundColor: color.surface },
+  secondaryText: { color: color.ink, fontSize: 15, fontWeight: "600" },
+  note: { fontSize: 13, lineHeight: 19, color: color.sub },
   inquiryCard: { padding: 16, gap: 8, borderRadius: 16, backgroundColor: color.greenSoft },
   inquiryTitle: { fontSize: 17, fontWeight: "700", color: color.ink },
   inquiryDescription: { fontSize: 13, lineHeight: 20, color: color.sub },
