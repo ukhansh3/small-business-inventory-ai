@@ -11,6 +11,7 @@ import { handleMarket, handlePhotoCheck, handleSharePriceCheck } from "./handler
 import { handleSearch } from "./handlers/search";
 import { errorResponse } from "./http";
 import { handleMembers } from "./handlers/members";
+import { traced } from "./trace";
 
 // 로컬 개발 서버: npm run dev:api. 배포(Vercel)와 같은 핸들러를 부른다.
 if (existsSync(".env.local")) process.loadEnvFile(".env.local");
@@ -20,15 +21,15 @@ const DEV_ORIGINS = new Set(["http://localhost:8081", "http://localhost:8082", "
 
 type Route = (req: Request) => Promise<Response>;
 const routes: Record<string, Route> = {
-  "POST /api/v1/search": (req) => handleSearch(req, defaultDeps()),
-  "POST /api/v1/assist/turns": (req) => handleAssistTurn(req, assistDeps(req)),
+  "POST /api/v1/search": (req) => traced("search", req, defaultDeps(), handleSearch),
+  "POST /api/v1/assist/turns": (req) => traced("assist", req, assistDeps(req), handleAssistTurn),
   "POST /api/v1/devices": (req) => handleRegisterDevice(req, defaultDeps()),
   "POST /api/v1/events": (req) => handleEvent(req, defaultDeps()),
   "POST /api/v1/item-requests": (req) => handleItemRequest(req, defaultDeps()),
   "PATCH /api/v1/devices/me": (req) => handleUpdateDevice(req, defaultDeps()),
   "GET /api/v1/locations": (req) => handleLocations(req, defaultDeps()),
   "GET /api/v1/vendors/:id": (req) => handleVendorDetail(req, defaultDeps()),
-  "POST /api/v1/price-checks": (req) => handlePhotoCheck(req, priceCheckDeps(req)),
+  "POST /api/v1/price-checks": (req) => traced("price_check", req, priceCheckDeps(req), handlePhotoCheck),
   "PATCH /api/v1/price-checks/:id": (req) => handleSharePriceCheck(req, defaultDeps()),
   "GET /api/v1/market": (req) => handleMarket(req, defaultDeps()),
   "GET /api/v1/stores": (req) => handleStores(req, storesDeps()),
@@ -47,6 +48,7 @@ const cors = {
   "access-control-allow-origin": "http://localhost:8081",
   "access-control-allow-headers": "content-type, authorization, x-device-id, x-debug-now, x-ai-mode, x-test-device, x-here",
   "access-control-allow-methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
+  "access-control-expose-headers": "x-request-id",
 };
 
 createServer(async (m, res) => {

@@ -19,11 +19,13 @@
 1. **지도에서 업체 보기**  
    지도에서 핀을 누르면 아래에 업체 카드가 나옵니다. 핀을 누르기 어렵다면 **목록 보기**를 누르세요. (AC-28)
 2. **AI 도우미에게 물어보기**  
-   아래 탭에서 **AI 도우미**를 열고 `상추 2키로 급해요`를 보냅니다. 화면에 나오는 질문에 답하고, 수령 방법은 **직접 갈게요**를 고릅니다. 결과에서 업체 카드를 확인하거나 **검색 결과 지도에서 보기**를 누르세요. (AC-5·AC-30)
+   아래 탭에서 **AI 도우미**를 열고 `상추 2키로 급해요`를 보냅니다. 더 묻지 않고 **"○○에서 바로 사세요"** 추천 카드가 나옵니다(가장 가까운 동네 채소 가게, 걸어서 걸리는 시간, 2kg 소매 값 범위). **추천한 곳 지도에서 보기**로 위치를 확인하세요. (AC-5·AC-30, ADR-013 검토안)
 3. **받은 견적 비교하기**  
-   AI 도우미 오른쪽 위 연필 아이콘(**새 대화**)을 누르고 `상추 2키로 만원 부르던데`를 보냅니다. **kg당 5,000원**이 나오고, 비교 자료가 있으면 동네 시세와의 차이도 표시됩니다. (AC-17·AC-24)
+   AI 도우미 오른쪽 위 연필 아이콘(**새 대화**)을 누르고 `상추 2키로 만원 부르던데`를 보냅니다. 상추 4kg 한 상자로 환산한 값(20,000원)과 판정(예: **잘 사셨어요**)이 나오고, **근거 보기**를 누르면 수원 경매가·서울 가락 상회 값·수원 소매가 사다리가 나옵니다. (AC-17·AC-24, R-28)
 
-수량이나 수령 방법만 바꾸려면 검색 결과 위의 조건을 누르세요. 처음부터 해보려면 **새 대화**에서 `상추 5키로 오늘 배달`을 보내면 됩니다.
+수량이나 수령 방법만 바꾸려면 검색 결과 위의 조건을 누르세요. 많이 살 때는 **새 대화**에서 `상추 5키로 오늘 배달`을 보내 보세요. **"배달은 ○○에 맡기세요"**와 전화하기 버튼, 적정 견적 범위가 나옵니다.
+
+> 위 2·3단계는 작업 브랜치 `feat/real-market-data`(PR #11) 기준입니다. 배포 주소는 병합·재배포 뒤에 같은 화면이 됩니다.
 
 각 단계의 AC(수용 기준)는 [앱 수용 기준](apps/cheonhajangsa-mvp/docs/acceptance-criteria.md)에서 확인할 수 있습니다.
 
@@ -77,6 +79,19 @@
 ## 로컬 실행
 
 Node.js 24를 사용합니다. `apps/cheonhajangsa-mvp/`에서 `npm ci`를 실행하고 [환경 변수](apps/cheonhajangsa-mvp/README.md#2-환경-변수)를 준비하세요. 터미널 두 개에서 각각 `npm run dev:api`, `npm run web`을 실행한 뒤 `http://localhost:8081`을 엽니다.
+
+필요한 환경 변수 이름(값은 `apps/cheonhajangsa-mvp/.env.local`에만, 커밋하지 않음): `ANTHROPIC_API_KEY`, `AI_MODE`(`live`/`stored`), `AI_MODEL`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `DATA_GO_KR_KEY`(시세 자동 갱신, 없으면 저장본), `EXPO_PUBLIC_KAKAO_JS_KEY`. 키 없이도 `AI_MODE=stored`로 저장된 응답 시나리오를 돌릴 수 있습니다.
+
+## 운영 기록과 평가(최종평가)
+
+| 항목 | 위치 | 방법 |
+|---|---|---|
+| 추적 기록 | [`logs/trace.jsonl`](logs/trace.jsonl) | 로컬 API(`npm run dev:api`)로 AI 도우미·검색·가격 진단 요청을 하면 요청마다 한 줄이 쌓입니다. 요청 id는 응답 머리 `x-request-id`와 같습니다. 칸: 요청 id, 시각, 사용자(기기 해시), 입력(전화번호·이메일 가림, 사진은 크기만), 단계별 결과, 결과, 커밋, 모델, 프롬프트 버전, 지연, 오류. 배포본(Vercel)은 같은 줄을 `TRACE ` 접두어로 서버 로그에 냅니다. 코드: `apps/cheonhajangsa-mvp/server/trace.ts` |
+| 평가 세트 | [`evals/evalset.jsonl`](evals/evalset.jsonl) | 정상 32건 + 공격 6건(`a01`~`a06`). 추적 기록에서 옮긴 실패는 `note`에 출처 요청 id |
+| 러너 | 앱 폴더에서 `npm run evals -- --change "기준점 1/3" --golden "10/10 passed"` | 실시간 AI 키 필요, 호출 비용 발생. 정상 지표와 `attack_success_rate`를 같은 실행에서 잼 |
+| 실행 이력 | [`evals/results/history.csv`](evals/results/history.csv) | BOM 있는 UTF-8. `change`는 `기준점 n/3` 또는 `R<번호> \| 대상: <케이스 id> \| 가설: <한 문장>` |
+| 위협 목록 | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) 위협 목록 절 | 위협 5개와 연결된 공격 케이스 |
+| 평가 설계 | [`evals/EVAL_DESIGN.md`](evals/EVAL_DESIGN.md) | 지표·합격선·기준 변경 기록 |
 
 ## 데이터 구분
 
