@@ -32,6 +32,10 @@ export type Store = {
   phone?: string | null;
 };
 
+// 가상 시연 가게 중 이 업종은 지도에 내지 않는다(2026-11-25 사용자 결정).
+// 식자재는 실제 데이터(도매시장 중도매인·납품업체·상가정보)로 대체됐다. Supabase 표는 그대로 둔다
+export const HIDDEN_DEMO_CATEGORIES: readonly string[] = ["식자재"];
+
 export type DemoStore = Pick<Store, "store_id" | "name" | "category" | "lat" | "lng"> & { service: string };
 
 export type StoresDeps = { data: Dataset; publicStores: PublicStoresFile; supplyVendors?: SupplyVendorsFile; env: ServerEnv; clock?: () => Date; loadDemoStores?: () => Promise<DemoStore[]>; loadActivity?: (locationId: string) => Promise<{ vendor_id: string; used_count: number; saved_count: number }[] | null> };
@@ -97,7 +101,7 @@ export function handleStores(req: Request, deps: StoresDeps): Promise<Response> 
     const [demoRows, activity] = await Promise.all([deps.loadDemoStores?.(), deps.loadActivity?.(loc.id)]);
     const demos = demoRows ?? [];
     for (const { service, ...demo } of demos) {
-      if (!inBox(demo.lat, demo.lng)) continue;
+      if (!inBox(demo.lat, demo.lng) || HIDDEN_DEMO_CATEGORIES.includes(demo.category)) continue;
       stores.push({ ...demo, kind: "public", address: "아주대 주변 가상 위치",
         demo_service: service, distance_m: Math.round(distanceMeters(loc, demo)) });
     }

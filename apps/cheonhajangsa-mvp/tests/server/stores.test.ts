@@ -47,3 +47,18 @@ describe("API-18 지도용 가게", () => {
     expect((await get("location_id=loc_test", {})).status).toBe(401);
   });
 });
+
+describe("가상 시연 가게 정리(2026-11-25)", () => {
+  it("식자재 가상 가게는 숨기고 서비스 업종 가상 가게는 그대로 둔다", async () => {
+    const loadDemoStores = async () => [
+      { store_id: "demo-produce", name: "가상식자재", category: "식자재", service: "채소", ...at(100) },
+      { store_id: "demo-clean", name: "가상청소", category: "청소·방역", service: "주방 청소", ...at(200) },
+    ];
+    const res = await handleStores(new Request("http://test/api/v1/stores?location_id=loc_test", { headers: { "x-device-id": DEVICE } }),
+      { data, publicStores, env: readEnv({}), clock: () => MON_1000, loadDemoStores });
+    const b = (await res.json()) as { stores: Store[] };
+    const names = b.stores.map((s) => s.name);
+    expect(names).not.toContain("가상식자재");
+    expect(b.stores.find((s) => s.name === "가상청소")).toMatchObject({ demo_service: "주방 청소" });
+  });
+});
