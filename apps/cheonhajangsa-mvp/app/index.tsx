@@ -191,7 +191,7 @@ export default function HomeScreen() {
               setSheetMode(sheetOpen || showPreview ? "collapsed" : "list");
             }} style={styles.handle}>
               <View style={styles.grip} />
-              <View style={styles.sheetHeading}><View><Text style={styles.sheetTitle}>{showPreview ? "선택하신 업체" : sheetOpen ? "업체 목록" : visiblePinCount === null ? "지도 업체" : `화면 속 업체 ${visiblePinCount}곳`}</Text></View><Text style={styles.sheetLink}>{sheetOpen || showPreview ? "↓ 접기" : "↑ 목록 보기"}</Text></View>
+              <View style={styles.sheetHeading}><View><Text style={styles.sheetTitle}>{showPreview ? "선택하신 업체" : sheetOpen ? "업체 목록" : visiblePinCount === null ? "지도 업체" : showAiResults && s.results ? `화면 속 검색 결과 ${visiblePinCount}곳` : `화면 속 업체 ${visiblePinCount}곳`}</Text></View><Text style={styles.sheetLink}>{sheetOpen || showPreview ? "↓ 접기" : "↑ 목록 보기"}</Text></View>
             </Pressable>
             {showPreview && <ScrollView style={styles.body} contentContainerStyle={styles.mapContent} keyboardShouldPersistTaps="handled">
               <CompactStoreCard key={selected.store_id} store={selected} location={me?.location_id}/>

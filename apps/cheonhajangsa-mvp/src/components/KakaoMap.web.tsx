@@ -118,11 +118,11 @@ export function KakaoMap({ center, pins, focusIds, selectedId, height, onPinPres
     if (focus.size > 0) {
       const b = new k.maps.LatLngBounds();
       for (const p of pins) if (focus.has(p.id) || p.kind === "me") b.extend(new k.maps.LatLng(p.lat, p.lng));
-      m.setBounds(b, 30, 30, 30, 30);
+      m.setBounds(b, 30, 30, 30 + Math.min(coveredBottom, Math.round(height * 0.6)), 30); // 아래 목록 시트에 가려지지 않게(v3)
     } else {
       m.setCenter(new k.maps.LatLng(center.lat, center.lng));
     }
-  }, [ready, pins, focusIds, center.lat, center.lng]);
+  }, [ready, pins, focusIds, center.lat, center.lng, coveredBottom, height]);
 
   // 높이가 바뀌면(목록 시트 펼침) 지도 크기를 다시 잰다
   useEffect(() => {
@@ -139,8 +139,11 @@ export function KakaoMap({ center, pins, focusIds, selectedId, height, onPinPres
       const projection = instance.getProjection();
       const width = element.clientWidth;
       const visibleHeight = Math.max(0, element.clientHeight - coveredBottom);
+      // 검색 결과를 강조 중이면 결과 핀만 센다(v3: 결과 78곳인데 화면 속 117곳으로 나오던 문제)
+      const focus = new Set(focusIds);
       const count = pins.filter((pin) => {
         if (pin.kind === "me") return false;
+        if (focus.size > 0 && !focus.has(pin.id)) return false;
         const point = projection.containerPointFromCoords(new sdk.maps.LatLng(pin.lat, pin.lng));
         return point.x >= 0 && point.x < width && point.y >= 0 && point.y < visibleHeight;
       }).length;
@@ -150,7 +153,7 @@ export function KakaoMap({ center, pins, focusIds, selectedId, height, onPinPres
     sdk.maps.event.addListener(instance, "idle", updateCount);
     updateCount();
     return () => sdk.maps.event.removeListener(instance, "idle", updateCount);
-  }, [ready, pins, height, coveredBottom, onVisibleCountChange]);
+  }, [ready, pins, height, coveredBottom, onVisibleCountChange, focusIds]);
 
   useEffect(() => {
     return () => onVisibleCountChange?.(null);

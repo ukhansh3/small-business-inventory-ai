@@ -49,3 +49,27 @@ describe("무게 직접 표기", () => {
     expect(hasExplicitWeight("감자 한 박스 3만원")).toBe(false);
   });
 });
+
+import { ITEM_OPTIONS, qtyOptionsFor } from "../../core/options";
+describe("칩 편집 선택지(v3)", () => {
+  it("품목은 비교 품목 4가지", () => {
+    expect(ITEM_OPTIONS.map((o) => o.label)).toEqual(expect.arrayContaining(["상추", "양파", "대파", "감자"]));
+  });
+  it("양의 거래 단위는 품목을 따른다", () => {
+    expect(qtyOptionsFor("item_onion").map((o) => o.label)).toEqual(["1kg", "2kg", "5kg", "1망(15kg)", "잘 모르겠어요"]);
+    expect(qtyOptionsFor("item_potato").map((o) => o.label)).toContain("1박스(20kg)");
+    expect(qtyOptionsFor("item_green_onion").map((o) => o.label)).toEqual(["1kg", "2kg", "5kg", "잘 모르겠어요"]);
+  });
+});
+
+import { initialState, reduce } from "../../src/lib/assist-state";
+describe("새 질문이 오면 이전 가격 카드를 거둔다(v3)", () => {
+  it("가격 진단 뒤 되묻기가 오면 카드가 사라지고 요약은 말풍선에 남는다", () => {
+    const check = { check_id: "c1", source: "text", doc_type: "text", seller_type: "unknown", purchased_on: null, delivery_fee_won: null, lines: [], market: null, message: "양파 시세예요.", example_data: false, ai_mode: "stored" } as never;
+    let s = reduce(initialState(false), { type: "turn_ok", res: { type: "price_check", session_id: "s", turn_seq: 1, ai_mode: "stored", example_data: false, price_check: check } } as never);
+    expect(s.priceCheck).not.toBeNull();
+    s = reduce(s, { type: "turn_ok", res: { type: "ask", session_id: "s", turn_seq: 2, ai_mode: "stored", example_data: false, ask: { slot: "urgency", question: "언제까지 필요하세요?", options: [], allow_text: true }, condition: { item_id: "item_onion", qty_kg: null, urgency: null, fulfillment: null, location_id: "loc_test" }, field_source: {} } } as never);
+    expect(s.priceCheck).toBeNull();
+    expect(s.messages.map((m) => m.text)).toContain("언제까지 필요하세요?");
+  });
+});

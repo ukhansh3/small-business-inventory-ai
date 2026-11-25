@@ -5,7 +5,7 @@ import type { AiFailureDetail, Ask, Chip, FieldSourceMap, Market, Notice, Partia
 
 export type ChatMessage = { id: number; role: "owner" | "ai"; text: string };
 // recover: AI 실패 후 조건 전체를 직접 고르는 편집(WF-12). Slot 이름: 칩 하나 편집(WF-08)
-export type EditorState = "closed" | "recover" | "qty_kg" | "urgency" | "fulfillment";
+export type EditorState = "closed" | "recover" | "item_id" | "qty_kg" | "urgency" | "fulfillment";
 export type RequestState = "idle" | "sending" | "done" | "failed";
 
 export type AssistState = {
@@ -105,13 +105,14 @@ export function reduce(s: AssistState, a: AssistAction): AssistState {
       const r = a.res;
       const base = { ...s, loading: false, sessionId: r.session_id, turnSeq: r.turn_seq, aiMode: r.ai_mode, exampleData: r.example_data };
       if (r.type === "ask") {
-        return { ...base, ...say(s, "ai", r.ask.question), ask: r.ask, notice: null, condition: conditionOnly(r.condition), fieldSource: r.field_source };
+        // 새 질문이 이전 가격 카드 위에 끼지 않게 카드를 거둔다(카드 요약은 말풍선에 남아 있음)
+        return { ...base, ...say(s, "ai", r.ask.question), ask: r.ask, notice: null, priceCheck: null, condition: conditionOnly(r.condition), fieldSource: r.field_source };
       }
       if (r.type === "price_check") {
         return { ...base, ...priceState(s, r.price_check) };
       }
       if (r.type === "notice") {
-        return { ...base, ...say(s, "ai", r.notice.message), ask: null, notice: r.notice, request: { state: "idle", message: null } };
+        return { ...base, ...say(s, "ai", r.notice.message), ask: null, notice: r.notice, priceCheck: null, request: { state: "idle", message: null } };
       }
       return {
         ...base,
