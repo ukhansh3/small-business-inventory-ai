@@ -2,9 +2,11 @@ import { createClient } from "@supabase/supabase-js";
 import type { DemoStore, StoresDeps } from "./handlers/stores";
 import { createHash } from "node:crypto";
 import publicStoresJson from "../data/public_stores.json";
+import supplyVendorsJson from "../data/supply_vendors.json";
 import { loadDataset, loadMarketPrices, rawDataset } from "../core/data";
 import type { MarketPricesFile } from "../core/market-prices";
 import { type PublicStoresFile, validatePublicStores } from "../core/public-stores";
+import { type SupplyVendorsFile, validateSupplyVendors } from "../core/supply-vendors";
 import type { Dataset } from "../core/types";
 import { createClaudeAi } from "./ai/claude";
 import { createStoredAi } from "./ai/stored";
@@ -37,16 +39,22 @@ function base(): Base {
 
 // v2 지도용 공공데이터 가게. 형식이 틀리면 시작할 때 실패한다(AC-27)
 let publicStores: PublicStoresFile | null = null;
+let supplyVendors: SupplyVendorsFile | null = null;
 export function storesDeps(): StoresDeps {
   if (!publicStores) {
     const v = validatePublicStores(publicStoresJson);
     if (!v.ok) throw new Error(`공공데이터 가게 형식 오류:\n${v.errors.join("\n")}`);
     publicStores = v.data;
   }
+  if (!supplyVendors) {
+    const v = validateSupplyVendors(supplyVendorsJson);
+    if (!v.ok) throw new Error(`식자재 납품업체 형식 오류:\n${v.errors.join("\n")}`);
+    supplyVendors = v.data;
+  }
   const { data, env } = base();
   const { supabaseUrl, supabaseServiceRoleKey } = env;
   return {
-    data, env, publicStores,
+    data, env, publicStores, supplyVendors,
     async loadActivity(locationId) {
       if (!supabaseUrl || !supabaseServiceRoleKey) return null;
       const db = createClient(supabaseUrl, supabaseServiceRoleKey, {

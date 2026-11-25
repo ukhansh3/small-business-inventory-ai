@@ -128,6 +128,7 @@ export type Store = {
   vendor_card?: import("../../core/search-types").VendorCard;
   source?: string;
   source_date?: string;
+  phone?: string | null;
 };
 
 // 503 AI_UNAVAILABLE의 detail

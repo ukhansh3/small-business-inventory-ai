@@ -59,7 +59,7 @@ export default function StoreDetail() {
               ? "시연용 업체예요. 제공 서비스는 " + store.demo_service + "입니다."
               : store.name + "은(는) " + store.category + " 업체예요."}</Text>
             {!store.demo_service && !!store.address && <Text style={styles.body}>{store.address}</Text>}
-            {!!store.source && <Text style={styles.body}>정보 출처 · {store.source}</Text>}
+            {!!store.source && <Text style={styles.body}>정보 출처 · {store.source}{store.source_date ? ` (${store.source_date} 기준)` : ""}</Text>}
             {!store.demo_service && (
               <Pressable accessibilityRole="link" onPress={() =>
                 void Linking.openURL("https://map.kakao.com/link/map/" + encodeURIComponent(store.name) + "," + store.lat + "," + store.lng)}>
@@ -69,6 +69,11 @@ export default function StoreDetail() {
             {!!store.vendor_card?.phone && !store.vendor_card.is_example && (
               <Pressable accessibilityRole="link" onPress={() => void Linking.openURL("tel:" + store.vendor_card?.phone)}>
                 <Text style={styles.link}>업체에 전화하기</Text>
+              </Pressable>
+            )}
+            {!!store.phone && (
+              <Pressable accessibilityRole="link" onPress={() => void Linking.openURL("tel:" + store.phone)}>
+                <Text style={styles.link}>전화하기 {store.phone} · 공공데이터 등록 번호</Text>
               </Pressable>
             )}
             <View style={styles.inquiryCard}>

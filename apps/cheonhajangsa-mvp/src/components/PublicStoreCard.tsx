@@ -4,7 +4,8 @@ import type { Store } from "../lib/api-types";
 import { VendorArtwork } from "./VendorArtwork";
 import { color, font, radius } from "./theme";
 
-// 공공데이터 가게 카드(R-22, AC-29): 이름·업종·거리·주소와 출처·기준일만. 가격·입고·번호 없음
+// 공공데이터 가게 카드(R-22, AC-29): 이름·업종·거리·주소와 출처·기준일. 가격·입고 없음.
+// 식자재 납품업체(R-26)는 인허가 자료에 등록된 전화가 있으면 함께 보여 준다
 export function PublicStoreCard({ store }: { store: Store }) {
   const kakaoUrl = `https://map.kakao.com/link/map/${encodeURIComponent(store.name)},${store.lat},${store.lng}`;
   return (
@@ -17,6 +18,11 @@ export function PublicStoreCard({ store }: { store: Store }) {
       <Text style={styles.main}>{distanceDisplay(store.distance_m).display}</Text>
       <Text style={styles.sub}>{store.address}</Text>
       <Text style={styles.badge}>공공데이터 · 가격·재고 미확인</Text>
+      {!!store.phone && (
+        <Pressable accessibilityRole="link" onPress={() => void Linking.openURL("tel:" + store.phone)}>
+          <Text style={styles.sub}>전화 {store.phone}</Text>
+        </Pressable>
+      )}
       <Text style={styles.source}>
         {store.source} · {store.source_date} 기준
       </Text>

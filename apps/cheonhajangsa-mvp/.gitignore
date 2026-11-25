@@ -58,3 +58,4 @@ data/*
 !data/offers.json
 !data/public_stores.json
 !data/market_prices.json
+!data/supply_vendors.json

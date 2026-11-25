@@ -2,6 +2,13 @@
 
 ## 완료
 
+### v3 식자재 납품업체 지도 표시 (2026-11-25, 브랜치 feat/real-market-data)
+- 원천: 행정안전부 인허가정보 '집단급식소 식품판매업'(data.go.kr 1741000/group_meal_food_retailers). 수원시 267건 중 영업/정상 99곳, 등록 전화 33곳
+- 저장본: `npx tsx scripts/build-supply-vendors.ts` → `data/supply_vendors.json`(형식 `core/supply-vendors.ts`, `npm run check:data`에 포함)
+- 좌표: 인허가 좌표(EPSG:5174)를 `core/epsg5174.ts`로 WGS84 변환. 외부 라이브러리 없이 구현, proj4 2.12.1 결과와 같음(테스트로 고정)
+- 지도·목록에 '식자재 납품업체' 업종으로 나오고(업종 칩 자동 추가), 카드·상세에 출처·기준일과 등록 전화(있을 때)를 보여 준다. 가격·재고는 없다(R-26)
+- 검증: 테스트 191개 통과(납품업체 5개 추가), 타입·린트·데이터 검사 통과, 로컬 화면에서 업종 칩·상세 전화 링크 확인
+
 ### v3 실시간 내 위치 (2026-11-25, 브랜치 feat/real-market-data)
 - 브라우저 위치 기능(Geolocation, 무료)으로 내 위치를 계속 받는다(`src/lib/here.ts`). 15m 넘게 움직이면 지도 점·지도 중심·거리 기준을 갱신한다
 - 좌표는 기기 메모리에만 두고 API 요청 머리글 `x-here: 위도,경도`로 거리 계산에만 보낸다. 서버(`server/here.ts`)는 국내 범위 안의 값만 약 10m 단위로 반올림해 쓰고, 조건·기록(DB)에는 남기지 않는다(R-25)

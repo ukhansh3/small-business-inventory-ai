@@ -1,6 +1,7 @@
 import { withHere } from "../here";
 import { distanceMeters } from "../../core/distance";
 import type { PublicStoresFile } from "../../core/public-stores";
+import { SUPPLY_CATEGORY, type SupplyVendorsFile } from "../../core/supply-vendors";
 import { buildCard } from "../../core/search";
 import type { VendorCard } from "../../core/search-types";
 import { seoulNow } from "../../core/time";
@@ -28,11 +29,12 @@ export type Store = {
   vendor_card?: VendorCard;
   source?: string;
   source_date?: string;
+  phone?: string | null;
 };
 
 export type DemoStore = Pick<Store, "store_id" | "name" | "category" | "lat" | "lng"> & { service: string };
 
-export type StoresDeps = { data: Dataset; publicStores: PublicStoresFile; env: ServerEnv; clock?: () => Date; loadDemoStores?: () => Promise<DemoStore[]>; loadActivity?: (locationId: string) => Promise<{ vendor_id: string; used_count: number; saved_count: number }[] | null> };
+export type StoresDeps = { data: Dataset; publicStores: PublicStoresFile; supplyVendors?: SupplyVendorsFile; env: ServerEnv; clock?: () => Date; loadDemoStores?: () => Promise<DemoStore[]>; loadActivity?: (locationId: string) => Promise<{ vendor_id: string; used_count: number; saved_count: number }[] | null> };
 
 function parseBbox(v: string | null): [number, number, number, number] | null {
   if (!v) return null;
@@ -73,6 +75,23 @@ export function handleStores(req: Request, deps: StoresDeps): Promise<Response> 
         distance_m: Math.round(distanceMeters(loc, p)),
         source: PUBLIC_SOURCE,
         source_date: deps.publicStores.source_date,
+      });
+    }
+    // 식자재 납품업체(R-26): 공개 정보와 전화만. 가격·재고 없음
+    for (const sv of deps.supplyVendors?.stores ?? []) {
+      if (!inBox(sv.lat, sv.lng)) continue;
+      stores.push({
+        store_id: sv.store_id,
+        kind: "public",
+        name: sv.name,
+        category: SUPPLY_CATEGORY,
+        address: sv.address,
+        lat: sv.lat,
+        lng: sv.lng,
+        distance_m: Math.round(distanceMeters(loc, sv)),
+        source: deps.supplyVendors!.source,
+        source_date: deps.supplyVendors!.source_date,
+        phone: sv.phone,
       });
     }
     const [demoRows, activity] = await Promise.all([deps.loadDemoStores?.(), deps.loadActivity?.(loc.id)]);
