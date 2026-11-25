@@ -27,6 +27,7 @@ import { isTestDevice } from "../src/lib/device";
 import { focusFor, pinsFor } from "../src/lib/map-pins";
 import { AppIcon, type IconName } from "../src/components/AppIcon";
 import { CompactStoreCard } from "../src/components/CompactStoreCard";
+import { StoreRows } from "../src/components/StoreRows";
 import { CommunityScreen, SavedScreen, ProfileScreen } from '../src/components/MemberScreens';
 
 const IS_PHONE = Platform.OS !== "web" || isPhoneUserAgent(globalThis.navigator?.userAgent ?? "");
@@ -197,7 +198,7 @@ export default function HomeScreen() {
             </ScrollView>}
             {sheetOpen && <ScrollView style={styles.body} contentContainerStyle={styles.mapContent} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
               {selected && <CompactStoreCard store={selected} location={me?.location_id}/>}
-              {showAiResults && s.results ? <ResultList results={s.results} stores={st.stores} location={me?.location_id} /> : st.error ? <ErrorRow message={st.error} onRetry={st.retry} /> : visibleStores.length === 0 ? <Text style={styles.sheetSub}>조건에 맞는 근처 업체가 없어요.</Text> : visibleStores.filter(store=>store.store_id!==selectedId).slice(0, storeQuery ? undefined : 30).map(store=><CompactStoreCard key={store.store_id} store={store} location={me?.location_id}/>)}
+              {showAiResults && s.results ? <ResultList results={s.results} stores={st.stores} location={me?.location_id} /> : st.error ? <ErrorRow message={st.error} onRetry={st.retry} /> : visibleStores.length === 0 ? <Text style={styles.sheetSub}>조건에 맞는 근처 업체가 없어요.</Text> : <StoreRows location={me?.location_id} rows={visibleStores.filter(store=>store.store_id!==selectedId).slice(0, storeQuery ? undefined : 30).map(store=>({ store }))}/>}
             </ScrollView>}
             </View>
           </View>
@@ -213,7 +214,7 @@ export default function HomeScreen() {
                     { id: -(index * 2 + 1), role: "owner", text: reply.text },
                     { id: -(index * 2 + 2), role: "ai", text: reply.stores.length ? `관련 업체 ${reply.stores.length}곳을 찾았어요.` : "조건에 맞는 근처 업체가 없어요." },
                   ]} loading={false} />
-                  {reply.stores.map((store) => <CompactStoreCard key={store.store_id} store={store} location={me?.location_id} />)}
+                  <StoreRows location={me?.location_id} rows={reply.stores.map((store) => ({ store }))} />
                 </Fragment>
               ))}
               <ChatLog messages={s.messages.slice(storeReplies.at(-1)?.after ?? 0)} loading={s.loading} />
