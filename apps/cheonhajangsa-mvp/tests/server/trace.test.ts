@@ -61,7 +61,8 @@ describe("추적 기록 trace.jsonl", () => {
   });
 
   it("되묻기·안내 응답의 결과를 요약한다", () => {
-    expect(traceOutput(200, { type: "ask", ask: { slot: "qty_kg" } })).toEqual({ outcome: "ask", summary: { slot: "qty_kg" } });
+    expect(traceOutput(200, { type: "ask", ask: { slot: "urgency" }, condition: { item_id: "item_green_onion", qty_kg: 4 } }))
+      .toEqual({ outcome: "ask", summary: { slot: "urgency", condition: { item_id: "item_green_onion", qty_kg: 4 } } });
     expect(traceOutput(200, { type: "notice", notice: { kind: "off_topic", recognized_item: null } }).outcome).toBe("off_topic");
   });
 });

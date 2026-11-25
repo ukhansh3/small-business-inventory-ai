@@ -60,7 +60,7 @@ export function traceOutput(status: number, json: unknown): { outcome: string; s
   if (!json || typeof json !== "object") return { outcome: `http_${status}`, summary: null };
   const r = json as Record<string, any>;
   if (status >= 400) return { outcome: "error", summary: { code: r.error?.code ?? r.code ?? null } };
-  if (r.type === "ask") return { outcome: "ask", summary: { slot: r.ask?.slot } };
+  if (r.type === "ask") return { outcome: "ask", summary: { slot: r.ask?.slot, condition: r.condition ?? null } };
   if (r.type === "notice") return { outcome: r.notice?.kind ?? "notice", summary: { item: r.notice?.recognized_item?.item_id ?? null } };
   const results = r.results as { total?: number; groups?: { key: string; items: { vendor_id: string }[] }[] } | undefined;
   const pc = (r.price_check ?? (r.check_id ? r : null)) as { lines?: { item_id: string | null; verdict: string | null; verdict_title?: string | null }[]; message?: string | null } | null;

@@ -87,7 +87,7 @@ Node.js 24를 사용합니다. `apps/cheonhajangsa-mvp/`에서 `npm ci`를 실�
 | 항목 | 위치 | 방법 |
 |---|---|---|
 | 추적 기록 | [`logs/trace.jsonl`](logs/trace.jsonl) | 로컬 API(`npm run dev:api`)로 AI 도우미·검색·가격 진단 요청을 하면 요청마다 한 줄이 쌓입니다. 요청 id는 응답 머리 `x-request-id`와 같습니다. 칸: 요청 id, 시각, 사용자(기기 해시), 입력(전화번호·이메일 가림, 사진은 크기만), 단계별 결과, 결과, 커밋, 모델, 프롬프트 버전, 지연, 오류. 배포본(Vercel)은 같은 줄을 `TRACE ` 접두어로 서버 로그에 냅니다. 코드: `apps/cheonhajangsa-mvp/server/trace.ts` |
-| 평가 세트 | [`evals/evalset.jsonl`](evals/evalset.jsonl) | 정상 32건 + 공격 6건(`a01`~`a06`). 추적 기록에서 옮긴 실패는 `note`에 출처 요청 id |
+| 평가 세트 | [`evals/evalset.jsonl`](evals/evalset.jsonl) | 정상 33건(추적 기록에서 옮긴 실패 `f01` 포함, `note`에 출처 요청 id) + 공격 6건(`a01`~`a06`) |
 | 러너 | 앱 폴더에서 `npm run evals -- --change "기준점 1/3" --golden "10/10 passed"` | 실시간 AI 키 필요, 호출 비용 발생. 정상 지표와 `attack_success_rate`를 같은 실행에서 잼 |
 | 실행 이력 | [`evals/results/history.csv`](evals/results/history.csv) | BOM 있는 UTF-8. `change`는 `기준점 n/3` 또는 `R<번호> \| 대상: <케이스 id> \| 가설: <한 문장>` |
 | 위협 목록 | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) 위협 목록 절 | 위협 5개와 연결된 공격 케이스 |
