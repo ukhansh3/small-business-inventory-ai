@@ -13,6 +13,7 @@ const ref = (now: number, weekAgo: number | null) => ({
   wholesale_per_kg: now, wholesale_date: "2026-11-25", retail_per_kg: 9000, retail_date: "2026-11-24",
   traditional_market_per_kg: 9000, large_retailer_per_kg: null,
   week_ago_per_kg: weekAgo, week_ago_date: weekAgo === null ? null : "2026-11-18",
+  box: null, auction_low_per_kg: now, auction_high_per_kg: now, trader: null, change: null,
 });
 
 describe("일주일 전 대비 한 줄", () => {
@@ -67,7 +68,7 @@ describe("시세 받아오기", () => {
     const file = await buildMarketPrices(get, "2026-11-25");
     expect(validateMarketPrices(file).ok).toBe(true);
     const lettuce = file.items.find((i) => i.item_id === "item_lettuce")!;
-    expect(lettuce.wholesale).toEqual({ date: "2026-11-24", per_kg: 3400, trades: 3 });
+    expect(lettuce.wholesale).toEqual({ date: "2026-11-24", per_kg: 3400, trades: 3, low_per_kg: 3400, high_per_kg: 3500 });
     expect(lettuce.wholesale_week_ago).toEqual({ date: "2026-11-17", per_kg: 3700, trades: 3 });
     expect(lettuce.retail?.traditional_market_per_kg).toBe(9800);
     expect(file.items.find((i) => i.item_id === "item_onion")!.wholesale).toBeNull(); // 거래 없음

@@ -27,6 +27,8 @@ export function createLivePrices(opts: { bundled: MarketPricesFile; key: string 
           wholesale: it.wholesale ?? old?.wholesale ?? null,
           wholesale_week_ago: it.wholesale ? it.wholesale_week_ago ?? null : old?.wholesale_week_ago ?? null,
           retail: it.retail ?? old?.retail ?? null,
+          trader: it.trader ?? old?.trader ?? null,
+          change: it.change ?? old?.change ?? null,
         };
       }),
     };

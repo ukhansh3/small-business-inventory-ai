@@ -2,7 +2,7 @@ import { distanceMeters } from "./distance";
 import { pricePerKg, won } from "./format";
 import { buildCard } from "./search";
 import type { VendorCard } from "./search-types";
-import { verdictAgainstReference, type Reference } from "./market-prices";
+import { verdictAgainstReference, type Reference, verdictOnLadder, type Ladder } from "./market-prices";
 import { seoulNow } from "./time";
 import type { Dataset } from "./types";
 
@@ -19,6 +19,7 @@ export type Market = {
   includes_example: boolean;
   display: string;
   reference?: Reference | null; // v3: 수원 실제 시세(있으면 판정 기준)
+  ladder?: Ladder | null; // v3(R-28): 상자 단위 가격 사다리(경매·상회·소매)
   trend?: string | null; // v3: "도매가가 일주일 전(11/18)보다 12% 올랐어요"
   weeks?: { week_start: string; per_kg: number }[] | null; // v3: 주간 도매 중앙값(막대그래프), 2주 이상일 때만
 };
@@ -45,6 +46,8 @@ export type PriceLine = {
   reason: string | null;
   verdict: Verdict | null;
   verdict_display: string | null;
+  verdict_title?: string | null; // v3(R-28) 판정 띠 제목: "잘 사셨어요"
+  box_won?: number | null; // v3(R-28) 사장님 값을 상자 한 개로 환산
   cheaper: VendorCard[];
 };
 
@@ -134,6 +137,15 @@ export function diagnoseLine(data: Dataset, line: PurchaseLineInput, lineNo: num
   }
   const ppk = perKg(line.amount_won, line.qty_kg);
   if (ppk === null) return { ...base, price_per_kg: null, comparable: false, reason: line.qty_kg === null ? "단위를 알 수 없어요" : "금액을 알 수 없어요" };
+  // R-28: 상자 단위 사다리(상회 판매가 포함)가 있으면 그것으로 판정
+  const onLadder = market?.ladder ? verdictOnLadder(ppk, market.ladder) : null;
+  if (onLadder) {
+    return {
+      ...base, price_per_kg: ppk, comparable: true, reason: null,
+      verdict: onLadder.verdict, verdict_title: onLadder.title, verdict_display: onLadder.display, box_won: onLadder.box_won,
+      cheaper: cheaperVendors(data, item.id, ppk, locationId, now),
+    };
+  }
   if (market?.reference) {
     const r = verdictAgainstReference(ppk, market.reference);
     return { ...base, price_per_kg: ppk, comparable: true, reason: null, verdict: r.verdict, verdict_display: r.display, cheaper: cheaperVendors(data, item.id, ppk, locationId, now) };

@@ -2,7 +2,7 @@
   "region": "수원",
   "built_on": "2026-11-25",
   "sources": {
-    "wholesale": "한국농수산식품유통공사 전국 공영도매시장 실시간 경매정보(수원 농수산물도매시장), kg당 낙찰가 중앙값",
+    "wholesale": "한국농수산식품유통공사 전국 공영도매시장 실시간 경매정보(수원 농수산물도매시장), kg당 낙찰가 중앙값·사분위. 상회 판매가는 기간별 중도매인 가격정보(서울 가락), 등락은 가격 등락 정보",
     "retail": "한국농수산식품유통공사 기간별 소매가격 정보(수원 지동시장·대형유통 1곳), 상품 등급 kg 환산가"
   },
   "items": [
@@ -11,7 +11,9 @@
       "wholesale": {
         "date": "2026-11-25",
         "per_kg": 3425,
-        "trades": 38
+        "trades": 38,
+        "low_per_kg": 2500,
+        "high_per_kg": 4150
       },
       "wholesale_week_ago": {
         "date": "2026-11-18",
@@ -22,6 +24,19 @@
         "date": "2026-11-24",
         "traditional_market_per_kg": 9800,
         "large_retailer_per_kg": 12600
+      },
+      "trader": {
+        "date": "2026-11-24",
+        "market": "서울 가락",
+        "box_kg": 4,
+        "low": 14300,
+        "high": 25000
+      },
+      "change": {
+        "date": "2026-11-24",
+        "week_pct": 24.4,
+        "month_pct": 63.3,
+        "year_pct": 26.9
       }
     },
     {
@@ -29,7 +44,9 @@
       "wholesale": {
         "date": "2026-11-25",
         "per_kg": 1400,
-        "trades": 8
+        "trades": 8,
+        "low_per_kg": 1400,
+        "high_per_kg": 1433
       },
       "wholesale_week_ago": {
         "date": "2026-11-18",
@@ -40,6 +57,19 @@
         "date": "2026-11-24",
         "traditional_market_per_kg": 2300,
         "large_retailer_per_kg": 1220
+      },
+      "trader": {
+        "date": "2026-11-24",
+        "market": "서울 가락",
+        "box_kg": 15,
+        "low": 11500,
+        "high": 20500
+      },
+      "change": {
+        "date": "2026-11-24",
+        "week_pct": 5,
+        "month_pct": 9.9,
+        "year_pct": 14.6
       }
     },
     {
@@ -47,7 +77,9 @@
       "wholesale": {
         "date": "2026-11-25",
         "per_kg": 1700,
-        "trades": 21
+        "trades": 21,
+        "low_per_kg": 1600,
+        "high_per_kg": 1710
       },
       "wholesale_week_ago": {
         "date": "2026-11-18",
@@ -58,6 +90,19 @@
         "date": "2026-11-24",
         "traditional_market_per_kg": 2360,
         "large_retailer_per_kg": 1480
+      },
+      "trader": {
+        "date": "2026-11-24",
+        "market": "서울 가락",
+        "box_kg": 1,
+        "low": 1860,
+        "high": 2160
+      },
+      "change": {
+        "date": "2026-11-24",
+        "week_pct": 4.4,
+        "month_pct": 6.6,
+        "year_pct": 23.4
       }
     },
     {
@@ -65,7 +110,9 @@
       "wholesale": {
         "date": "2026-11-24",
         "per_kg": 1325,
-        "trades": 20
+        "trades": 20,
+        "low_per_kg": 1100,
+        "high_per_kg": 1500
       },
       "wholesale_week_ago": {
         "date": "2026-11-17",
@@ -76,6 +123,19 @@
         "date": "2026-11-24",
         "traditional_market_per_kg": 3600,
         "large_retailer_per_kg": 2600
+      },
+      "trader": {
+        "date": "2026-11-24",
+        "market": "서울 가락",
+        "box_kg": 20,
+        "low": 26000,
+        "high": 36000
+      },
+      "change": {
+        "date": "2026-11-24",
+        "week_pct": 1.8,
+        "month_pct": 2.6,
+        "year_pct": 29.8
       }
     }
   ]

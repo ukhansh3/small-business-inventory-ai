@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { computeMarket, diagnoseLine, type Market, type PriceLine, type PurchaseLineInput } from "../core/price";
 import { type MarketHistoryFile, weeksFor } from "../core/market-history";
-import { referenceDisplay, referenceFor, trendDisplay, type MarketPricesFile } from "../core/market-prices";
+import { ladderFor, referenceDisplay, referenceFor, trendDisplay, type MarketPricesFile } from "../core/market-prices";
 import type { Dataset } from "../core/types";
 import { hasExampleData } from "./condition";
 import type { Logger } from "./log/logger";
@@ -42,6 +42,10 @@ export async function marketFor(deps: PriceCheckDeps, itemId: string): Promise<M
     return {
       item_id: itemId, per_kg: null, samples: 0, includes_example: false, display: referenceDisplay(reference), reference,
       trend: trend?.display ?? null,
+      ladder: (() => {
+        const l = ladderFor(reference);
+        return l ? { ...l, item_name: deps.data.items.find((i) => i.id === itemId)?.name } : null;
+      })(),
       weeks: weeks.length >= 2 ? weeks : null,
     };
   }
