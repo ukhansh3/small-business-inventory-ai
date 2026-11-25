@@ -117,13 +117,14 @@ export function handleAssistTurn(req: Request, deps: AssistDeps): Promise<Respon
 
       if (decision.type === "notice") {
         const name = decision.item_name;
+        const activeNames = deps.data.items.filter((i) => i.active).map((i) => i.name).join("·");
         const known = name ? deps.data.items.find((i) => i.name === name || i.aliases.includes(name)) : undefined;
         const notice =
           decision.kind === "off_topic"
             ? { kind: "off_topic", message: "이 도우미에서는 식재료 판매처와 가격을 확인할 수 있어요. 업체나 업종은 지도에서 검색해 주세요.", recognized_item: null, actions: ["search_lettuce"] }
             : {
                 kind: "out_of_scope_item",
-                message: name ? `아직 상추만 준비돼 있어요. ${name} 요청을 남겨 주시면 먼저 준비할게요.` : "아직 상추만 준비돼 있어요.",
+                message: name ? `아직 ${activeNames}만 준비돼 있어요. ${name} 요청을 남겨 주시면 먼저 준비할게요.` : `아직 ${activeNames}만 준비돼 있어요.`,
                 recognized_item: name ? { item_id: known?.id ?? null, name } : null,
                 actions: ["request_item", "search_lettuce"],
               };

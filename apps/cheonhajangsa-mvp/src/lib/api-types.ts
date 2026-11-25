@@ -35,6 +35,15 @@ export type Market = {
   samples: number;
   includes_example: boolean;
   display: string;
+  // v3(R-23): 수원 실제 시세. 있으면 판정 기준
+  reference?: {
+    wholesale_per_kg: number;
+    wholesale_date: string;
+    retail_per_kg: number;
+    retail_date: string;
+    traditional_market_per_kg: number | null;
+    large_retailer_per_kg: number | null;
+  } | null;
 };
 export type PriceLine = {
   line_no: number;

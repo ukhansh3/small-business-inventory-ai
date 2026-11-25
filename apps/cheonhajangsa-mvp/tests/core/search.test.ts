@@ -93,8 +93,8 @@ describe("AC-4 가격 표시(R-10·R-11)", () => {
       per_kg_display: "(kg당 약 3,800원)",
     });
   });
-  it("D는 확인일이 없어 '가격 정보 없음'", () => {
-    expect(card(r, "v_104").price).toEqual({ has_price: false, display: "가격 정보 없음", per_kg_display: null });
+  it("D는 확인일이 없어 '가격 미등록 · 전화로 확인'", () => {
+    expect(card(r, "v_104").price).toEqual({ has_price: false, display: "가격 미등록 · 전화로 확인", per_kg_display: null });
   });
   it("1kg 단위는 kg당 환산을 붙이지 않는다", () => {
     const one = search(

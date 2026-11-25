@@ -2,6 +2,8 @@ import items from "../data/items.json";
 import locations from "../data/locations.json";
 import offers from "../data/offers.json";
 import vendors from "../data/vendors.json";
+import marketPrices from "../data/market_prices.json";
+import { validateMarketPrices, type MarketPricesFile } from "./market-prices";
 import type { Dataset } from "./types";
 import { validateDataset } from "./validate";
 
@@ -15,3 +17,10 @@ export function loadDataset(): Dataset {
 }
 
 export const rawDataset = { items, locations, vendors, offers };
+
+// v3: 수원 실제 시세 저장본. 형식이 틀리면 시작할 때 실패한다
+export function loadMarketPrices(): MarketPricesFile {
+  const result = validateMarketPrices(marketPrices);
+  if (!result.ok) throw new Error(`시세 저장본 형식 오류:\n${result.errors.join("\n")}`);
+  return result.data;
+}

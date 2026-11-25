@@ -54,12 +54,13 @@ export function PriceCheckCard({
   share: { state: RequestState; message: string | null };
   disabled: boolean;
   onShare: () => void;
-  onSearch: () => void;
+  onSearch: (itemName: string) => void;
   onCall: (c: Card) => void;
   onDetail: (c: Card) => void;
 }) {
   const judged = check.lines.find((l) => l.cheaper.length > 0);
   const canShare = check.lines.some((l) => l.comparable);
+  const itemName = check.lines.find((l) => l.comparable && l.item_name)?.item_name ?? "상추";
   const meta = [DOC_LABEL[check.doc_type], SELLER_LABEL[check.seller_type], check.purchased_on].filter(Boolean).join(" · ");
   return (
     <View style={styles.card}>
@@ -85,15 +86,15 @@ export function PriceCheckCard({
       <View style={styles.actions}>
         {canShare && share.state !== "done" && (
           <Pressable accessibilityRole="button" disabled={disabled || share.state === "sending"} onPress={onShare} style={[styles.btn, styles.primary]}>
-            <Text style={[styles.btnLabel, styles.primaryLabel]}>{share.state === "sending" ? "보태는 중…" : "이 가격 동네 시세에 보태기"}</Text>
+            <Text style={[styles.btnLabel, styles.primaryLabel]}>{share.state === "sending" ? "보태는 중…" : "이 가격 기록에 보태기"}</Text>
           </Pressable>
         )}
-        <Pressable accessibilityRole="button" disabled={disabled} onPress={onSearch} style={styles.btn}>
-          <Text style={styles.btnLabel}>상추 판매처 찾기</Text>
+        <Pressable accessibilityRole="button" disabled={disabled} onPress={() => onSearch(itemName)} style={styles.btn}>
+          <Text style={styles.btnLabel}>{itemName} 판매처 찾기</Text>
         </Pressable>
       </View>
       {share.message && <Text style={[styles.shareMsg, share.state === "failed" && styles.fail]}>{share.message}</Text>}
-      {canShare && share.state !== "done" && <Text style={styles.note}>보태면 가게 이름 없이 kg당 가격만 동네 시세에 들어가요.</Text>}
+      {canShare && share.state !== "done" && <Text style={styles.note}>보태면 가게 이름 없이 kg당 가격만 기록돼요. 모이면 사장님들이 실제로 산 가격으로 보여 드려요.</Text>}
       {check.source === "photo" && <Text style={styles.note}>사진은 진단에만 쓰고 저장하지 않아요.</Text>}
     </View>
   );

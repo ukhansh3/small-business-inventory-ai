@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { computeMarket, diagnoseLine, type Market, type PriceLine, type PurchaseLineInput } from "../core/price";
+import { referenceDisplay, referenceFor, type MarketPricesFile } from "../core/market-prices";
 import type { Dataset } from "../core/types";
 import { hasExampleData } from "./condition";
 import type { Logger } from "./log/logger";
@@ -21,10 +22,15 @@ export type PriceCheck = {
   ai_mode: "live" | "stored";
 };
 
-export type PriceCheckDeps = { data: Dataset; log?: Logger };
+export type PriceCheckDeps = { data: Dataset; log?: Logger; prices?: MarketPricesFile | null };
 
-// R-18: 판매처 가격 + 동의한 구매 기록
+// v3(R-23): 수원 실제 시세(도매 경매가·소매가)가 있으면 그것을 기준으로 쓴다.
+// 없으면 v2 방식(판매처 가격 + 동의한 구매 기록, R-18)으로 돌아간다.
 export async function marketFor(deps: PriceCheckDeps, itemId: string): Promise<Market> {
+  const reference = referenceFor(deps.prices ?? null, itemId);
+  if (reference) {
+    return { item_id: itemId, per_kg: null, samples: 0, includes_example: false, display: referenceDisplay(reference), reference };
+  }
   const observed = await (deps.log ?? noopLogger).marketSamples(itemId);
   return computeMarket(deps.data, itemId, observed);
 }
@@ -48,7 +54,7 @@ export async function buildPriceCheck(
     message?: string | null;
   },
 ): Promise<PriceCheck> {
-  // 시세는 비교할 수 있는 품목(active)마다 한 번만 읽는다. MVP는 상추 하나
+  // 시세는 비교할 수 있는 품목(active)마다 한 번만 읽는다
   const itemIds = [...new Set(input.lines.map((l) => l.item_id).filter((id): id is string => !!id && !!deps.data.items.find((i) => i.id === id && i.active)))];
   const markets = new Map<string, Market>();
   for (const id of itemIds) markets.set(id, await marketFor(deps, id));

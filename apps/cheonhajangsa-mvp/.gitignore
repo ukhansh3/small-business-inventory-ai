@@ -57,3 +57,4 @@ data/*
 !data/vendors.json
 !data/offers.json
 !data/public_stores.json
+!data/market_prices.json

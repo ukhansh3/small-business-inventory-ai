@@ -220,7 +220,7 @@ export default function HomeScreen() {
               </View>
               {s.market && s.results && <MarketLine market={s.market} />}
               {s.results && <><Pressable accessibilityRole="button" onPress={() => { setSelectedId(null); setShowAiResults(true); setSheetMode("list"); setTab("map"); }} style={styles.exampleChip}><Text style={styles.sheetLink}>⌖ 검색 결과 지도에서 보기</Text></Pressable><ResultList results={s.results} stores={st.stores} location={me?.location_id} /></>}
-              {s.priceCheck && !s.loading && <View key={s.priceCheck.check_id} onLayout={(event) => { priceY.current = event.nativeEvent.layout.y; scroll.current?.scrollTo({ y: Math.max(priceY.current - 80, 0), animated: true }); }}><PriceCheckCard check={s.priceCheck} share={s.share} disabled={s.loading} onShare={a.sharePrice} onSearch={a.searchLettuce} onCall={onCall} onDetail={openDetail} /></View>}
+              {s.priceCheck && !s.loading && <View key={s.priceCheck.check_id} onLayout={(event) => { priceY.current = event.nativeEvent.layout.y; scroll.current?.scrollTo({ y: Math.max(priceY.current - 80, 0), animated: true }); }}><PriceCheckCard check={s.priceCheck} share={s.share} disabled={s.loading} onShare={a.sharePrice} onSearch={a.searchItem} onCall={onCall} onDetail={openDetail} /></View>}
             </ScrollView>
             <ChatInput disabled={s.loading} error={s.inputError} onSend={sendAssistantText} onPhoto={a.sendPhoto} />
           </>

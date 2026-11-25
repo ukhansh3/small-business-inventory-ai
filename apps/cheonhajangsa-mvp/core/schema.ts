@@ -40,8 +40,9 @@ export const openingHoursSchema = z.strictObject({
   sun: dayHoursSchema,
 });
 
-export const VENDOR_KINDS = ["채소가게", "식자재마트", "시장점포"] as const;
-export const DATA_STATUSES = ["예시", "현장확인", "판매처직접"] as const;
+// v3(2026-11-25): 실제 공공 명단의 도매시장 중도매인 추가
+export const VENDOR_KINDS = ["채소가게", "식자재마트", "시장점포", "도매시장 중도매인"] as const;
+export const DATA_STATUSES = ["예시", "현장확인", "판매처직접", "공공명단"] as const;
 export const PRICE_SOURCES = ["가게안내", "현장확인", "판매처직접", "예시"] as const;
 
 export const vendorSchema = z.strictObject({

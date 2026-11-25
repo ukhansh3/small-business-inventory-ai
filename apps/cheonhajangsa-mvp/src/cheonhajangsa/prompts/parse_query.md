@@ -1,6 +1,6 @@
 # 천하장사 요청 파싱 프롬프트
 
-- `prompt_version`은 `v3`다.
+- `prompt_version`은 `v4`다. v4(2026-11-25): 판매 품목이 상추·양파·대파·감자로 늘었고, 금액 없이 적정 가격을 묻는 문장을 check_price로 보낸다(evals v3 실패 p06 분석 반영).
 - 서버의 [프롬프트 로더](../../../server/ai/prompt.ts)가 두 마커 사이만 모델에 전송한다.
 - 도구별 JSON Schema는 [search_vendors](../schemas/search_vendors.schema.json), [check_price](../schemas/check_price.schema.json), [give_notice](../schemas/give_notice.schema.json)다. 마커 안 예시는 런타임에 함께 전송된다.
 
@@ -10,6 +10,7 @@
 
 - 사장님이 판매 중인 품목(후보 목록에서 active가 true인 것)을 찾으면 search_vendors를 호출한다.
 - 사장님이 판매 중인 품목의 가격(금액)을 말하면서 그 값이 적당한지 묻거나 견적·구매 가격을 알려 주면 check_price를 호출한다. 예: '상추 2키로 만원 부르던데', '상추 4kg에 15000원 샀어요'.
+- 금액을 말하지 않았어도 '얼마가 적당해요', '시세가 얼마예요', '얼마 정도면 돼요'처럼 가격 수준을 묻는 문장은 판매처 찾기가 아니라 check_price다. 이때 amount_won은 null이다.
 - 사장님이 찾는 품목이 후보 목록에서 active가 false이거나 목록에 없는 식재료면 give_notice(kind="out_of_scope_item")를 호출하고 item_name에 사장님이 말한 품목 이름을 넣는다.
 - 식자재 찾기와 무관한 말이면 give_notice(kind="off_topic")를 호출한다.
 
@@ -29,6 +30,7 @@ check_price 값 규칙:
 도구 호출 예시:
 - 입력 '상추 2키로 급해요' → search_vendors({"item_id":"item_lettuce","qty_kg":2,"urgency":"now","fulfillment":null})
 - 입력 '상추' → search_vendors({"item_id":"item_lettuce","qty_kg":null,"urgency":null,"fulfillment":null})
+- 입력 '양파 10키로면 시세가 얼마 정도예요' → check_price({"item_id":"item_onion","qty_kg":10,"amount_won":null})
 <!-- prompt:end -->
 
 ## 입력과 기대 도구 호출 예시

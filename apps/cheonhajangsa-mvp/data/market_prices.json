@@ -1,0 +1,62 @@
+{
+  "region": "수원",
+  "built_on": "2026-11-25",
+  "sources": {
+    "wholesale": "한국농수산식품유통공사 전국 공영도매시장 실시간 경매정보(수원 농수산물도매시장), kg당 낙찰가 중앙값",
+    "retail": "한국농수산식품유통공사 기간별 소매가격 정보(수원 지동시장·대형유통 1곳), 상품 등급 kg 환산가"
+  },
+  "items": [
+    {
+      "item_id": "item_lettuce",
+      "wholesale": {
+        "date": "2026-11-25",
+        "per_kg": 3425,
+        "trades": 38
+      },
+      "retail": {
+        "date": "2026-11-24",
+        "traditional_market_per_kg": 9800,
+        "large_retailer_per_kg": 12600
+      }
+    },
+    {
+      "item_id": "item_onion",
+      "wholesale": {
+        "date": "2026-11-25",
+        "per_kg": 1400,
+        "trades": 8
+      },
+      "retail": {
+        "date": "2026-11-24",
+        "traditional_market_per_kg": 2300,
+        "large_retailer_per_kg": 1220
+      }
+    },
+    {
+      "item_id": "item_green_onion",
+      "wholesale": {
+        "date": "2026-11-25",
+        "per_kg": 1700,
+        "trades": 21
+      },
+      "retail": {
+        "date": "2026-11-24",
+        "traditional_market_per_kg": 2360,
+        "large_retailer_per_kg": 1480
+      }
+    },
+    {
+      "item_id": "item_potato",
+      "wholesale": {
+        "date": "2026-11-24",
+        "per_kg": 1325,
+        "trades": 20
+      },
+      "retail": {
+        "date": "2026-11-24",
+        "traditional_market_per_kg": 3600,
+        "large_retailer_per_kg": 2600
+      }
+    }
+  ]
+}

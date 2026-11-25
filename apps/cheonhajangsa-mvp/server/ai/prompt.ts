@@ -7,7 +7,7 @@ import type Anthropic from "@anthropic-ai/sdk";
 import type { AiInput } from "./types";
 
 // 시스템 프롬프트와 도구 정의. 바꾸면 PROMPT_VERSION을 올리고 evals를 다시 돌린다(개발기획서 7절).
-export const PROMPT_VERSION = "v3";
+export const PROMPT_VERSION = "v4";
 
 export function loadSystemPrompt(): string {
   const file = join(process.cwd(), "src/cheonhajangsa/prompts/parse_query.md");
@@ -26,7 +26,7 @@ export const TOOLS: Anthropic.Tool[] = [
   },
   {
     name: "check_price",
-    description: "사장님이 말한 품목 가격이 동네 시세보다 비싼지 싼지 진단한다. 품목이 판매 중이고 금액이 언급될 때 쓴다. 문장에 없는 값은 null로 둔다.",
+    description: "사장님이 말하거나 묻는 품목 가격을 수원 도매·소매 시세와 비교해 진단한다. 품목이 판매 중이고 금액을 말하거나 적정 가격을 물을 때 쓴다. 문장에 없는 값은 null로 둔다.",
     strict: true,
     input_schema: { ...checkPriceSchema, type: "object" },
   },

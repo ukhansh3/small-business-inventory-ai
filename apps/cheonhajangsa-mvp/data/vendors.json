@@ -1,406 +1,3278 @@
 [
   {
-    "id": "v_001",
-    "name": "원천 새벽채소",
-    "kind": "채소가게",
-    "address": "경기 수원시 원천동 예시 주소 1",
-    "dong": "원천동",
-    "lat": 37.2803,
-    "lng": 127.0452,
-    "phone": "000-0000-0001",
+    "id": "v_301",
+    "name": "의림상회 · 경기청과",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (경기청과)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-236-3700",
     "opening_hours": {
       "mon": {
-        "open": "06:30",
-        "close": "20:00"
+        "open": "03:00",
+        "close": "19:00"
       },
       "tue": {
-        "open": "06:30",
-        "close": "20:00"
+        "open": "03:00",
+        "close": "19:00"
       },
       "wed": {
-        "open": "06:30",
-        "close": "20:00"
+        "open": "03:00",
+        "close": "19:00"
       },
       "thu": {
-        "open": "06:30",
-        "close": "20:00"
+        "open": "03:00",
+        "close": "19:00"
       },
       "fri": {
-        "open": "06:30",
-        "close": "20:00"
+        "open": "03:00",
+        "close": "19:00"
       },
       "sat": {
-        "open": "06:30",
-        "close": "18:00"
+        "open": "03:00",
+        "close": "19:00"
       },
       "sun": "closed"
     },
-    "delivery_available": true,
-    "delivery_dongs": [
-      "원천동",
-      "우만동"
-    ],
-    "delivery_note": "2만 원 이상",
-    "data_status": "예시",
-    "checked_on": null
-  },
-  {
-    "id": "v_002",
-    "name": "우만 시장 채소전",
-    "kind": "시장점포",
-    "address": "경기 수원시 우만동 예시 주소 2",
-    "dong": "우만동",
-    "lat": 37.2771,
-    "lng": 127.0395,
-    "phone": "000-0000-0002",
-    "opening_hours": {
-      "mon": {
-        "open": "08:00",
-        "close": "19:00"
-      },
-      "tue": {
-        "open": "08:00",
-        "close": "19:00"
-      },
-      "wed": {
-        "open": "08:00",
-        "close": "19:00"
-      },
-      "thu": {
-        "open": "08:00",
-        "close": "19:00"
-      },
-      "fri": {
-        "open": "08:00",
-        "close": "19:00"
-      },
-      "sat": {
-        "open": "08:00",
-        "close": "19:00"
-      },
-      "sun": {
-        "open": "09:00",
-        "close": "15:00"
-      }
-    },
-    "delivery_available": false,
+    "delivery_available": null,
     "delivery_dongs": [],
     "delivery_note": null,
-    "data_status": "예시",
-    "checked_on": null
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
   },
   {
-    "id": "v_003",
-    "name": "아주 식자재마트",
-    "kind": "식자재마트",
-    "address": "경기 수원시 원천동 예시 주소 3",
-    "dong": "원천동",
-    "lat": 37.2823,
-    "lng": 127.0474,
-    "phone": "000-0000-0003",
+    "id": "v_302",
+    "name": "남부상회 · 경기청과",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (경기청과)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-237-8641",
     "opening_hours": {
       "mon": {
-        "open": "09:00",
-        "close": "22:00"
+        "open": "03:00",
+        "close": "19:00"
       },
       "tue": {
-        "open": "09:00",
-        "close": "22:00"
+        "open": "03:00",
+        "close": "19:00"
       },
       "wed": {
-        "open": "09:00",
-        "close": "22:00"
+        "open": "03:00",
+        "close": "19:00"
       },
       "thu": {
-        "open": "09:00",
-        "close": "22:00"
+        "open": "03:00",
+        "close": "19:00"
       },
       "fri": {
-        "open": "09:00",
-        "close": "22:00"
+        "open": "03:00",
+        "close": "19:00"
       },
       "sat": {
-        "open": "09:00",
-        "close": "22:00"
-      },
-      "sun": {
-        "open": "09:00",
-        "close": "22:00"
-      }
-    },
-    "delivery_available": true,
-    "delivery_dongs": [
-      "원천동",
-      "우만동",
-      "매탄동",
-      "광교동"
-    ],
-    "delivery_note": "5만 원 이상",
-    "data_status": "예시",
-    "checked_on": null
-  },
-  {
-    "id": "v_004",
-    "name": "매탄 푸른채소",
-    "kind": "채소가게",
-    "address": "경기 수원시 매탄동 예시 주소 4",
-    "dong": "매탄동",
-    "lat": 37.2698,
-    "lng": 127.0459,
-    "phone": "000-0000-0004",
-    "opening_hours": {
-      "mon": {
-        "open": "07:00",
-        "close": "21:00"
-      },
-      "tue": {
-        "open": "07:00",
-        "close": "21:00"
-      },
-      "wed": {
-        "open": "07:00",
-        "close": "21:00"
-      },
-      "thu": {
-        "open": "07:00",
-        "close": "21:00"
-      },
-      "fri": {
-        "open": "07:00",
-        "close": "21:00"
-      },
-      "sat": {
-        "open": "07:00",
-        "close": "21:00"
+        "open": "03:00",
+        "close": "19:00"
       },
       "sun": "closed"
     },
-    "delivery_available": true,
-    "delivery_dongs": [
-      "매탄동"
-    ],
-    "delivery_note": null,
-    "data_status": "예시",
-    "checked_on": null
-  },
-  {
-    "id": "v_005",
-    "name": "삼거리 야채가게",
-    "kind": "채소가게",
-    "address": "경기 수원시 우만동 예시 주소 5",
-    "dong": "우만동",
-    "lat": 37.2762,
-    "lng": 127.0418,
-    "phone": "000-0000-0005",
-    "opening_hours": {
-      "mon": {
-        "open": "10:00",
-        "close": "20:00"
-      },
-      "tue": {
-        "open": "10:00",
-        "close": "20:00"
-      },
-      "wed": {
-        "open": "10:00",
-        "close": "20:00"
-      },
-      "thu": {
-        "open": "10:00",
-        "close": "20:00"
-      },
-      "fri": {
-        "open": "10:00",
-        "close": "20:00"
-      },
-      "sat": {
-        "open": "10:00",
-        "close": "20:00"
-      },
-      "sun": {
-        "open": "10:00",
-        "close": "18:00"
-      }
-    },
-    "delivery_available": false,
+    "delivery_available": null,
     "delivery_dongs": [],
     "delivery_note": null,
-    "data_status": "예시",
-    "checked_on": null
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
   },
   {
-    "id": "v_006",
-    "name": "인계 도매 식자재",
-    "kind": "식자재마트",
-    "address": "경기 수원시 인계동 예시 주소 6",
-    "dong": "인계동",
-    "lat": 37.2655,
-    "lng": 127.033,
-    "phone": "000-0000-0006",
+    "id": "v_303",
+    "name": "광진상회 · 경기청과",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (경기청과)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-236-3700",
     "opening_hours": {
       "mon": {
-        "open": "05:00",
-        "close": "14:00"
+        "open": "03:00",
+        "close": "19:00"
       },
       "tue": {
-        "open": "05:00",
-        "close": "14:00"
+        "open": "03:00",
+        "close": "19:00"
       },
       "wed": {
-        "open": "05:00",
-        "close": "14:00"
+        "open": "03:00",
+        "close": "19:00"
       },
       "thu": {
-        "open": "05:00",
-        "close": "14:00"
+        "open": "03:00",
+        "close": "19:00"
       },
       "fri": {
-        "open": "05:00",
-        "close": "14:00"
+        "open": "03:00",
+        "close": "19:00"
       },
       "sat": {
-        "open": "05:00",
-        "close": "14:00"
+        "open": "03:00",
+        "close": "19:00"
       },
       "sun": "closed"
     },
-    "delivery_available": true,
-    "delivery_dongs": [
-      "인계동",
-      "매탄동",
-      "원천동"
-    ],
-    "delivery_note": "오전 배달만",
-    "data_status": "예시",
-    "checked_on": null
-  },
-  {
-    "id": "v_007",
-    "name": "광교 산들채소",
-    "kind": "채소가게",
-    "address": "경기 수원시 광교동 예시 주소 7",
-    "dong": "광교동",
-    "lat": 37.288,
-    "lng": 127.05,
-    "phone": "000-0000-0007",
-    "opening_hours": {
-      "mon": {
-        "open": "08:00",
-        "close": "20:00"
-      },
-      "tue": {
-        "open": "08:00",
-        "close": "20:00"
-      },
-      "wed": {
-        "open": "08:00",
-        "close": "20:00"
-      },
-      "thu": {
-        "open": "08:00",
-        "close": "20:00"
-      },
-      "fri": {
-        "open": "08:00",
-        "close": "20:00"
-      },
-      "sat": "closed",
-      "sun": "closed"
-    },
-    "delivery_available": false,
+    "delivery_available": null,
     "delivery_dongs": [],
     "delivery_note": null,
-    "data_status": "예시",
-    "checked_on": null
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
   },
   {
-    "id": "v_008",
-    "name": "월드컵 시장 쌈채소",
-    "kind": "시장점포",
-    "address": "경기 수원시 우만동 예시 주소 8",
-    "dong": "우만동",
-    "lat": 37.2745,
-    "lng": 127.0372,
-    "phone": "000-0000-0008",
+    "id": "v_304",
+    "name": "정진상회 · 경기청과",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (경기청과)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-235-4916",
     "opening_hours": {
       "mon": {
-        "open": "07:00",
-        "close": "18:00"
+        "open": "03:00",
+        "close": "19:00"
       },
       "tue": {
-        "open": "07:00",
-        "close": "18:00"
+        "open": "03:00",
+        "close": "19:00"
       },
       "wed": {
-        "open": "07:00",
-        "close": "18:00"
+        "open": "03:00",
+        "close": "19:00"
       },
       "thu": {
-        "open": "07:00",
-        "close": "18:00"
+        "open": "03:00",
+        "close": "19:00"
       },
       "fri": {
-        "open": "07:00",
-        "close": "18:00"
+        "open": "03:00",
+        "close": "19:00"
       },
       "sat": {
-        "open": "07:00",
-        "close": "18:00"
+        "open": "03:00",
+        "close": "19:00"
       },
       "sun": "closed"
     },
-    "delivery_available": false,
+    "delivery_available": null,
     "delivery_dongs": [],
     "delivery_note": null,
-    "data_status": "예시",
-    "checked_on": null
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
   },
   {
-    "id": "v_009",
-    "name": "영통 알뜰 식자재",
-    "kind": "식자재마트",
-    "address": "경기 수원시 영통동 예시 주소 9",
-    "dong": "영통동",
-    "lat": 37.2512,
-    "lng": 127.056,
-    "phone": "000-0000-0009",
+    "id": "v_305",
+    "name": "보민상회 · 경기청과",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (경기청과)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-236-3700",
     "opening_hours": {
       "mon": {
-        "open": "09:00",
-        "close": "21:00"
+        "open": "03:00",
+        "close": "19:00"
       },
       "tue": {
-        "open": "09:00",
-        "close": "21:00"
+        "open": "03:00",
+        "close": "19:00"
       },
       "wed": {
-        "open": "09:00",
-        "close": "21:00"
+        "open": "03:00",
+        "close": "19:00"
       },
       "thu": {
-        "open": "09:00",
-        "close": "21:00"
+        "open": "03:00",
+        "close": "19:00"
       },
       "fri": {
-        "open": "09:00",
-        "close": "21:00"
+        "open": "03:00",
+        "close": "19:00"
       },
       "sat": {
-        "open": "09:00",
-        "close": "21:00"
+        "open": "03:00",
+        "close": "19:00"
       },
-      "sun": {
-        "open": "09:00",
-        "close": "21:00"
-      }
+      "sun": "closed"
     },
-    "delivery_available": true,
-    "delivery_dongs": [
-      "영통동",
-      "매탄동"
-    ],
-    "delivery_note": "3만 원 이상",
-    "data_status": "예시",
-    "checked_on": null
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_306",
+    "name": "신보상회 · 경기청과",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (경기청과)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-236-5725",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_307",
+    "name": "건영상회 · 경기청과",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (경기청과)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-239-9856",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_308",
+    "name": "태성상회 · 경기청과",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (경기청과)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-232-6897",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_309",
+    "name": "영훈상회 · 경기청과",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (경기청과)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-236-3700",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_310",
+    "name": "동원상회 · 경기청과",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (경기청과)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-236-3700",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_311",
+    "name": "그린상회 · 경기청과",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (경기청과)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-236-3700",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_312",
+    "name": "도라지상회 · 경기청과",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (경기청과)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-236-3700",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_313",
+    "name": "금성상회 · 경기청과",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (경기청과)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-238-3718",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_314",
+    "name": "봉원상회 · 경기청과",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (경기청과)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-233-9119",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_315",
+    "name": "생생상회 · 경기청과",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (경기청과)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-225-3317",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_316",
+    "name": "국민유통 · 경기청과",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (경기청과)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-236-3700",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_317",
+    "name": "충남상회 · 경기청과",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (경기청과)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-232-9559",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_318",
+    "name": "성림상회 · 경기청과",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (경기청과)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-233-3336/239-8490",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_319",
+    "name": "영동상회 · 경기청과",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (경기청과)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-236-3700",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_320",
+    "name": "엔비농산 · 경기청과",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (경기청과)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-236-3700",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_321",
+    "name": "진성상회 · 경기청과",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (경기청과)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-239-6098",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_322",
+    "name": "강원상회 · 경기청과",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (경기청과)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-236-3700",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_323",
+    "name": "농부상회 · 경기청과",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (경기청과)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-236-3700",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_324",
+    "name": "동진상회 · 경기청과",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (경기청과)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-221-7890",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_325",
+    "name": "정아상회 · 경기청과",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (경기청과)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-236-3700",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_326",
+    "name": "대구상회 · 경기청과",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (경기청과)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-239-6599",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_327",
+    "name": "권선상회 · 경기청과",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (경기청과)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-236-3700",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_328",
+    "name": "칠성상회 · 경기청과",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (경기청과)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-234-5773",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_329",
+    "name": "비행장상회 · 경기청과",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (경기청과)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-232-4933",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_330",
+    "name": "대일상회 · 경기청과",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (경기청과)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-233-9435",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_331",
+    "name": "도란상회 · 경기청과",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (경기청과)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-236-3700",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_332",
+    "name": "누리상회 · 경기청과",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (경기청과)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-236-3700",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_333",
+    "name": "행복상회 · 경기청과",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (경기청과)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-236-3700",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_334",
+    "name": "진영상회 · 경기청과",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (경기청과)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-236-3700",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_335",
+    "name": "경기상회 · 경기청과",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (경기청과)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-236-3700",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_336",
+    "name": "장미상회 · 수원청과물",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (수원청과물)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-232-2253",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_337",
+    "name": "신진물산 · 수원청과물",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (수원청과물)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-232-2253",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_338",
+    "name": "의형제상회 · 수원청과물",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (수원청과물)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-236-3712",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_339",
+    "name": "여수상회 · 수원청과물",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (수원청과물)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-224-3732",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_340",
+    "name": "신창상회 · 수원청과물",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (수원청과물)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-233-9684",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_341",
+    "name": "신보상회 · 수원청과물",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (수원청과물)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-221-5717",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_342",
+    "name": "무안상회 · 수원청과물",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (수원청과물)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-226-7048",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_343",
+    "name": "대한양상회 · 수원청과물",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (수원청과물)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-267-0981",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_344",
+    "name": "경남상회 · 수원청과물",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (수원청과물)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-232-3088",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_345",
+    "name": "대원상회 · 수원청과물",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (수원청과물)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-232-2253",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_346",
+    "name": "화성상회 · 수원청과물",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (수원청과물)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-232-6514",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_347",
+    "name": "대여수상회 · 수원청과물",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (수원청과물)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-224-3732",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_348",
+    "name": "원장미상회 · 수원청과물",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (수원청과물)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-203-5115",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_349",
+    "name": "경희청과 · 수원청과물",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (수원청과물)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-232-2253",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_350",
+    "name": "순천상회 · 수원청과물",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (수원청과물)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-225-5771",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_351",
+    "name": "일진코리아 · 수원청과물",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (수원청과물)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-232-2253",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_352",
+    "name": "선심상회 · 수원청과물",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (수원청과물)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-232-2253",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_353",
+    "name": "현대상회 · 수원청과물",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (수원청과물)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-232-2253",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_354",
+    "name": "영남물산 · 수원청과물",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (수원청과물)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-232-2253",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_355",
+    "name": "오케이팜 · 수원청과물",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (수원청과물)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-232-2253",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_356",
+    "name": "youha 한양상회 · 수원청과물",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (수원청과물)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-232-2253",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_357",
+    "name": "푸성귀 · 수원청과물",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (수원청과물)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-232-2253",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_358",
+    "name": "대구상회 · 수원청과물",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (수원청과물)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-232-2253",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_359",
+    "name": "명성상회 · 수원청과물",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (수원청과물)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-232-2253",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_360",
+    "name": "세종상회 · 수원원예농협",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (수원원예농협)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-236-2782",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_361",
+    "name": "은혜상회 · 수원원예농협",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (수원원예농협)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-239-1914",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_362",
+    "name": "백만상회 · 수원원예농협",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (수원원예농협)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-234-8068",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_363",
+    "name": "성화상회 · 수원원예농협",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (수원원예농협)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-233-9772",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_364",
+    "name": "삼오상회 · 수원원예농협",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (수원원예농협)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-237-9327",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_365",
+    "name": "대영상회 · 수원원예농협",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (수원원예농협)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-221-8337",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_366",
+    "name": "삼춘네야채 · 수원원예농협",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (수원원예농협)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-226-5773",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_367",
+    "name": "영암상회 · 수원원예농협",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (수원원예농협)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-233-9772",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_368",
+    "name": "무등상회 · 수원원예농협",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (수원원예농협)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-239-5737",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_369",
+    "name": "백마상회 · 수원원예농협",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (수원원예농협)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-239-0733",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_370",
+    "name": "태성상회 · 수원원예농협",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (수원원예농협)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-233-9772",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_371",
+    "name": "팔달상회 · 수원원예농협",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (수원원예농협)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-238-3661",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_372",
+    "name": "새벽상회 · 수원원예농협",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (수원원예농협)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-233-9772",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_373",
+    "name": "지승상회 · 수원원예농협",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (수원원예농협)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-233-9772",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_374",
+    "name": "다영유통 · 수원원예농협",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (수원원예농협)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-233-9772",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_375",
+    "name": "호남상회 · 수원원예농협",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (수원원예농협)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-233-9772",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_376",
+    "name": "대광상회 · 수원원예농협",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (수원원예농협)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-224-0857",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_377",
+    "name": "강원상회 · 수원원예농협",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (수원원예농협)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-233-9772",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
+  },
+  {
+    "id": "v_378",
+    "name": "늘봄상회 · 수원원예농협",
+    "kind": "도매시장 중도매인",
+    "address": "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (수원원예농협)",
+    "dong": "권선동",
+    "lat": 37.2514,
+    "lng": 127.039,
+    "phone": "031-233-9772",
+    "opening_hours": {
+      "mon": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "tue": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "wed": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "thu": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "fri": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sat": {
+        "open": "03:00",
+        "close": "19:00"
+      },
+      "sun": "closed"
+    },
+    "delivery_available": null,
+    "delivery_dongs": [],
+    "delivery_note": null,
+    "data_status": "공공명단",
+    "checked_on": "2026-10-28"
   }
 ]

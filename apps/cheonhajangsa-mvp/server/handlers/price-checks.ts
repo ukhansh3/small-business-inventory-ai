@@ -107,7 +107,7 @@ export function handleMarket(req: Request, deps: { data: Dataset; log?: Logger }
     const itemId = new URL(req.url).searchParams.get("item_id");
     const item = deps.data.items.find((i) => i.id === itemId);
     if (!item) throw new HttpError("INVALID_INPUT", "품목이 필요해요.");
-    if (!item.active) throw new HttpError("ITEM_NOT_ACTIVE", "아직 상추만 준비돼 있어요.");
+    if (!item.active) throw new HttpError("ITEM_NOT_ACTIVE", `아직 ${deps.data.items.filter((i) => i.active).map((i) => i.name).join("·")}만 준비돼 있어요.`);
     return json(200, await marketFor(deps, item.id));
   });
 }

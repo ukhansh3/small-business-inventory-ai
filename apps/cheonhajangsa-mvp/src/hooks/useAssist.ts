@@ -214,6 +214,7 @@ export function useAssist() {
     editCondition,
     requestItem,
     searchLettuce: useCallback(() => sendText("상추"), [sendText]),
+    searchItem: useCallback((name: string) => sendText(name), [sendText]),
     openEditor: useCallback((editor: EditorState) => dispatch({ type: "open_editor", editor }), []),
     retry: useCallback(() => retryRef.current?.(), []),
   };

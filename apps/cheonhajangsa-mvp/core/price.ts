@@ -2,6 +2,7 @@ import { distanceMeters } from "./distance";
 import { pricePerKg, won } from "./format";
 import { buildCard } from "./search";
 import type { VendorCard } from "./search-types";
+import { verdictAgainstReference, type Reference } from "./market-prices";
 import { seoulNow } from "./time";
 import type { Dataset } from "./types";
 
@@ -17,6 +18,7 @@ export type Market = {
   samples: number;
   includes_example: boolean;
   display: string;
+  reference?: Reference | null; // v3: 수원 실제 시세(있으면 판정 기준)
 };
 
 export type Verdict = "cheaper" | "normal" | "pricier";
@@ -125,10 +127,15 @@ export function diagnoseLine(data: Dataset, line: PurchaseLineInput, lineNo: num
     cheaper: [],
   };
   if (!item || !item.active) {
-    return { ...base, price_per_kg: perKg(line.amount_won, line.qty_kg), comparable: false, reason: "아직 상추만 비교해요" };
+    const names = data.items.filter((i) => i.active).map((i) => i.name).join("·");
+    return { ...base, price_per_kg: perKg(line.amount_won, line.qty_kg), comparable: false, reason: `아직 ${names}만 비교해요` };
   }
   const ppk = perKg(line.amount_won, line.qty_kg);
   if (ppk === null) return { ...base, price_per_kg: null, comparable: false, reason: line.qty_kg === null ? "단위를 알 수 없어요" : "금액을 알 수 없어요" };
+  if (market?.reference) {
+    const r = verdictAgainstReference(ppk, market.reference);
+    return { ...base, price_per_kg: ppk, comparable: true, reason: null, verdict: r.verdict, verdict_display: r.display, cheaper: cheaperVendors(data, item.id, ppk, locationId, now) };
+  }
   if (!market || market.per_kg === null) return { ...base, price_per_kg: ppk, comparable: true, reason: "아직 비교할 정보가 적어요" };
   const v = verdictOf(ppk, market.per_kg.median);
   return { ...base, price_per_kg: ppk, comparable: true, reason: null, verdict: v.verdict, verdict_display: v.display, cheaper: cheaperVendors(data, item.id, ppk, locationId, now) };

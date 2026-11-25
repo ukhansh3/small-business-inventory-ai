@@ -22,7 +22,7 @@ function monthDay(isoDate: string): string {
 // R-11: unit_kg가 있고 1kg 단위가 아니면 kg당 가격(100원 단위 반올림)을 덧붙인다
 export function priceDisplay(o: Offer): { has_price: boolean; display: string; per_kg_display: string | null } {
   if (o.price === null || o.price_unit_label === null || o.price_source === null || o.price_checked_on === null) {
-    return { has_price: false, display: "가격 정보 없음", per_kg_display: null };
+    return { has_price: false, display: "가격 미등록 · 전화로 확인", per_kg_display: null };
   }
   const display = `${o.price_unit_label} ${won(o.price)}원 · ${SOURCE_LABEL[o.price_source]} · ${monthDay(o.price_checked_on)} 확인`;
   const perKg = o.unit_kg !== null && o.unit_kg !== 1 ? `(kg당 약 ${won(Math.round(o.price / o.unit_kg / 100) * 100)}원)` : null;
