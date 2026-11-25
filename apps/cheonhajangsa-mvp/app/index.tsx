@@ -70,7 +70,7 @@ export default function HomeScreen() {
     const produceQuery = /^(야채|채소|과일|청과)$/.test(keyword);
     return st.stores.filter((store) => {
       if (selectedCategory) return store.category === selectedCategory;
-      const description = [store.name, store.category, store.vendor_card?.kind, store.demo_service].join(" ").toLowerCase();
+      const description = [store.name, store.category, store.vendor_card?.kind].join(" ").toLowerCase();
       return description.replace(/\s+/g, "").includes(keyword.replace(/\s+/g, "")) ||
         (produceQuery && /채소|야채|과일|청과|시장점포/.test(description));
     });
@@ -129,7 +129,6 @@ export default function HomeScreen() {
     const terms = st.stores.flatMap((store) => [
       store.name,
       ...store.category.split("·"),
-      ...(store.demo_service?.split("·") ?? []),
     ]);
     const matchedTerm = terms
       .map((term) => term.trim())
@@ -142,7 +141,7 @@ export default function HomeScreen() {
     if (keyword) {
       const normalized = keyword.toLowerCase().replace(/\s/g, "");
       const stores = st.stores.filter((store) =>
-        [store.name, store.category, store.demo_service].some((value) => value?.toLowerCase().replace(/\s/g, "").includes(normalized)),
+        [store.name, store.category].some((value) => value?.toLowerCase().replace(/\s/g, "").includes(normalized)),
       );
       setStoreReplies((previous) => [...previous, { after: s.messages.length, text, stores }]);
       return;

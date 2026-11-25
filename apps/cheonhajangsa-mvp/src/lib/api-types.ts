@@ -133,7 +133,6 @@ export type Store = {
   distance_m: number;
   used_count?: number;
   saved_count?: number;
-  demo_service?: string;
   vendor_card?: import("../../core/search-types").VendorCard;
   source?: string;
   source_date?: string;

@@ -59,9 +59,8 @@ export default function StoreDetail() {
             <Text style={styles.title}>{displayName(store.name)}</Text>
             <View style={styles.toneRow}>
               <View style={[styles.dot, { backgroundColor: TONES[tone].color }]} />
-              <Text style={styles.toneText}>{tone === "demo" ? `가상 시연 · ${store.category}` : TONES[tone].label}{tone === "shop" ? ` · ${store.category}` : ""}</Text>
+              <Text style={styles.toneText}>{TONES[tone].label}{tone === "shop" ? ` · ${store.category}` : ""}</Text>
             </View>
-            {!!store.demo_service && <Text style={styles.body}>시연용 가상 업체예요. 제공 서비스: {store.demo_service}</Text>}
 
             {/* 핵심 정보(v3): 거리·영업시간·전화·가격·주소·출처 */}
             <View style={styles.info}>
@@ -73,7 +72,7 @@ export default function StoreDetail() {
               {!!store.vendor_card && (
                 <InfoRow label="가격" value={store.vendor_card.price.has_price ? store.vendor_card.price.display : "가격 미등록 · 전화로 확인"} />
               )}
-              {!store.demo_service && !!store.address && <InfoRow label="주소" value={store.address} />}
+              {!!store.address && <InfoRow label="주소" value={store.address} />}
               {!!store.source && <InfoRow label="출처" value={store.source + (store.source_date ? ` (${store.source_date} 기준)` : "")} muted />}
             </View>
 
@@ -83,12 +82,10 @@ export default function StoreDetail() {
                   <Text style={styles.primaryText}>전화하기</Text>
                 </Pressable>
               )}
-              {!store.demo_service && (
-                <Pressable accessibilityRole="link" onPress={() =>
-                  void Linking.openURL("https://map.kakao.com/link/map/" + encodeURIComponent(store.name) + "," + store.lat + "," + store.lng)} style={phone || canInquire ? styles.secondary : styles.primary}>
-                  <Text style={phone || canInquire ? styles.secondaryText : styles.primaryText}>카카오맵에서 위치 보기</Text>
-                </Pressable>
-              )}
+              <Pressable accessibilityRole="link" onPress={() =>
+                void Linking.openURL("https://map.kakao.com/link/map/" + encodeURIComponent(store.name) + "," + store.lat + "," + store.lng)} style={phone || canInquire ? styles.secondary : styles.primary}>
+                <Text style={phone || canInquire ? styles.secondaryText : styles.primaryText}>카카오맵에서 위치 보기</Text>
+              </Pressable>
             </View>
 
             {canInquire ? (

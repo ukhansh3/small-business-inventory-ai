@@ -12,7 +12,7 @@ export function pinsFor(stores: Store[], me: { lat: number; lng: number; name: s
     lng: s.lng,
     name: displayName(s.name),
     tone: toneOf(s), // v3: 출처별 핀 색
-    kind: s.demo_service ? "example" : s.kind === "public" ? "public" : s.vendor_card?.is_example ? "example" : "vendor",
+    kind: s.kind === "public" ? "public" : s.vendor_card?.is_example ? "example" : "vendor",
   }));
   if (me) pins.push({ id: "__me", lat: me.lat, lng: me.lng, name: `내 위치: ${me.name}`, kind: "me" });
   return pins;

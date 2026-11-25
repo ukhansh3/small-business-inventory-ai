@@ -8,7 +8,7 @@ import { color } from "./theme";
 
 // 목록 한 줄 카드. 출처 구분(색 점 + 이름), 거리, 0이 아닌 사용·저장 수만 보여 준다.
 // 가상 시연 업체는 "가상 시연" 배지로 실제 업체와 구분한다.
-export function CompactStoreCard({ store, location, deliveryLabel }: { store: Pick<Store, "store_id" | "name" | "category" | "distance_m" | "used_count" | "saved_count" | "vendor_card" | "demo_service">; location?: string; deliveryLabel?: string | null }) {
+export function CompactStoreCard({ store, location, deliveryLabel }: { store: Pick<Store, "store_id" | "name" | "category" | "distance_m" | "used_count" | "saved_count" | "vendor_card">; location?: string; deliveryLabel?: string | null }) {
   const router = useRouter();
   const distance = store.distance_m < 1000
     ? Math.round(store.distance_m) + "m"
@@ -17,7 +17,7 @@ export function CompactStoreCard({ store, location, deliveryLabel }: { store: Pi
   const t = TONES[tone];
   const name = displayName(store.name);
   const activity = activityText(store.used_count, store.saved_count);
-  const showCategory = tone === "shop" || tone === "demo";
+  const showCategory = tone === "shop";
   return (
     <Pressable accessibilityRole="button" accessibilityLabel={name + " 상세 보기"}
       onPress={() => router.push({ pathname: "/store/[id]", params: { id: store.store_id, location: location ?? "" } })}
@@ -26,15 +26,14 @@ export function CompactStoreCard({ store, location, deliveryLabel }: { store: Pi
       <View style={styles.copy}>
         <View style={styles.titleRow}>
           <Text style={styles.name} numberOfLines={1}>{name}</Text>
-          {tone === "demo" && <Text style={styles.demo}>가상 시연</Text>}
         </View>
         <View style={styles.metaRow}>
           <View style={[styles.dot, { backgroundColor: t.color }]} />
           <Text style={styles.meta} numberOfLines={1}>
-            {tone === "demo" ? store.category : t.label}{showCategory && tone !== "demo" ? ` · ${store.category}` : ""} · {distance}
+            {t.label}{showCategory ? ` · ${store.category}` : ""} · {distance}
           </Text>
         </View>
-        {!!store.vendor_card && tone !== "demo" && <Text style={styles.meta} numberOfLines={1}>{store.vendor_card.open_status.display}</Text>}
+        {!!store.vendor_card && <Text style={styles.meta} numberOfLines={1}>{store.vendor_card.open_status.display}</Text>}
         {!!deliveryLabel && <Text style={styles.meta}>{deliveryLabel}</Text>}
         {!!activity && <Text style={styles.activity}>{activity}</Text>}
       </View>
@@ -62,6 +61,5 @@ const styles = StyleSheet.create({
   dot: { width: 8, height: 8, borderRadius: 4 },
   meta: { flexShrink: 1, fontSize: 13, color: color.sub },
   activity: { fontSize: 12, color: color.faint },
-  demo: { overflow: "hidden", borderRadius: 6, paddingHorizontal: 6, paddingVertical: 2, fontSize: 12, fontWeight: "700", color: "#ffffff", backgroundColor: TONES.demo.color },
   arrow: { width: 26, height: 26, borderRadius: 13, alignItems: "center", justifyContent: "center", backgroundColor: color.soft },
 });

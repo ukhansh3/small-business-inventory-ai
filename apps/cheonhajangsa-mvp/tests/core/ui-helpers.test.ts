@@ -8,11 +8,11 @@ import { activityText, displayName, toneOf } from "../../src/lib/store-tone";
 const s = (id: string, category: string, lat = 37.2514, lng = 127.039) => ({ store: { store_id: id, category, lat, lng, address: "경기 수원시 권선구 세권로 243 수원시농수산물도매시장 (경기청과)" } });
 
 describe("출처 구분과 이름", () => {
-  it("업종·시연 여부로 출처를 나눈다", () => {
+  it("업종으로 출처를 나눈다", () => {
     expect(toneOf({ category: "도매시장 중도매인" })).toBe("wholesale");
     expect(toneOf({ category: "식자재 납품업체" })).toBe("supply");
     expect(toneOf({ category: "채소/과일" })).toBe("shop");
-    expect(toneOf({ category: "청소·방역", demo_service: "주방 청소" })).toBe("demo");
+    expect(toneOf({ category: "슈퍼마켓" })).toBe("shop");
   });
   it("원천 구분자를 공백으로 바꾼다", () => {
     expect(displayName("럭키;과일;야채")).toBe("럭키 과일 야채");

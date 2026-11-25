@@ -1,5 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
-import type { DemoStore, StoresDeps } from "./handlers/stores";
+import type { StoresDeps } from "./handlers/stores";
 import { createHash } from "node:crypto";
 import publicStoresJson from "../data/public_stores.json";
 import supplyVendorsJson from "../data/supply_vendors.json";
@@ -65,19 +65,6 @@ export function storesDeps(): StoresDeps {
       });
       const { data, error } = await db.rpc("chj_store_activity_counts", { p_location_id: locationId });
       return error ? null : data;
-    },
-    async loadDemoStores() {
-      if (!supabaseUrl || !supabaseServiceRoleKey) return [];
-      const db = createClient(supabaseUrl, supabaseServiceRoleKey, {
-        auth: { persistSession: false, autoRefreshToken: false },
-      });
-      const result = await db.from("chj_demo_stores")
-        .select("store_id,name,category,service,lat,lng").returns<DemoStore[]>();
-      if (result.error) {
-        console.warn("가상 업체 조회 실패:", result.error.code);
-        return [];
-      }
-      return result.data;
     },
   };
 }

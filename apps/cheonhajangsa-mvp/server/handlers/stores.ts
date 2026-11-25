@@ -26,7 +26,6 @@ export type Store = {
   distance_m: number;
   used_count?: number;
   saved_count?: number;
-  demo_service?: string;
   vendor_card?: VendorCard;
   source?: string;
   source_date?: string;
@@ -34,13 +33,8 @@ export type Store = {
   hours?: string; // v3: 주간 영업시간 한 줄(판매처만)
 };
 
-// 가상 시연 가게 중 이 업종은 지도에 내지 않는다(2026-11-25 사용자 결정).
-// 식자재는 실제 데이터(도매시장 중도매인·납품업체·상가정보)로 대체됐다. Supabase 표는 그대로 둔다
-export const HIDDEN_DEMO_CATEGORIES: readonly string[] = ["식자재"];
-
-export type DemoStore = Pick<Store, "store_id" | "name" | "category" | "lat" | "lng"> & { service: string };
-
-export type StoresDeps = { data: Dataset; publicStores: PublicStoresFile; supplyVendors?: SupplyVendorsFile; env: ServerEnv; clock?: () => Date; loadDemoStores?: () => Promise<DemoStore[]>; loadActivity?: (locationId: string) => Promise<{ vendor_id: string; used_count: number; saved_count: number }[] | null> };
+// 중간 시연용 가상 업체(Supabase chj_demo_stores)는 앱에서 뺐다(2026-11-25 사용자 결정). 표는 팀 확인 전까지 그대로 둔다.
+export type StoresDeps = { data: Dataset; publicStores: PublicStoresFile; supplyVendors?: SupplyVendorsFile; env: ServerEnv; clock?: () => Date; loadActivity?: (locationId: string) => Promise<{ vendor_id: string; used_count: number; saved_count: number }[] | null> };
 
 function parseBbox(v: string | null): [number, number, number, number] | null {
   if (!v) return null;
@@ -108,13 +102,7 @@ export function handleStores(req: Request, deps: StoresDeps): Promise<Response> 
         phone: sv.phone,
       });
     }
-    const [demoRows, activity] = await Promise.all([deps.loadDemoStores?.(), deps.loadActivity?.(loc.id)]);
-    const demos = demoRows ?? [];
-    for (const { service, ...demo } of demos) {
-      if (!inBox(demo.lat, demo.lng) || HIDDEN_DEMO_CATEGORIES.includes(demo.category)) continue;
-      stores.push({ ...demo, kind: "public", address: "아주대 주변 가상 위치",
-        demo_service: service, distance_m: Math.round(distanceMeters(loc, demo)) });
-    }
+    const activity = await deps.loadActivity?.(loc.id);
     if (activity) {
       const byId = new Map(activity.map((row) => [row.vendor_id, row]));
       for (const store of stores) {
