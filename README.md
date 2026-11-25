@@ -84,6 +84,8 @@ Node.js 24를 사용합니다. `apps/cheonhajangsa-mvp/`에서 `npm ci`를 실�
 
 ## 운영 기록과 평가(최종평가)
 
+교수 평가 기준(강의 90 지침) 순서대로 정리한 현황: [최종평가 준비 현황](docs/evaluation/final-eval-readiness.md)
+
 | 항목 | 위치 | 방법 |
 |---|---|---|
 | 추적 기록 | [`logs/trace.jsonl`](logs/trace.jsonl) | 로컬 API(`npm run dev:api`)로 AI 도우미·검색·가격 진단 요청을 하면 요청마다 한 줄이 쌓입니다. 요청 id는 응답 머리 `x-request-id`와 같습니다. 칸: 요청 id, 시각, 사용자(기기 해시), 입력(전화번호·이메일 가림, 사진은 크기만), 단계별 결과, 결과, 커밋, 모델, 프롬프트 버전, 지연, 오류. 배포본(Vercel)은 같은 줄을 `TRACE ` 접두어로 서버 로그에 냅니다. 코드: `apps/cheonhajangsa-mvp/server/trace.ts` |
