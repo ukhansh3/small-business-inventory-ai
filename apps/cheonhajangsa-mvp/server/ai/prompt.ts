@@ -7,7 +7,7 @@ import type Anthropic from "@anthropic-ai/sdk";
 import type { AiInput } from "./types";
 
 // 시스템 프롬프트와 도구 정의. 바꾸면 PROMPT_VERSION을 올리고 evals를 다시 돌린다(개발기획서 7절).
-export const PROMPT_VERSION = "v4";
+export const PROMPT_VERSION = "v5";
 
 export function loadSystemPrompt(): string {
   const file = join(process.cwd(), "src/cheonhajangsa/prompts/parse_query.md");
