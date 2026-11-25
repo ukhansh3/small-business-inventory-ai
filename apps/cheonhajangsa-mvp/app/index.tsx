@@ -247,7 +247,7 @@ function Welcome({ onExample }: { onExample: (text: string) => void }) {
 
 function Header({ tab, test, stored, started, loading, onRestart }: { tab: ActiveTab; test: boolean; stored: boolean; started: boolean; loading: boolean; onRestart: () => void }) {
   const titles={map:"천하장사",assistant:"AI 도우미",messages:"대화",community:"사장님 커뮤니티",saved:"저장",profile:"내 정보"};
-  return <View style={styles.header}><View style={styles.brandMark}><AppIcon name={tab==="assistant"?"bot":"store"} size={20} color="#ffffff"/></View><View><Text style={styles.brand}>{titles[tab]}</Text>{tab === "assistant" && <Text style={styles.brandSub}>등록된 거래 정보로 찾아드려요</Text>}</View><View style={styles.spacer} />{stored && <Text style={styles.status}>저장 응답</Text>}{tab === "assistant" && started ? <Pressable accessibilityLabel="새 대화" disabled={loading} onPress={onRestart} style={styles.iconButton}><AppIcon name="edit" size={21}/></Pressable> : <View style={styles.iconButton}><AppIcon name="bell" size={21}/></View>}</View>;
+  return <View style={styles.header}><View style={styles.brandMark}><AppIcon name={tab==="assistant"?"bot":"store"} size={20} color="#ffffff"/></View><View><Text style={styles.brand}>{titles[tab]}</Text>{tab === "assistant" && <Text style={styles.brandSub}>등록된 거래 정보로 찾아드려요</Text>}</View><View style={styles.spacer} />{stored && <Text style={styles.status}>저장 응답</Text>}{tab === "assistant" && started ? <Pressable accessibilityLabel="새 대화" disabled={loading} onPress={onRestart} style={styles.iconButton}><AppIcon name="edit" size={21}/></Pressable> : null}</View>;
 }
 
 function BottomNav({ active, onChange }: { active: ActiveTab; onChange:(tab:ActiveTab)=>void }) {
