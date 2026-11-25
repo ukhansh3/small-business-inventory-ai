@@ -8,6 +8,7 @@ import { handle, HttpError, isTestDevice, isUuid, json, readJson, requestAiMode,
 import type { Logger } from "../log/logger";
 import { noopLogger } from "../log/noop";
 import { marketFor } from "../price-check";
+import { withHere } from "../here";
 
 // API-02 조건 검색: POST /api/v1/search. AI를 부르지 않는다(AC-14).
 
@@ -32,7 +33,7 @@ export function handleSearch(req: Request, deps: SearchDeps): Promise<Response> 
     let results;
     const started = Date.now();
     try {
-      results = search(deps.data, values, requestNow(req, deps.env, deps.clock));
+      results = search(withHere(deps.data, req), values, requestNow(req, deps.env, deps.clock));
     } catch (e) {
       if (e instanceof SearchInputError) throw new HttpError(e.code, e.message);
       throw e;

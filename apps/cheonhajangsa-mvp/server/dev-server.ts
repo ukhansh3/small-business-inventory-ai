@@ -45,7 +45,7 @@ async function toRequest(m: IncomingMessage): Promise<Request> {
 
 const cors = {
   "access-control-allow-origin": "http://localhost:8081",
-  "access-control-allow-headers": "content-type, authorization, x-device-id, x-debug-now, x-ai-mode, x-test-device",
+  "access-control-allow-headers": "content-type, authorization, x-device-id, x-debug-now, x-ai-mode, x-test-device, x-here",
   "access-control-allow-methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
 };
 

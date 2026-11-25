@@ -13,6 +13,7 @@ import { ChatLog } from "../src/components/ChatLog";
 import { ChipEditor } from "../src/components/ChipEditor";
 import { ConditionChips } from "../src/components/ConditionChips";
 import { KakaoMap } from "../src/components/KakaoMap";
+import { useHere } from "../src/lib/here";
 import { MarketLine } from "../src/components/MarketLine";
 import { NoticeCard } from "../src/components/NoticeCard";
 import { PriceCheckCard } from "../src/components/PriceCheckCard";
@@ -56,6 +57,11 @@ export default function HomeScreen() {
   const st = useStores(s.condition.location_id ?? a.currentLocation?.location_id ?? null);
   const me = a.currentLocation;
   const { retry: reloadStores } = st;
+  // v3 실시간 내 위치(R-25): 허용하면 지도 점·지도 중심·거리 기준이 지금 위치를 따른다(15m 넘게 움직일 때 갱신)
+  const { here, status: hereStatus } = useHere();
+  const hereOn = here !== null;
+  useEffect(() => { if (hereOn) reloadStores(); }, [hereOn, reloadStores]);
+  const dot = here ? { lat: here.lat, lng: here.lng, name: "실시간" } : me ? { lat: me.lat, lng: me.lng, name: me.name } : null;
   useFocusEffect(useCallback(() => reloadStores(), [reloadStores]));
   const visibleStores = useMemo(() => {
     const keyword = storeQuery.toLowerCase();
@@ -69,7 +75,7 @@ export default function HomeScreen() {
   }, [st.stores, storeQuery, selectedCategory]);
   const categories = [...new Set(st.stores.map((store) => store.category))];
   const mapStores = showAiResults ? st.stores : visibleStores;
-  const pins = useMemo(() => pinsFor(mapStores, me ? { lat: me.lat, lng: me.lng, name: me.name } : null), [mapStores, me]);
+  const pins = useMemo(() => pinsFor(mapStores, dot), [mapStores, dot?.lat, dot?.lng, dot?.name]); // eslint-disable-line react-hooks/exhaustive-deps
   const focusIds = useMemo(
     () => focusFor(null, showAiResults ? s.results : null, showAiResults ? s.priceCheck : null),
     [showAiResults, s.results, s.priceCheck],
@@ -146,7 +152,7 @@ export default function HomeScreen() {
         {tab === "map" ? (
           <>
             <View style={styles.mapTools}>
-              <Pressable accessibilityRole="button" accessibilityHint="눌러서 내 위치 바꾸기" onPress={openLocation} style={styles.locationBar}><AppIcon name="locate" size={16} color={color.green}/><Text style={styles.locationText}>{a.currentLocation?.name ?? "기본 위치"} 주변</Text><AppIcon name="chevron" size={14}/></Pressable>
+              <Pressable accessibilityRole="button" accessibilityHint="눌러서 내 위치 바꾸기" onPress={openLocation} style={styles.locationBar}><AppIcon name="locate" size={16} color={color.green}/><Text style={styles.locationText}>{here ? `실시간 내 위치 주변(±${here.accuracy_m}m)` : `${a.currentLocation?.name ?? "기본 위치"} 주변${hereStatus === "denied" ? " · 위치 권한 꺼짐" : ""}`}</Text><AppIcon name="chevron" size={14}/></Pressable>
               <View style={styles.searchBar}><AppIcon name="search" size={20} color={color.sub}/><TextInput value={query} onChangeText={setQuery} accessibilityLabel="업체명 또는 업종 입력" placeholder="업체명이나 업종을 검색하세요" placeholderTextColor={color.faint} returnKeyType="search" onSubmitEditing={() => searchStores(query.trim())} style={styles.searchInput}/><Pressable accessibilityRole="button" accessibilityLabel="업체 검색" onPress={() => searchStores(query.trim())}><AppIcon name="arrow" size={20} color={color.green}/></Pressable></View>
               <View style={styles.filterRow}>
                 <Pressable accessibilityRole="button" onPress={() => { searchStores(""); setCategoriesOpen(false); }}
@@ -175,7 +181,7 @@ export default function HomeScreen() {
             )}
             <View style={styles.mapStage} onLayout={(event)=>setMapStageHeight(Math.round(event.nativeEvent.layout.height))}>
             <View style={styles.mapWrap}>
-              {me ? <KakaoMap center={{ lat: me.lat, lng: me.lng }} pins={pins} focusIds={focusIds} selectedId={selectedId} height={mapHeight} coveredBottom={sheetHeight} onVisibleCountChange={setVisiblePinCount} onPinPress={(id) => { setSelectedId(id); setSheetMode("preview"); }} /> : <View style={[styles.mapWait, { height: mapHeight }]} />}
+              {me ? <KakaoMap center={here ? { lat: here.lat, lng: here.lng } : { lat: me.lat, lng: me.lng }} pins={pins} focusIds={focusIds} selectedId={selectedId} height={mapHeight} coveredBottom={sheetHeight} onVisibleCountChange={setVisiblePinCount} onPinPress={(id) => { setSelectedId(id); setSheetMode("preview"); }} /> : <View style={[styles.mapWait, { height: mapHeight }]} />}
             </View>
             <Pressable accessibilityRole="button" accessibilityLabel="내 위치 기준으로 다시 보기" onPress={()=>{setSelectedId(null);st.retry();}} style={[styles.locateButton,{bottom:sheetHeight+16}]}><AppIcon name="locate" size={22}/></Pressable>
             <View style={[styles.sheet,{height:sheetHeight}]}>

@@ -1,3 +1,4 @@
+import { withHere } from "../here";
 import { distanceMeters } from "../../core/distance";
 import type { PublicStoresFile } from "../../core/public-stores";
 import { buildCard } from "../../core/search";
@@ -44,7 +45,8 @@ export function handleStores(req: Request, deps: StoresDeps): Promise<Response> 
   return handle(async () => {
     requireDevice(req);
     const q = new URL(req.url).searchParams;
-    const loc = deps.data.locations.find((l) => l.id === q.get("location_id")) ?? deps.data.locations.find((l) => l.is_default)!;
+    const here = withHere(deps.data, req); // 실시간 위치가 있으면 거리 기준을 바꾼다(R-25)
+    const loc = here.locations.find((l) => l.id === q.get("location_id")) ?? here.locations.find((l) => l.is_default)!;
     const itemId = q.get("item_id") ?? deps.data.items.find((i) => i.active)!.id;
     const bbox = parseBbox(q.get("bbox"));
     const inBox = (lat: number, lng: number) => !bbox || (lng >= bbox[0] && lat >= bbox[1] && lng <= bbox[2] && lat <= bbox[3]);

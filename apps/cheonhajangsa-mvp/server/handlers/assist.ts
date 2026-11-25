@@ -7,6 +7,7 @@ import type { Dataset } from "../../core/types";
 import { PROMPT_VERSION } from "../ai/prompt";
 import { findCandidates } from "../ai/retrieval";
 import { buildPriceCheck, marketFor } from "../price-check";
+import { withHere } from "../here";
 import { type AiClient, type AiDecision, AiUnavailableError } from "../ai/types";
 import { chips, type FieldSource, fieldSourceSchema, hasExampleData, type Slot } from "../condition";
 import type { ServerEnv } from "../env";
@@ -136,7 +137,7 @@ export function handleAssistTurn(req: Request, deps: AssistDeps): Promise<Respon
       if (decision.type === "price") {
         const d = decision;
         const complete = d.qty_kg !== null && d.qty_kg > 0 && d.amount_won !== null && d.amount_won > 0;
-        const price_check = await buildPriceCheck(deps, {
+        const price_check = await buildPriceCheck({ ...deps, data: withHere(deps.data, req) }, {
           device_id: deviceId,
           is_test: isTestDevice(req),
           session_id: sessionId,
@@ -188,7 +189,7 @@ export function handleAssistTurn(req: Request, deps: AssistDeps): Promise<Respon
     let results;
     const searchStarted = Date.now();
     try {
-      results = search(deps.data, full, requestNow(req, deps.env, deps.clock));
+      results = search(withHere(deps.data, req), full, requestNow(req, deps.env, deps.clock));
     } catch (e) {
       if (e instanceof SearchInputError) throw new HttpError(e.code, e.message);
       throw e;

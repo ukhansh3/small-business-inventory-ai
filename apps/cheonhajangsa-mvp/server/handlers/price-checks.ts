@@ -1,3 +1,5 @@
+import { withHere } from "../here";
+import type { MarketPricesFile } from "../../core/market-prices";
 import { z } from "zod";
 import type { Dataset } from "../../core/types";
 import { seoulNow } from "../../core/time";
@@ -15,7 +17,7 @@ import { buildPriceCheck, marketFor } from "../price-check";
 
 export const MAX_IMAGE_BYTES = 3 * 1024 * 1024; // base64로 약 4MB. Vercel 함수 본문 한도 4.5MB
 
-export type PriceChecksDeps = { data: Dataset; env: ServerEnv; vision: VisionClient; clock?: () => Date; log?: Logger };
+export type PriceChecksDeps = { data: Dataset; env: ServerEnv; vision: VisionClient; clock?: () => Date; log?: Logger; prices?: MarketPricesFile | null };
 
 const photoSchema = z.strictObject({
   image: z.strictObject({ media_type: z.enum(["image/jpeg", "image/png", "image/webp"]), data: z.string().min(1) }),
@@ -65,7 +67,7 @@ export function handlePhotoCheck(req: Request, deps: PriceChecksDeps): Promise<R
     }
 
     const check = await buildPriceCheck(
-      { data: deps.data, log },
+      { data: withHere(deps.data, req), log, prices: deps.prices },
       {
         device_id: deviceId,
         is_test: isTestDevice(req),

@@ -1,3 +1,4 @@
+import { withHere } from "../here";
 import { randomUUID } from "node:crypto";
 import { vendorDetail } from "../../core/detail";
 import { SearchInputError } from "../../core/search";
@@ -27,7 +28,7 @@ export function handleVendorDetail(req: Request, deps: VendorsDeps): Promise<Res
 
     let detail;
     try {
-      detail = vendorDetail(deps.data, vendorId, itemId, locationId, requestNow(req, deps.env, deps.clock), Number.isInteger(rank) && rank > 0 ? rank : 1);
+      detail = vendorDetail(withHere(deps.data, req), vendorId, itemId, locationId, requestNow(req, deps.env, deps.clock), Number.isInteger(rank) && rank > 0 ? rank : 1);
     } catch (e) {
       if (e instanceof SearchInputError) throw new HttpError(e.code, e.message);
       throw e;
