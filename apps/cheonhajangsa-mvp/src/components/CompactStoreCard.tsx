@@ -1,31 +1,44 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { useRouter } from "expo-router";
 import type { Store } from "../lib/api-types";
+import { activityText, displayName, toneOf, TONES } from "../lib/store-tone";
 import { VendorArtwork } from "./VendorArtwork";
 import { AppIcon } from "./AppIcon";
 import { color } from "./theme";
 
+// 목록 한 줄 카드. 출처 구분(색 점 + 이름), 거리, 0이 아닌 사용·저장 수만 보여 준다.
+// 가상 시연 업체는 "가상 시연" 배지로 실제 업체와 구분한다.
 export function CompactStoreCard({ store, location, deliveryLabel }: { store: Pick<Store, "store_id" | "name" | "category" | "distance_m" | "used_count" | "saved_count" | "vendor_card" | "demo_service">; location?: string; deliveryLabel?: string | null }) {
   const router = useRouter();
   const distance = store.distance_m < 1000
     ? Math.round(store.distance_m) + "m"
     : (store.distance_m / 1000).toFixed(1) + "km";
+  const tone = toneOf(store);
+  const t = TONES[tone];
+  const name = displayName(store.name);
+  const activity = activityText(store.used_count, store.saved_count);
+  const showCategory = tone === "shop" || tone === "demo";
   return (
-    <Pressable accessibilityRole="button" accessibilityLabel={store.name + " 상세 보기"}
+    <Pressable accessibilityRole="button" accessibilityLabel={name + " 상세 보기"}
       onPress={() => router.push({ pathname: "/store/[id]", params: { id: store.store_id, location: location ?? "" } })}
       style={styles.row}>
       <VendorArtwork card={store.vendor_card} store={store} />
       <View style={styles.copy}>
-        <Text style={styles.name}>{store.name}</Text>
-        <Text style={styles.meta}>{store.category} · {distance}</Text>
-        {deliveryLabel && <Text style={styles.meta}>{deliveryLabel}</Text>}
-        <View style={styles.badges}>
-          <Text style={[styles.badge, styles.used]}>사용 {store.used_count ?? "–"}명</Text>
-          <Text style={[styles.badge, styles.saved]}>저장 {store.saved_count ?? "–"}명</Text>
-          {!!store.demo_service && <Text style={styles.demo}>시연</Text>}
+        <View style={styles.titleRow}>
+          <Text style={styles.name} numberOfLines={1}>{name}</Text>
+          {tone === "demo" && <Text style={styles.demo}>가상 시연</Text>}
         </View>
+        <View style={styles.metaRow}>
+          <View style={[styles.dot, { backgroundColor: t.color }]} />
+          <Text style={styles.meta} numberOfLines={1}>
+            {tone === "demo" ? store.category : t.label}{showCategory && tone !== "demo" ? ` · ${store.category}` : ""} · {distance}
+          </Text>
+        </View>
+        {!!store.vendor_card && tone !== "demo" && <Text style={styles.meta} numberOfLines={1}>{store.vendor_card.open_status.display}</Text>}
+        {!!deliveryLabel && <Text style={styles.meta}>{deliveryLabel}</Text>}
+        {!!activity && <Text style={styles.activity}>{activity}</Text>}
       </View>
-      <View style={styles.arrow}><AppIcon name="chevron" size={15} color={color.sub} /></View>
+      <View style={styles.arrow}><AppIcon name="next" size={15} color={color.sub} /></View>
     </Pressable>
   );
 }
@@ -43,12 +56,12 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   copy: { flex: 1, gap: 4 },
-  name: { fontSize: 16, fontWeight: "700", color: color.ink },
-  meta: { fontSize: 12, color: color.sub },
-  badges: { flexDirection: "row", flexWrap: "wrap", alignItems: "center", gap: 5, marginTop: 3 },
-  badge: { borderRadius: 8, paddingHorizontal: 7, paddingVertical: 4, fontSize: 12, fontWeight: "700", color: "#9a3412" },
-  used: { backgroundColor: "#ffedd5" },
-  saved: { backgroundColor: "#fff7ed" },
-  demo: { fontSize: 10, color: color.sub },
+  titleRow: { flexDirection: "row", alignItems: "center", gap: 6 },
+  name: { flexShrink: 1, fontSize: 16, fontWeight: "700", color: color.ink },
+  metaRow: { flexDirection: "row", alignItems: "center", gap: 6 },
+  dot: { width: 8, height: 8, borderRadius: 4 },
+  meta: { flexShrink: 1, fontSize: 13, color: color.sub },
+  activity: { fontSize: 12, color: color.faint },
+  demo: { overflow: "hidden", borderRadius: 6, paddingHorizontal: 6, paddingVertical: 2, fontSize: 12, fontWeight: "700", color: "#ffffff", backgroundColor: TONES.demo.color },
   arrow: { width: 26, height: 26, borderRadius: 13, alignItems: "center", justifyContent: "center", backgroundColor: color.soft },
 });

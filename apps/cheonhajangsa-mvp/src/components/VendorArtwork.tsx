@@ -2,6 +2,7 @@ import { Image, StyleSheet, Text, View, type ImageSourcePropType } from "react-n
 import type { VendorCard } from "../../core/search-types";
 import type { Store } from "../lib/api-types";
 import { storefrontPhotos } from "./vendor-storefront-photos";
+import { displayName, toneOf, TONES } from "../lib/store-tone";
 
 const customPhotos: Readonly<Record<string, ImageSourcePropType>> = {
   "v_001": require("../../assets/vendors/woncheon-dawn.png"),
@@ -45,6 +46,19 @@ export function VendorArtwork({ card, store, large = false }: {
 }) {
   const name = store?.name ?? card?.name;
   if (!name) return null;
+
+  // 실제 데이터 업체(공공데이터·중도매인·납품업체)에는 예시 사진·예시 간판을 붙이지 않는다.
+  // 실제 가게 사진으로 오해할 수 있어서다. 예시 사진은 가상 시연 업체에만 쓴다.
+  const isDemo = (store?.store_id ?? card?.vendor_id ?? "").startsWith("demo-") || !!card?.is_example;
+  if (!isDemo) {
+    const tone = TONES[toneOf({ category: store?.category ?? card?.kind ?? "", demo_service: undefined, vendor_card: undefined })];
+    const initial = displayName(name).replace(/^(\((주|유|합)\)|주식회사|농업회사법인|유한회사)\s*/, "").slice(0, 1);
+    return (
+      <View style={[styles.tile, large && styles.large, { backgroundColor: tone.soft }]} accessible accessibilityLabel={tone.label}>
+        <Text style={[styles.initial, large && styles.largeInitial, { color: tone.color }]}>{initial}</Text>
+      </View>
+    );
+  }
 
   const id = store?.store_id ?? card?.vendor_id ?? name;
   const category = store?.category ?? card?.kind ?? "";
@@ -116,6 +130,9 @@ const styles = StyleSheet.create({
   shopRoof: { position: "absolute", top: -2, width: 15, height: 3, borderRadius: 1 },
   marketRoof: { width: 17, height: 4, transform: [{ rotate: "-8deg" }] },
   shopDoor: { width: 3, height: 4 },
+  tile: { width: 56, height: 56, borderRadius: 14, alignItems: "center", justifyContent: "center" },
+  initial: { fontSize: 24, fontWeight: "800", letterSpacing: -0.5 },
+  largeInitial: { fontSize: 48 },
   wordmark: { maxWidth: "100%", fontSize: 11, lineHeight: 13, fontWeight: "900", textAlign: "center", letterSpacing: -0.4 },
   largeWordmark: { fontSize: 24, lineHeight: 29 },
   label: { position: "absolute", bottom: 4, right: 4, color: "#fff", backgroundColor: "#252722", borderRadius: 3, paddingHorizontal: 4, paddingVertical: 2, fontSize: 8 },
