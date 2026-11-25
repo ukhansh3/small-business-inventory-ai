@@ -22,7 +22,7 @@ function won(n: number): string {
   return n.toLocaleString("ko-KR");
 }
 
-function LineRow({ line }: { line: PriceLine }) {
+function LineRow({ line, judgedAbove }: { line: PriceLine; judgedAbove: boolean }) {
   const badge = line.verdict === "pricier" ? styles.pricier : line.verdict === "cheaper" ? styles.cheaper : styles.normal;
   return (
     <View style={styles.line}>
@@ -32,7 +32,7 @@ function LineRow({ line }: { line: PriceLine }) {
         {won(line.amount_won)}원
         {line.price_per_kg !== null && line.comparable ? ` → kg당 ${won(line.price_per_kg)}원` : ""}
       </Text>
-      {line.verdict_display ? (
+      {judgedAbove ? null : line.verdict_display ? (
         <Text style={[styles.badge, badge]}>{line.verdict_display}</Text>
       ) : (
         line.reason && <Text style={styles.reason}>{line.reason}</Text>
@@ -59,18 +59,20 @@ export function PriceCheckCard({
   onDetail: (c: Card) => void;
 }) {
   const judged = check.lines.find((l) => l.cheaper.length > 0);
+  // 시세 카드 판정 띠에 쓸 줄(시세 품목과 같은 첫 판정 줄). 이 줄의 판정은 아래 목록에서 다시 쓰지 않는다
+  const mine = check.market ? check.lines.find((l) => l.comparable && l.verdict_title && l.item_id === check.market!.item_id) ?? null : null;
   const canShare = check.lines.some((l) => l.comparable);
   const itemName = check.lines.find((l) => l.comparable && l.item_name)?.item_name ?? "상추";
   const meta = [DOC_LABEL[check.doc_type], SELLER_LABEL[check.seller_type], check.purchased_on].filter(Boolean).join(" · ");
   return (
     <View style={styles.card}>
       <Text style={styles.meta}>{meta}</Text>
-      {check.market && <MarketLine market={check.market} />}
+      {check.market && <MarketLine market={check.market} mine={mine} />}
       {check.lines.length > 0 && (
         <View style={styles.lines}>
           <Text style={styles.section}>이렇게 읽었어요</Text>
           {check.lines.map((l) => (
-            <LineRow key={l.line_no} line={l} />
+            <LineRow key={l.line_no} line={l} judgedAbove={!!check.market?.ladder && l === mine} />
           ))}
           {check.delivery_fee_won !== null && <Text style={styles.reason}>배송비 {won(check.delivery_fee_won)}원은 빼고 계산했어요.</Text>}
         </View>
