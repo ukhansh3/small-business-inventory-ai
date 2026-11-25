@@ -43,7 +43,11 @@ export type Market = {
     retail_date: string;
     traditional_market_per_kg: number | null;
     large_retailer_per_kg: number | null;
+    week_ago_per_kg?: number | null;
+    week_ago_date?: string | null;
   } | null;
+  trend?: string | null; // v3(R-27): 일주일 전 대비 한 줄
+  weeks?: { week_start: string; per_kg: number }[] | null; // v3(R-27): 주간 도매 중앙값
 };
 export type PriceLine = {
   line_no: number;

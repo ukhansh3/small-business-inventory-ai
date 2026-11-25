@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { computeMarket, diagnoseLine, type Market, type PriceLine, type PurchaseLineInput } from "../core/price";
-import { referenceDisplay, referenceFor, type MarketPricesFile } from "../core/market-prices";
+import { type MarketHistoryFile, weeksFor } from "../core/market-history";
+import { referenceDisplay, referenceFor, trendDisplay, type MarketPricesFile } from "../core/market-prices";
 import type { Dataset } from "../core/types";
 import { hasExampleData } from "./condition";
 import type { Logger } from "./log/logger";
@@ -22,14 +23,27 @@ export type PriceCheck = {
   ai_mode: "live" | "stored";
 };
 
-export type PriceCheckDeps = { data: Dataset; log?: Logger; prices?: MarketPricesFile | null };
+export type PriceCheckDeps = {
+  data: Dataset;
+  log?: Logger;
+  prices?: MarketPricesFile | null; // 저장본(테스트는 이것만 넣는다)
+  loadPrices?: () => Promise<MarketPricesFile>; // 있으면 이것이 우선: 몇 시간마다 새로 받은 시세(R-27)
+  history?: MarketHistoryFile | null; // 주간 추이(막대그래프)
+};
 
 // v3(R-23): 수원 실제 시세(도매 경매가·소매가)가 있으면 그것을 기준으로 쓴다.
 // 없으면 v2 방식(판매처 가격 + 동의한 구매 기록, R-18)으로 돌아간다.
 export async function marketFor(deps: PriceCheckDeps, itemId: string): Promise<Market> {
-  const reference = referenceFor(deps.prices ?? null, itemId);
+  const prices = deps.loadPrices ? await deps.loadPrices() : deps.prices ?? null;
+  const reference = referenceFor(prices, itemId);
   if (reference) {
-    return { item_id: itemId, per_kg: null, samples: 0, includes_example: false, display: referenceDisplay(reference), reference };
+    const trend = trendDisplay(reference);
+    const weeks = weeksFor(deps.history ?? null, itemId, { date: reference.wholesale_date, per_kg: reference.wholesale_per_kg });
+    return {
+      item_id: itemId, per_kg: null, samples: 0, includes_example: false, display: referenceDisplay(reference), reference,
+      trend: trend?.display ?? null,
+      weeks: weeks.length >= 2 ? weeks : null,
+    };
   }
   const observed = await (deps.log ?? noopLogger).marketSamples(itemId);
   return computeMarket(deps.data, itemId, observed);

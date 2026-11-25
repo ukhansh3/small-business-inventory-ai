@@ -2,6 +2,14 @@
 
 ## 완료
 
+### v3 시세 자동 갱신·추이 (2026-11-25, 브랜치 feat/real-market-data, R-27)
+- 서버에 `DATA_GO_KR_KEY`가 있으면 3시간마다 공공데이터에서 수원 시세를 새로 받는다(`server/market-live.ts`). 4초 안에 못 받거나 실패하면 가진 값(없으면 저장본 `data/market_prices.json`)을 쓰고 10분간 다시 시도하지 않는다. 품목별로 새 값이 비면 이전 값을 유지
+- 받는 방식은 저장본 스크립트와 같은 코드(`core/market-build.ts`). 하루·품목을 같이 거르는 조회만 쓴다(약 0.3초). 날짜 범위 조회는 7~8초라 쓰지 않는다
+- 추이: 최근 거래일과 그 일주일 전 도매가를 비교한 한 줄("도매가가 일주일 전(11/18)보다 4% 내렸어요", ±3% 안은 "비슷해요"), 주간 도매 중앙값 막대(`data/market_history.json`, `scripts/build-market-history.ts`, 마지막 막대는 지금 값). 경매 API가 약 30일만 보관해 5주치(10/26주~)
+- 배포 때 Vercel 환경 변수 `DATA_GO_KR_KEY`를 넣어야 자동 갱신이 켜진다. 없으면 저장본 그대로
+- 검증: 테스트 202개 통과(가짜 공공데이터로 갱신·시간 초과·3시간 재사용·병합·추이 10개 추가), 타입·린트·데이터 검사 통과, 로컬 화면에서 상추 가격 진단 카드의 추이 한 줄·막대 확인
+- 발견: 저장된 응답 모드의 "대파 있어요"는 아직 '준비 안 된 품목' 안내를 돌려준다(대파는 이제 비교 품목). 손대지 않음
+
 ### v3 식자재 납품업체 지도 표시 (2026-11-25, 브랜치 feat/real-market-data)
 - 원천: 행정안전부 인허가정보 '집단급식소 식품판매업'(data.go.kr 1741000/group_meal_food_retailers). 수원시 267건 중 영업/정상 99곳, 등록 전화 33곳
 - 저장본: `npx tsx scripts/build-supply-vendors.ts` → `data/supply_vendors.json`(형식 `core/supply-vendors.ts`, `npm run check:data`에 포함)

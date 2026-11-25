@@ -19,6 +19,8 @@ export type Market = {
   includes_example: boolean;
   display: string;
   reference?: Reference | null; // v3: 수원 실제 시세(있으면 판정 기준)
+  trend?: string | null; // v3: "도매가가 일주일 전(11/18)보다 12% 올랐어요"
+  weeks?: { week_start: string; per_kg: number }[] | null; // v3: 주간 도매 중앙값(막대그래프), 2주 이상일 때만
 };
 
 export type Verdict = "cheaper" | "normal" | "pricier";

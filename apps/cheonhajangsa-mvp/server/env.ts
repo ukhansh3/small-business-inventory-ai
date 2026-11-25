@@ -10,6 +10,7 @@ export type ServerEnv = {
   anthropicApiKey: string | null;
   supabaseUrl: string | null;
   supabaseServiceRoleKey: string | null;
+  dataGoKrKey: string | null; // 공공데이터포털 키. 있으면 시세를 몇 시간마다 새로 받는다(R-27)
 };
 
 export function readEnv(source: Record<string, string | undefined> = process.env): ServerEnv {
@@ -24,5 +25,6 @@ export function readEnv(source: Record<string, string | undefined> = process.env
     anthropicApiKey: blank(source.ANTHROPIC_API_KEY),
     supabaseUrl: blank(source.SUPABASE_URL),
     supabaseServiceRoleKey: blank(source.SUPABASE_SERVICE_ROLE_KEY),
+    dataGoKrKey: blank(source.DATA_GO_KR_KEY),
   };
 }

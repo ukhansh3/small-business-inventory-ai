@@ -3,6 +3,8 @@ import locations from "../data/locations.json";
 import offers from "../data/offers.json";
 import vendors from "../data/vendors.json";
 import marketPrices from "../data/market_prices.json";
+import marketHistory from "../data/market_history.json";
+import { validateMarketHistory, type MarketHistoryFile } from "./market-history";
 import { validateMarketPrices, type MarketPricesFile } from "./market-prices";
 import type { Dataset } from "./types";
 import { validateDataset } from "./validate";
@@ -22,5 +24,12 @@ export const rawDataset = { items, locations, vendors, offers };
 export function loadMarketPrices(): MarketPricesFile {
   const result = validateMarketPrices(marketPrices);
   if (!result.ok) throw new Error(`시세 저장본 형식 오류:\n${result.errors.join("\n")}`);
+  return result.data;
+}
+
+// v3: 수원 도매 시세 주간 추이 저장본
+export function loadMarketHistory(): MarketHistoryFile {
+  const result = validateMarketHistory(marketHistory);
+  if (!result.ok) throw new Error(`시세 추이 형식 오류:\n${result.errors.join("\n")}`);
   return result.data;
 }
