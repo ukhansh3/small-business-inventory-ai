@@ -29,6 +29,7 @@ import { focusFor, pinsFor } from "../src/lib/map-pins";
 import { AppIcon, type IconName } from "../src/components/AppIcon";
 import { CompactStoreCard } from "../src/components/CompactStoreCard";
 import { StoreRows } from "../src/components/StoreRows";
+import { routeSearch } from "../src/lib/search-route";
 import { CommunityScreen, SavedScreen, ProfileScreen } from '../src/components/MemberScreens';
 
 const IS_PHONE = Platform.OS !== "web" || isPhoneUserAgent(globalThis.navigator?.userAgent ?? "");
@@ -126,6 +127,19 @@ export default function HomeScreen() {
     setSheetMode(keyword ? "list" : "collapsed");
   };
 
+  // 첫 화면 검색창: 사는 문장은 AI 도우미로 넘기고, 가게 이름·업종은 지도에서 찾는다
+  const submitSearch = () => {
+    const text = query.trim();
+    if (routeSearch(text) === "assistant") {
+      setQuery("");
+      searchStores("");
+      setTab("assistant");
+      void a.sendText(text);
+      return;
+    }
+    searchStores(text);
+  };
+
   const sendAssistantText = (text: string) => {
     const input = text.toLowerCase().replace(/[\s·]/g, "");
     const terms = st.stores.flatMap((store) => [
@@ -159,7 +173,7 @@ export default function HomeScreen() {
           <>
             <View style={styles.mapTools}>
               <Pressable accessibilityRole="button" accessibilityHint="눌러서 내 위치 바꾸기" onPress={openLocation} style={styles.locationBar}><AppIcon name="locate" size={16} color={color.green}/><Text style={styles.locationText}>{here ? `실시간 내 위치 주변(±${here.accuracy_m}m)` : `${a.currentLocation?.name ?? "기본 위치"} 주변`}</Text><AppIcon name="chevron" size={14}/></Pressable>
-              <View style={styles.searchBar}><AppIcon name="search" size={20} color={color.sub}/><TextInput value={query} onChangeText={setQuery} accessibilityLabel="업체명 또는 업종 입력" placeholder="업체명이나 업종을 검색하세요" placeholderTextColor={color.faint} returnKeyType="search" onSubmitEditing={() => searchStores(query.trim())} style={styles.searchInput}/><Pressable accessibilityRole="button" accessibilityLabel="업체 검색" onPress={() => searchStores(query.trim())}><AppIcon name="arrow" size={20} color={color.green}/></Pressable></View>
+              <View style={styles.searchBar}><AppIcon name="search" size={20} color={color.sub}/><TextInput value={query} onChangeText={setQuery} accessibilityLabel="살 품목이나 업체명 입력" placeholder="상추 2키로 급해요 · 가게 이름도 돼요" placeholderTextColor={color.faint} returnKeyType="search" onSubmitEditing={submitSearch} style={styles.searchInput}/><Pressable accessibilityRole="button" accessibilityLabel="찾기" onPress={submitSearch}><AppIcon name="arrow" size={20} color={color.green}/></Pressable></View>
               <View style={styles.filterRow}>
                 <Pressable accessibilityRole="button" onPress={() => { searchStores(""); setCategoriesOpen(false); }}
                   style={[styles.filterChip, !storeQuery && styles.filterOn]}>
