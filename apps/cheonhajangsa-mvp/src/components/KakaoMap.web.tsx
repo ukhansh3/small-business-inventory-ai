@@ -49,7 +49,7 @@ function loadKakao(): Promise<Kakao> {
   return loading;
 }
 
-export function KakaoMap({ center, pins, focusIds, selectedId, height, onPinPress, coveredBottom = 0, onVisibleCountChange }: MapProps) {
+export function KakaoMap({ center, pins, focusIds, selectedId, height, onPinPress, coveredBottom = 0, onVisibleCountChange, recenterKey = 0 }: MapProps) {
   const box = useRef<HostInstance>(null); // 웹에서는 DOM 요소
   const kakao = useRef<Kakao | null>(null);
   const map = useRef<KMap | null>(null);
@@ -109,12 +109,19 @@ export function KakaoMap({ center, pins, focusIds, selectedId, height, onPinPres
     });
   }, [ready, pins, focusIds, selectedId]);
 
-  // 검색 결과의 지도 범위만 맞춘다. 개별 핀 선택은 강조만 바꾼다.
+  // 지도 위치는 꼭 필요할 때만 맞춘다(2026-11-26): 처음, 내 위치가 15m 넘게 바뀔 때, 강조할 핀이 바뀔 때, 내 위치 버튼.
+  // 핀 목록을 다시 받거나 목록 시트 높이가 바뀔 때마다 맞추면, 사장님이 끌어 놓은 지도가 제자리로 튕겨 돌아간다.
+  const placed = useRef<{ lat: number; lng: number; focusKey: string; recenterKey: number } | null>(null);
   useEffect(() => {
     const k = kakao.current;
     const m = map.current;
     if (!ready || !k || !m) return;
     const focus = new Set(focusIds);
+    const focusKey = pins.filter((p) => focus.has(p.id)).map((p) => p.id).sort().join(","); // 실제로 그려진 강조 핀 기준(핀이 늦게 와도 맞춤)
+    const last = placed.current;
+    const moved = !last || Math.hypot((center.lat - last.lat) * 111_000, (center.lng - last.lng) * 88_000) >= 15;
+    if (last && !moved && last.focusKey === focusKey && last.recenterKey === recenterKey) return;
+    placed.current = { lat: center.lat, lng: center.lng, focusKey, recenterKey };
     if (focus.size > 0) {
       const b = new k.maps.LatLngBounds();
       for (const p of pins) if (focus.has(p.id) || p.kind === "me") b.extend(new k.maps.LatLng(p.lat, p.lng));
@@ -122,7 +129,7 @@ export function KakaoMap({ center, pins, focusIds, selectedId, height, onPinPres
     } else {
       m.setCenter(new k.maps.LatLng(center.lat, center.lng));
     }
-  }, [ready, pins, focusIds, center.lat, center.lng, coveredBottom, height]);
+  }, [ready, pins, focusIds, center.lat, center.lng, coveredBottom, height, recenterKey]);
 
   // 높이가 바뀌면(목록 시트 펼침) 지도 크기를 다시 잰다
   useEffect(() => {

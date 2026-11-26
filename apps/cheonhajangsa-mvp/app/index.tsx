@@ -44,6 +44,7 @@ export default function HomeScreen() {
   const [sheetMode, setSheetMode] = useState<"collapsed" | "preview" | "list">("collapsed");
   const [visiblePinCount, setVisiblePinCount] = useState<number | null>(null);
   const [mapStageHeight, setMapStageHeight] = useState(400);
+  const [recenterKey, setRecenterKey] = useState(0);
   const [query, setQuery] = useState("");
   const [storeQuery, setStoreQuery] = useState("");
   const [showAiResults, setShowAiResults] = useState(false);
@@ -201,9 +202,9 @@ export default function HomeScreen() {
             )}
             <View style={styles.mapStage} onLayout={(event)=>setMapStageHeight(Math.round(event.nativeEvent.layout.height))}>
             <View style={styles.mapWrap}>
-              {me ? <KakaoMap center={here ? { lat: here.lat, lng: here.lng } : { lat: me.lat, lng: me.lng }} pins={pins} focusIds={focusIds} selectedId={selectedId} height={mapHeight} coveredBottom={sheetHeight} onVisibleCountChange={setVisiblePinCount} onPinPress={(id) => { setSelectedId(id); setSheetMode("preview"); }} /> : <View style={[styles.mapWait, { height: mapHeight }]} />}
+              {me ? <KakaoMap center={here ? { lat: here.lat, lng: here.lng } : { lat: me.lat, lng: me.lng }} pins={pins} focusIds={focusIds} selectedId={selectedId} height={mapHeight} coveredBottom={sheetHeight} onVisibleCountChange={setVisiblePinCount} recenterKey={recenterKey} onPinPress={(id) => { setSelectedId(id); setSheetMode("preview"); }} /> : <View style={[styles.mapWait, { height: mapHeight }]} />}
             </View>
-            <Pressable accessibilityRole="button" accessibilityLabel="내 위치 기준으로 다시 보기" onPress={()=>{setSelectedId(null);st.retry();}} style={[styles.locateButton,{bottom:sheetHeight+16}]}><AppIcon name="locate" size={22}/></Pressable>
+            <Pressable accessibilityRole="button" accessibilityLabel="내 위치 기준으로 다시 보기" onPress={()=>{setSelectedId(null);setRecenterKey((n)=>n+1);st.retry();}} style={[styles.locateButton,{bottom:sheetHeight+16}]}><AppIcon name="locate" size={22}/></Pressable>
             <View style={[styles.sheet,{height:sheetHeight}]}>
             <Pressable accessibilityRole="button" accessibilityState={{ expanded: sheetOpen || showPreview }} onPress={() => {
               setSelectedId(null);

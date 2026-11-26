@@ -10,4 +10,5 @@ export type MapProps = {
   coveredBottom?: number;
   onVisibleCountChange?: (count: number | null) => void;
   onPinPress: (id: string) => void;
+  recenterKey?: number; // 바뀌면 내 위치(또는 강조한 핀)로 다시 맞춘다(내 위치 버튼)
 };
