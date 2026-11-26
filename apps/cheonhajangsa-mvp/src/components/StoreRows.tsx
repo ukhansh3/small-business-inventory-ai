@@ -11,14 +11,15 @@ import { color } from "./theme";
 export type StoreRowInput = { store: Store; deliveryLabel?: string | null };
 
 export function StoreRows({ rows, location }: { rows: StoreRowInput[]; location?: string }) {
+  // 바깥 목록의 간격(gap)이 줄마다 끼지 않게 한 덩어리로 묶는다
   return (
-    <>
+    <View>
       {groupRows(rows).map((row) =>
         row.type === "single"
           ? <CompactStoreCard key={row.item.store.store_id} store={row.item.store} deliveryLabel={row.item.deliveryLabel} location={location} />
           : <MarketGroup key={row.key} row={row} location={location} />,
       )}
-    </>
+    </View>
   );
 }
 
@@ -70,9 +71,9 @@ function MarketGroup({ row, location }: { row: Extract<Row<StoreRowInput>, { typ
 }
 
 const styles = StyleSheet.create({
-  group: { marginVertical: 4, borderWidth: 1, borderColor: color.line, borderRadius: 16, backgroundColor: "#fff", overflow: "hidden" },
-  head: { flexDirection: "row", alignItems: "center", gap: 12, padding: 12 },
-  tile: { width: 56, height: 56, borderRadius: 14, alignItems: "center", justifyContent: "center", flexDirection: "row" },
+  group: { borderBottomWidth: 1, borderBottomColor: color.line, backgroundColor: "#fff" },
+  head: { flexDirection: "row", alignItems: "center", gap: 10, paddingVertical: 10, paddingHorizontal: 4 },
+  tile: { width: 44, height: 44, borderRadius: 12, alignItems: "center", justifyContent: "center", flexDirection: "row" },
   count: { fontSize: 20, fontWeight: "800" },
   countUnit: { fontSize: 12, fontWeight: "700", marginTop: 5 },
   copy: { flex: 1, gap: 4 },
@@ -80,8 +81,8 @@ const styles = StyleSheet.create({
   metaRow: { flexDirection: "row", alignItems: "center", gap: 6 },
   dot: { width: 8, height: 8, borderRadius: 4 },
   meta: { flexShrink: 1, fontSize: 13, color: color.sub },
-  arrow: { width: 26, height: 26, borderRadius: 13, alignItems: "center", justifyContent: "center", backgroundColor: color.soft },
-  items: { paddingHorizontal: 8, paddingBottom: 8, backgroundColor: color.soft },
+  arrow: { width: 20, alignItems: "center", justifyContent: "center" },
+  items: { paddingHorizontal: 12, paddingBottom: 8, backgroundColor: color.soft },
   more: { minHeight: 44, alignItems: "center", justifyContent: "center", marginTop: 4, borderRadius: 12, backgroundColor: "#fff", borderWidth: 1, borderColor: color.line },
   moreText: { fontSize: 14, fontWeight: "700", color: color.ink },
 });

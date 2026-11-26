@@ -195,10 +195,10 @@ function pinImage(k: Kakao, tone: StoreTone): MarkerImage {
 }
 
 const styles = StyleSheet.create({
-  legend: { position: "absolute", top: 10, left: 10, flexDirection: "row", flexWrap: "wrap", gap: 8, maxWidth: "75%", paddingHorizontal: 10, paddingVertical: 6, borderRadius: 12, backgroundColor: "rgba(255,255,255,0.94)" },
+  legend: { position: "absolute", top: 8, left: 8, right: 8, alignSelf: "flex-start", flexDirection: "row", flexWrap: "wrap", columnGap: 10, rowGap: 2, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8, backgroundColor: "rgba(255,255,255,0.9)" },
   legendItem: { flexDirection: "row", alignItems: "center", gap: 4 },
   legendDot: { width: 9, height: 9, borderRadius: 5 },
-  legendText: { fontSize: 12, color: color.ink },
+  legendText: { fontSize: 11, color: color.ink },
   wrap: { width: "100%", backgroundColor: color.greenSoft, overflow: "hidden" },
   error: { position: "absolute", top: 0, left: 0, right: 0, bottom: 0, alignItems: "center", justifyContent: "center", padding: 16 },
   errorText: { fontSize: font.small, color: color.sub, textAlign: "center" },
