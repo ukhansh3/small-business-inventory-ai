@@ -92,7 +92,7 @@ export default function StoreDetail() {
                   <Text style={styles.secondaryText}>{opening ? "대화 여는 중…" : "메시지로 문의"}</Text>
                 </Pressable>
               )}
-              {canInquire && <Text style={styles.note}>견적·이용 시간을 물어볼 수 있어요. 답장은 대화 탭에서 봐요.</Text>}
+              {canInquire && <Text style={styles.note}>견적·이용 시간을 물어볼 수 있어요. 답장은 내 정보 › 대화에서 봐요.</Text>}
               {!!notice && <Text accessibilityLiveRegion="polite" style={styles.body}>{notice}</Text>}
             </View>
 

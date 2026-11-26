@@ -168,7 +168,7 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.safe} edges={["top"]}>
       <View style={styles.screen}>
-        <Header tab={tab} test={isTestDevice()} stored={s.aiMode === "stored"} started={started} loading={s.loading} onRestart={() => { setSelectedId(null); setStoreReplies([]); a.restart(); }} />
+        <Header tab={tab} test={isTestDevice()} stored={s.aiMode === "stored"} started={started} loading={s.loading} onRestart={() => { setSelectedId(null); setStoreReplies([]); a.restart(); }} onBack={() => setTab("profile")} />
         {tab === "map" ? (
           <>
             <View style={styles.mapTools}>
@@ -256,7 +256,7 @@ export default function HomeScreen() {
           </>
         ) : (tab === "messages" || tab === "saved") && !member.profile ? (
           member.initializing ? <Text style={styles.sheetSub}>로그인 확인 중…</Text> : <LoginPrompt feature={tab} onLogin={() => setTab("profile")} />
-        ) : tab==='messages'?<VendorConversations/>:tab==='community'?<CommunityScreen/>:tab==='saved'?<SavedScreen/>:<ProfileScreen onSaved={()=>setTab('saved')} onLocation={openLocation} location={a.currentLocation?.name??'기본 위치'}/>}
+        ) : tab==='messages'?<VendorConversations/>:tab==='community'?<CommunityScreen/>:tab==='saved'?<SavedScreen/>:<View style={styles.body}><ProfileMenu onOpen={setTab}/><ProfileScreen onSaved={()=>setTab('saved')} onLocation={openLocation} location={a.currentLocation?.name??'기본 위치'}/></View>}
         <BottomNav active={tab} onChange={setTab} />
         {call && <CallSheet card={call.card} plan={call.plan} onClose={() => setCall(null)} />}
       </View>
@@ -269,14 +269,24 @@ function Welcome({ onExample }: { onExample: (text: string) => void }) {
   return <View style={styles.welcome}><Text style={styles.welcomeTitle}>무엇을 찾아드릴까요?</Text><Text style={styles.welcomeSub}>상추·양파·대파·감자의 수원 시세와 근처 판매처를 찾아 드려요. 가격을 적으면 비싼지도 알려 드려요.</Text><View style={styles.examples}>{examples.map((text) => <Pressable key={text} onPress={() => onExample(text)} style={styles.exampleChip}><Text style={styles.exampleText}>{text}</Text></Pressable>)}</View></View>;
 }
 
-function Header({ tab, test, stored, started, loading, onRestart }: { tab: ActiveTab; test: boolean; stored: boolean; started: boolean; loading: boolean; onRestart: () => void }) {
+function Header({ tab, test, stored, started, loading, onRestart, onBack }: { tab: ActiveTab; test: boolean; stored: boolean; started: boolean; loading: boolean; onRestart: () => void; onBack: () => void }) {
   const titles={map:"천하장사",assistant:"AI 도우미",messages:"대화",community:"사장님 커뮤니티",saved:"저장",profile:"내 정보"};
-  return <View style={styles.header}><View style={styles.brandMark}><AppIcon name={tab==="assistant"?"bot":"store"} size={20} color="#ffffff"/></View><View><Text style={styles.brand}>{titles[tab]}</Text>{tab === "assistant" && <Text style={styles.brandSub}>수원 시세와 가까운 판매처로 찾아 드려요</Text>}</View><View style={styles.spacer} />{stored && <Text style={styles.status}>저장 응답</Text>}{tab === "assistant" && started ? <Pressable accessibilityLabel="새 대화" disabled={loading} onPress={onRestart} style={styles.iconButton}><AppIcon name="edit" size={21}/></Pressable> : null}</View>;
+  const sub = tab === "messages" || tab === "community"; // 내 정보 안의 화면
+  return <View style={styles.header}>{sub && <Pressable accessibilityRole="button" accessibilityLabel="내 정보로 돌아가기" onPress={onBack} style={styles.back}><Text style={styles.backText}>‹</Text></Pressable>}<View style={styles.brandMark}><AppIcon name={tab==="assistant"?"bot":"store"} size={20} color="#ffffff"/></View><View><Text style={styles.brand}>{titles[tab]}</Text>{tab === "assistant" && <Text style={styles.brandSub}>수원 시세와 가까운 판매처로 찾아 드려요</Text>}</View><View style={styles.spacer} />{stored && <Text style={styles.status}>저장 응답</Text>}{tab === "assistant" && started ? <Pressable accessibilityLabel="새 대화" disabled={loading} onPress={onRestart} style={styles.iconButton}><AppIcon name="edit" size={21}/></Pressable> : null}</View>;
 }
 
+// 하단 탭 4개(2026-11-26): 매일 쓰는 지도·AI 도우미·저장·내 정보. 대화·커뮤니티는 내 정보 안에서 연다
 function BottomNav({ active, onChange }: { active: ActiveTab; onChange:(tab:ActiveTab)=>void }) {
-  const tabs: {key:ActiveTab;icon:IconName;label:string}[] = [{ key: "map", icon: "map", label: "지도" }, { key: "assistant", icon: "bot", label: "AI 도우미" }, { key: "messages", icon: "chat", label: "대화" }, { key: "community", icon: "users", label: "커뮤니티" }, { key: "saved", icon: "bookmark", label: "저장" }, { key: "profile", icon: "user", label: "내 정보" }];
-  return <View style={styles.nav}>{tabs.map((item) => { const selected = active === item.key; return <Pressable key={item.key} accessibilityRole="tab" accessibilityState={{ selected }} onPress={()=>onChange(item.key)} style={styles.navItem}><AppIcon name={item.icon} size={21} color={selected?color.green:color.sub}/><Text style={[styles.navLabel, selected && styles.navOn]}>{item.label}</Text><View style={[styles.navDot, selected && styles.navDotOn]} /></Pressable>; })}</View>;
+  const tabs: {key:ActiveTab;icon:IconName;label:string}[] = [{ key: "map", icon: "map", label: "지도" }, { key: "assistant", icon: "bot", label: "AI 도우미" }, { key: "saved", icon: "bookmark", label: "저장" }, { key: "profile", icon: "user", label: "내 정보" }];
+  return <View style={styles.nav}>{tabs.map((item) => { const selected = active === item.key || (item.key === "profile" && (active === "messages" || active === "community")); return <Pressable key={item.key} accessibilityRole="tab" accessibilityState={{ selected }} onPress={()=>onChange(item.key)} style={styles.navItem}><AppIcon name={item.icon} size={22} color={selected?color.green:color.sub}/><Text style={[styles.navLabel, selected && styles.navOn]}>{item.label}</Text><View style={[styles.navDot, selected && styles.navDotOn]} /></Pressable>; })}</View>;
+}
+
+function ProfileMenu({ onOpen }: { onOpen: (tab: ActiveTab) => void }) {
+  const items: { key: ActiveTab; icon: IconName; title: string; sub: string }[] = [
+    { key: "messages", icon: "chat", title: "대화", sub: "업체에 보낸 문의와 답장" },
+    { key: "community", icon: "users", title: "사장님 커뮤니티", sub: "구매처 질문·가격 제보·후기" },
+  ];
+  return <View style={styles.menu}>{items.map((item) => <Pressable key={item.key} accessibilityRole="button" onPress={() => onOpen(item.key)} style={styles.menuRow}><AppIcon name={item.icon} size={20} color={color.ink}/><View style={styles.menuCopy}><Text style={styles.menuTitle}>{item.title}</Text><Text style={styles.menuSub}>{item.sub}</Text></View><AppIcon name="next" size={16} color={color.sub}/></Pressable>)}</View>;
 }
 
 function ErrorRow({ message, onRetry }: { message: string; onRetry: () => void }) {
@@ -305,5 +315,7 @@ const styles = StyleSheet.create({
   body: { flex: 1 }, mapContent: { paddingHorizontal: 16, paddingTop: 6, paddingBottom: 24, gap: 12 }, aiContent: { paddingHorizontal: 16, paddingTop: 10, paddingBottom: 24, gap: 14 }, selected: { gap: 8 }, selectedHead: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" }, selectedTitle: { color: color.sub, fontSize: font.small, fontWeight: "700" }, close: { color: color.green, fontSize: font.small, fontWeight: "700" },
   welcome: { paddingTop: 20, paddingBottom: 8, gap: 8 }, welcomeTitle: { color: color.ink, fontSize: 22, fontWeight: "800", letterSpacing: -0.5 }, welcomeSub: { color: color.sub, fontSize: 14, lineHeight: 21 }, examples: { width: "100%", marginTop: 10, gap: 8 }, exampleChip: { minHeight: 42, justifyContent: "center", paddingHorizontal: 14, borderRadius: 14, backgroundColor: color.soft }, exampleText: { color: color.ink, fontSize: 15 }, conditions: { gap: 10 },
   nav: { height: 72, flexDirection: "row", paddingHorizontal: 4, paddingTop: 6, paddingBottom: 8, borderTopWidth: 1, borderTopColor: color.line, backgroundColor: color.surface }, navItem: { flex: 1, alignItems: "center", justifyContent: "center", gap: 2 }, navIcon: { color: color.sub, fontSize: 20, lineHeight: 23 }, navLabel: { color: color.sub, fontSize: 12, fontWeight: "600" }, navOn: { color: color.green }, navDot: { width: 4, height: 4, borderRadius: 2, backgroundColor: "transparent" }, navDotOn: { backgroundColor: color.green },
+  back: { width: 28, height: 36, alignItems: "center", justifyContent: "center", marginLeft: -6 }, backText: { fontSize: 30, lineHeight: 32, color: color.ink },
+  menu: { marginHorizontal: 18, marginTop: 8, borderTopWidth: 1, borderTopColor: color.line }, menuRow: { minHeight: 60, flexDirection: "row", alignItems: "center", gap: 12, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: color.line }, menuCopy: { flex: 1, gap: 2 }, menuTitle: { fontSize: 16, fontWeight: "600", color: color.ink }, menuSub: { fontSize: 13, color: color.sub },
   netErr: { flexDirection: "row", alignItems: "center", gap: 10, padding: 12, borderRadius: radius, backgroundColor: color.redSoft }, netErrText: { flex: 1, fontSize: font.body, color: color.red }, retry: { paddingVertical: 8, paddingHorizontal: 12, borderRadius: 12, backgroundColor: color.red }, retryLabel: { color: "#ffffff", fontWeight: "700", fontSize: font.small },
 });
