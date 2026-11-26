@@ -4,7 +4,8 @@ import { color, font, radius } from "./theme";
 
 // AI 도우미 추천 카드(ADR-013 팀 검토안). 앱이 고른 한 곳과 이유, 바로 할 일(전화·길찾기).
 // 서버가 만든 문구를 그대로 보여 준다.
-const mapUrl = (p: Place) => `https://map.kakao.com/link/map/${encodeURIComponent(p.name)},${p.lat},${p.lng}`;
+// 길찾기 버튼은 위치 보기(link/map)가 아니라 바로 길 안내(link/to)를 연다
+const mapUrl = (p: Place) => `https://map.kakao.com/link/to/${encodeURIComponent(p.name)},${p.lat},${p.lng}`;
 
 // 적정 견적 문장에서 금액 범위만 굵게(문장 전체를 굵게 하면 읽기 어렵다)
 function emphasizeWon(text: string) {

@@ -76,6 +76,7 @@ export default function StoreDetail() {
               {!!store.source && <InfoRow label="출처" value={store.source + (store.source_date ? ` (${store.source_date} 기준)` : "")} muted />}
             </View>
 
+            {/* 바로 할 일(2026-11-26): 전화가 있으면 전화, 없으면 길찾기가 주 버튼. AI 도우미 추천 카드와 같은 말·같은 동작 */}
             <View style={styles.actions}>
               {!!phone && (
                 <Pressable accessibilityRole="link" onPress={() => void Linking.openURL("tel:" + phone)} style={styles.primary}>
@@ -83,23 +84,18 @@ export default function StoreDetail() {
                 </Pressable>
               )}
               <Pressable accessibilityRole="link" onPress={() =>
-                void Linking.openURL("https://map.kakao.com/link/map/" + encodeURIComponent(store.name) + "," + store.lat + "," + store.lng)} style={phone || canInquire ? styles.secondary : styles.primary}>
-                <Text style={phone || canInquire ? styles.secondaryText : styles.primaryText}>카카오맵에서 위치 보기</Text>
+                void Linking.openURL("https://map.kakao.com/link/to/" + encodeURIComponent(displayName(store.name)) + "," + store.lat + "," + store.lng)} style={phone ? styles.secondary : styles.primary}>
+                <Text style={phone ? styles.secondaryText : styles.primaryText}>길찾기</Text>
               </Pressable>
+              {canInquire && (
+                <Pressable accessibilityRole="button" disabled={opening} onPress={() => void inquire(store.store_id)} style={styles.secondary}>
+                  <Text style={styles.secondaryText}>{opening ? "대화 여는 중…" : "메시지로 문의"}</Text>
+                </Pressable>
+              )}
+              {canInquire && <Text style={styles.note}>견적·이용 시간을 물어볼 수 있어요. 답장은 대화 탭에서 봐요.</Text>}
+              {!!notice && <Text accessibilityLiveRegion="polite" style={styles.body}>{notice}</Text>}
             </View>
 
-            {canInquire ? (
-              <View style={styles.inquiryCard}>
-                <Text style={styles.inquiryTitle}>사장님에게 문의</Text>
-                <Text style={styles.inquiryDescription}>견적이나 이용 가능 시간을 메시지로 물어보세요. 답장은 하단 대화 탭에서 확인할 수 있어요.</Text>
-                <Pressable accessibilityRole="button" disabled={opening} onPress={() => void inquire(store.store_id)} style={styles.inquire}>
-                  <Text style={styles.inquiryButtonText}>{opening ? "대화 여는 중…" : "문의하기"}</Text>
-                </Pressable>
-                {!!notice && <Text accessibilityLiveRegion="polite" style={styles.body}>{notice}</Text>}
-              </View>
-            ) : (
-              <Text style={styles.note}>메시지 문의는 사장님 계정이 연결되면 열려요.{phone ? " 지금은 전화로 물어보세요." : ""}</Text>
-            )}
             <VendorReviews key={store.store_id} vendorId={store.store_id} />
           </>
         ) : <Text style={styles.body}>{error ?? (stores.length ? "업체를 찾지 못했어요." : "업체 정보를 불러오는 중이에요.")}</Text>}
@@ -137,12 +133,6 @@ const styles = StyleSheet.create({
   secondary: { minHeight: 48, borderRadius: 12, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: color.line, backgroundColor: color.surface },
   secondaryText: { color: color.ink, fontSize: 15, fontWeight: "600" },
   note: { fontSize: 13, lineHeight: 19, color: color.sub },
-  inquiryCard: { padding: 16, gap: 8, borderRadius: 16, backgroundColor: color.greenSoft },
-  inquiryTitle: { fontSize: 17, fontWeight: "700", color: color.ink },
-  inquiryDescription: { fontSize: 13, lineHeight: 20, color: color.sub },
-  inquire: { marginTop: 4, minHeight: 44, padding: 12, borderRadius: 10, alignItems: "center", backgroundColor: color.green },
-  unavailable: { opacity: 0.65 },
-  inquiryButtonText: { color: "#fff", fontSize: 15, fontWeight: "700" },
   page: { padding: 24, gap: 14 },
   title: { fontSize: 25, fontWeight: "700", color: color.ink },
   body: { fontSize: 15, lineHeight: 22, color: color.ink },
