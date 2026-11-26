@@ -118,7 +118,8 @@ export function reduce(s: AssistState, a: AssistAction): AssistState {
       }
       return {
         ...base,
-        ...say(s, "ai", r.recommendation ? `${r.recommendation.headline}.` : resultLine(r.results)),
+        // 추천 카드 제목과 같은 문장을 말풍선에 되풀이하지 않는다
+        ...say(s, "ai", r.recommendation ? "조건에 맞춰 한 곳을 골랐어요." : resultLine(r.results)),
         ask: null,
         notice: null,
         condition: conditionOnly(r.condition),

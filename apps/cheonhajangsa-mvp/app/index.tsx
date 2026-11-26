@@ -53,6 +53,8 @@ export default function HomeScreen() {
   const scroll = useRef<ScrollViewInstance>(null);
   const chipsY = useRef(0);
   const priceY = useRef(0);
+  // 새 답이 오면 그 답의 시작(조건 칩)으로 올린다. 칩 위치는 화면이 다시 그려진 뒤에야 맞으므로 onLayout에서도 맞춘다
+  const answerPending = useRef(false);
 
   const { applySavedLocation } = a;
   useFocusEffect(useCallback(() => applySavedLocation(), [applySavedLocation]));
@@ -100,7 +102,7 @@ export default function HomeScreen() {
   useEffect(() => {
     if (tab !== "assistant" || !started) return;
     if (storeReplies.at(-1)?.after === s.messages.length) scroll.current?.scrollToEnd({ animated: true });
-    else if (s.results && s.editor !== "recover") scroll.current?.scrollTo({ y: Math.max(chipsY.current - 12, 0), animated: true });
+    else if (s.results && s.editor !== "recover") { answerPending.current = true; scroll.current?.scrollTo({ y: Math.max(chipsY.current - 12, 0), animated: true }); }
     else if (!s.priceCheck || s.loading) scroll.current?.scrollToEnd({ animated: true });
   }, [tab, started, storeReplies, s.messages.length, s.loading, s.editor, s.results, s.priceCheck]);
 
@@ -208,7 +210,7 @@ export default function HomeScreen() {
           </>
         ) : tab === "assistant" ? (
           <>
-            <ScrollView ref={scroll} style={styles.body} contentContainerStyle={styles.aiContent} keyboardShouldPersistTaps="handled">
+            <ScrollView ref={scroll} style={styles.body} contentContainerStyle={styles.aiContent} keyboardShouldPersistTaps="handled" onScrollBeginDrag={() => { answerPending.current = false; }}>
               {!started && <Welcome onExample={a.sendText} />}
               {storeReplies.map((reply, index) => (
                 <Fragment key={index}>
@@ -224,7 +226,10 @@ export default function HomeScreen() {
               {s.ask && !s.loading && <AskOptions ask={s.ask} disabled={s.loading} onPick={(option) => a.sendChoice(s.ask!.slot, option)} />}
               {s.notice && !s.loading && <NoticeCard notice={s.notice} request={s.request} disabled={s.loading} onRequest={a.requestItem} onSearchLettuce={a.searchLettuce} />}
               {s.networkError && <ErrorRow message="연결이 끊겼어요." onRetry={a.retry} />}
-              <View style={styles.conditions} onLayout={(event) => (chipsY.current = event.nativeEvent.layout.y)}>
+              <View style={styles.conditions} onLayout={(event) => {
+                chipsY.current = event.nativeEvent.layout.y;
+                if (answerPending.current && s.results) scroll.current?.scrollTo({ y: Math.max(chipsY.current - 12, 0), animated: true });
+              }}>
                 {s.chips && <ConditionChips chips={s.chips} disabled={s.loading} onEdit={a.openEditor} onLocation={openLocation} />}
                 {s.editor !== "closed" && <ChipEditor key={s.editor} editor={s.editor} condition={s.condition} disabled={s.loading} onSubmit={a.editCondition} onClose={() => a.openEditor("closed")} />}
               </View>
@@ -247,12 +252,12 @@ export default function HomeScreen() {
 
 function Welcome({ onExample }: { onExample: (text: string) => void }) {
   const examples = ["상추 2키로 급해요", "상추 5키로 오늘 배달", "상추 2키로 만원 부르던데"];
-  return <View style={styles.welcome}><View style={styles.botMark}><Text style={styles.botMarkText}>✦</Text></View><Text style={styles.welcomeTitle}>무엇을 찾아드릴까요?</Text><Text style={styles.welcomeSub}>상추·양파·대파·감자의 수원 시세와 근처 판매처를 찾아 드려요. 가격을 적으면 비싼지도 알려 드려요.</Text><View style={styles.examples}>{examples.map((text) => <Pressable key={text} onPress={() => onExample(text)} style={styles.exampleChip}><Text style={styles.exampleText}>{text}</Text></Pressable>)}</View></View>;
+  return <View style={styles.welcome}><Text style={styles.welcomeTitle}>무엇을 찾아드릴까요?</Text><Text style={styles.welcomeSub}>상추·양파·대파·감자의 수원 시세와 근처 판매처를 찾아 드려요. 가격을 적으면 비싼지도 알려 드려요.</Text><View style={styles.examples}>{examples.map((text) => <Pressable key={text} onPress={() => onExample(text)} style={styles.exampleChip}><Text style={styles.exampleText}>{text}</Text></Pressable>)}</View></View>;
 }
 
 function Header({ tab, test, stored, started, loading, onRestart }: { tab: ActiveTab; test: boolean; stored: boolean; started: boolean; loading: boolean; onRestart: () => void }) {
   const titles={map:"천하장사",assistant:"AI 도우미",messages:"대화",community:"사장님 커뮤니티",saved:"저장",profile:"내 정보"};
-  return <View style={styles.header}><View style={styles.brandMark}><AppIcon name={tab==="assistant"?"bot":"store"} size={20} color="#ffffff"/></View><View><Text style={styles.brand}>{titles[tab]}</Text>{tab === "assistant" && <Text style={styles.brandSub}>등록된 거래 정보로 찾아드려요</Text>}</View><View style={styles.spacer} />{stored && <Text style={styles.status}>저장 응답</Text>}{tab === "assistant" && started ? <Pressable accessibilityLabel="새 대화" disabled={loading} onPress={onRestart} style={styles.iconButton}><AppIcon name="edit" size={21}/></Pressable> : null}</View>;
+  return <View style={styles.header}><View style={styles.brandMark}><AppIcon name={tab==="assistant"?"bot":"store"} size={20} color="#ffffff"/></View><View><Text style={styles.brand}>{titles[tab]}</Text>{tab === "assistant" && <Text style={styles.brandSub}>수원 시세와 가까운 판매처로 찾아 드려요</Text>}</View><View style={styles.spacer} />{stored && <Text style={styles.status}>저장 응답</Text>}{tab === "assistant" && started ? <Pressable accessibilityLabel="새 대화" disabled={loading} onPress={onRestart} style={styles.iconButton}><AppIcon name="edit" size={21}/></Pressable> : null}</View>;
 }
 
 function BottomNav({ active, onChange }: { active: ActiveTab; onChange:(tab:ActiveTab)=>void }) {
@@ -284,7 +289,7 @@ const styles = StyleSheet.create({
   mapWrap: { position: "relative", overflow: "hidden", backgroundColor: "#e9efe7" }, mapWait: { width: "100%", backgroundColor: "#e9efe7" }, mapBadge: { position: "absolute", top: 14, alignSelf: "center", paddingHorizontal: 14, paddingVertical: 9, borderRadius: 20, backgroundColor: color.surface, shadowColor: "#14181f", shadowOpacity: 0.15, shadowRadius: 10, elevation: 3 }, mapBadgeText: { color: color.green, fontSize: 12, fontWeight: "700" },
   handle: { paddingTop: 8, paddingHorizontal: 18, paddingBottom: 8,backgroundColor:color.surface }, grip: { width: 38, height: 4, alignSelf: "center", marginBottom: 12, borderRadius: 2, backgroundColor: color.line }, sheetHeading: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" }, sheetTitle: { fontSize: 16, fontWeight: "600", color: color.ink }, sheetSub: { marginTop: 3, fontSize: 11, color: color.sub }, sheetLink: { color: color.green, fontSize: 12, fontWeight: "500" },
   body: { flex: 1 }, mapContent: { paddingHorizontal: 16, paddingTop: 6, paddingBottom: 24, gap: 12 }, aiContent: { paddingHorizontal: 16, paddingTop: 10, paddingBottom: 24, gap: 14 }, selected: { gap: 8 }, selectedHead: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" }, selectedTitle: { color: color.sub, fontSize: font.small, fontWeight: "700" }, close: { color: color.green, fontSize: font.small, fontWeight: "700" },
-  welcome: { alignItems: "center", paddingVertical: 28, gap: 9 }, botMark: { width: 50, height: 50, borderRadius: 17, alignItems: "center", justifyContent: "center", backgroundColor: color.greenSoft }, botMarkText: { color: color.green, fontSize: 22, fontWeight: "800" }, welcomeTitle: { marginTop: 5, color: color.ink, fontSize: 22, fontWeight: "800", letterSpacing: -0.5 }, welcomeSub: { maxWidth: 310, color: color.sub, fontSize: 13, lineHeight: 19, textAlign: "center" }, examples: { width: "100%", marginTop: 10, gap: 8 }, exampleChip: { minHeight: 42, justifyContent: "center", paddingHorizontal: 14, borderRadius: 14, backgroundColor: color.soft }, exampleText: { color: color.ink, fontSize: 13 }, conditions: { gap: 10 },
+  welcome: { paddingTop: 20, paddingBottom: 8, gap: 8 }, welcomeTitle: { color: color.ink, fontSize: 22, fontWeight: "800", letterSpacing: -0.5 }, welcomeSub: { color: color.sub, fontSize: 14, lineHeight: 21 }, examples: { width: "100%", marginTop: 10, gap: 8 }, exampleChip: { minHeight: 42, justifyContent: "center", paddingHorizontal: 14, borderRadius: 14, backgroundColor: color.soft }, exampleText: { color: color.ink, fontSize: 15 }, conditions: { gap: 10 },
   nav: { height: 72, flexDirection: "row", paddingHorizontal: 4, paddingTop: 6, paddingBottom: 8, borderTopWidth: 1, borderTopColor: color.line, backgroundColor: color.surface }, navItem: { flex: 1, alignItems: "center", justifyContent: "center", gap: 2 }, navIcon: { color: color.sub, fontSize: 20, lineHeight: 23 }, navLabel: { color: color.sub, fontSize: 12, fontWeight: "600" }, navOn: { color: color.green }, navDot: { width: 4, height: 4, borderRadius: 2, backgroundColor: "transparent" }, navDotOn: { backgroundColor: color.green },
   netErr: { flexDirection: "row", alignItems: "center", gap: 10, padding: 12, borderRadius: radius, backgroundColor: color.redSoft }, netErrText: { flex: 1, fontSize: font.body, color: color.red }, retry: { paddingVertical: 8, paddingHorizontal: 12, borderRadius: 12, backgroundColor: color.red }, retryLabel: { color: "#ffffff", fontWeight: "700", fontSize: font.small },
 });

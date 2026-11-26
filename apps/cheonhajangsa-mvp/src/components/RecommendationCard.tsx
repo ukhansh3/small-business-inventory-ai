@@ -6,6 +6,12 @@ import { color, font, radius } from "./theme";
 // 서버가 만든 문구를 그대로 보여 준다.
 const mapUrl = (p: Place) => `https://map.kakao.com/link/map/${encodeURIComponent(p.name)},${p.lat},${p.lng}`;
 
+// 적정 견적 문장에서 금액 범위만 굵게(문장 전체를 굵게 하면 읽기 어렵다)
+function emphasizeWon(text: string) {
+  const parts = text.split(/(\d[\d.,]*만?~\d[\d.,]*만?원)/);
+  return parts.map((part, i) => (i % 2 === 1 ? <Text key={i} style={styles.benchmarkWon}>{part}</Text> : part));
+}
+
 export function RecommendationCard({ rec }: { rec: Recommendation }) {
   const p = rec.primary;
   const call = rec.situation === "bulk_delivery" && p.phone;
@@ -23,7 +29,7 @@ export function RecommendationCard({ rec }: { rec: Recommendation }) {
       </View>
       {!!rec.benchmark && (
         <View style={styles.benchmark}>
-          <Text style={styles.benchmarkText}>{rec.benchmark}</Text>
+          <Text style={styles.benchmarkText}>{emphasizeWon(rec.benchmark)}</Text>
         </View>
       )}
       <Pressable
@@ -67,7 +73,8 @@ const styles = StyleSheet.create({
   dot: { width: 6, height: 6, borderRadius: 3, marginTop: 8, backgroundColor: color.faint },
   reason: { flex: 1, fontSize: font.body, color: color.ink, lineHeight: 22 },
   benchmark: { padding: 12, borderRadius: 12, backgroundColor: color.greenSoft },
-  benchmarkText: { fontSize: font.body, color: "#9a3412", fontWeight: "700", lineHeight: 22 },
+  benchmarkText: { fontSize: font.body, color: color.ink, lineHeight: 22 },
+  benchmarkWon: { fontWeight: "800", color: "#9a3412" },
   primary: { minHeight: 48, borderRadius: 12, alignItems: "center", justifyContent: "center", backgroundColor: color.green },
   primaryText: { color: "#ffffff", fontSize: 16, fontWeight: "700" },
   extra: { fontSize: 13, color: color.sub, lineHeight: 19 },
