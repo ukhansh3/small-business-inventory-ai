@@ -7,6 +7,7 @@ import { color } from "../../src/components/theme";
 import { useStores } from "../../src/hooks/useStores";
 import { displayName, toneOf, TONES } from "../../src/lib/store-tone";
 import { getSavedLocation } from "../../src/lib/location";
+import { getStoreContact } from "../../src/lib/api";
 
 export default function StoreDetail() {
   const { id, location } = useLocalSearchParams<{ id: string; location?: string }>();
@@ -21,8 +22,21 @@ export default function StoreDetail() {
   const [availability, setAvailability] = useState<{ vendorId: string; available: boolean }>();
   const vendorId = store?.store_id;
   const tone = store ? toneOf(store) : "shop";
-  const phone = store?.phone ?? (store?.vendor_card && !store.vendor_card.is_example ? store.vendor_card.phone : null);
+  const [contact, setContact] = useState<{ id: string; phone: string | null; place_url: string | null; source: string | null }>();
+  const kakao = contact?.id === store?.store_id ? contact : undefined;
+  const ownPhone = store?.phone ?? (store?.vendor_card && !store.vendor_card.is_example ? store.vendor_card.phone : null);
+  const phone = ownPhone ?? kakao?.phone ?? null;
   const canInquire = availability?.vendorId !== vendorId || availability?.available !== false;
+
+  // 공공 가게는 전화·영업시간이 없어 카카오맵에서 보는 순간 찾는다(서버 조회, 저장 안 함)
+  useEffect(() => {
+    if (!vendorId || store?.kind !== "public") return;
+    let active = true;
+    void getStoreContact(vendorId)
+      .then((c) => { if (active) setContact({ id: vendorId, phone: c.phone, place_url: c.place_url, source: c.source }); })
+      .catch(() => {});
+    return () => { active = false; };
+  }, [vendorId, store?.kind]);
 
   useEffect(() => {
     if (!vendorId) return;
@@ -69,9 +83,15 @@ export default function StoreDetail() {
                 <InfoRow label="영업" value={[store.vendor_card?.open_status.display, store.hours].filter(Boolean).join(" · ")} />
               )}
               {!!phone && <InfoRow label="전화" value={phone} />}
+              {!!kakao?.place_url && (
+                <Pressable accessibilityRole="link" onPress={() => void Linking.openURL(kakao.place_url!)} style={styles.infoRow}>
+                  <Text style={styles.infoLabel}>영업</Text>
+                  <Text style={[styles.infoValue, styles.link]}>카카오맵에서 영업시간 보기 ›</Text>
+                </Pressable>
+              )}
               {!!store.vendor_card?.price.has_price && <InfoRow label="가격" value={store.vendor_card.price.display} />}
               {!!store.address && <InfoRow label="주소" value={store.address} />}
-              {!!store.source && <InfoRow label="출처" value={store.source + (store.source_date ? ` (${store.source_date} 기준)` : "")} muted />}
+              {!!store.source && <InfoRow label="출처" value={store.source + (store.source_date ? ` (${store.source_date} 기준)` : "") + (!ownPhone && kakao?.source && (kakao.phone || kakao.place_url) ? ` · 전화·영업시간 ${kakao.source}` : "")} muted />}
             </View>
 
             {/* 바로 할 일(2026-11-26): 전화가 있으면 전화, 없으면 길찾기가 주 버튼. AI 도우미 추천 카드와 같은 말·같은 동작 */}

@@ -116,3 +116,8 @@ export function getStores(locationId: string | null) {
   const q = locationId ? `?location_id=${encodeURIComponent(locationId)}` : "";
   return request<{ location_id: string; stores: Store[] }>("GET", `/api/v1/stores${q}`);
 }
+
+// 업체 상세 연락처: 서버가 카카오 로컬로 보는 순간 조회한다(저장 안 함). 못 찾으면 빈 값
+export function getStoreContact(storeId: string) {
+  return request<{ store_id: string; phone: string | null; place_url: string | null; source: string | null }>("GET", `/api/v1/stores?store_id=${encodeURIComponent(storeId)}`);
+}

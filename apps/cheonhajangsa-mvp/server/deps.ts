@@ -6,6 +6,7 @@ import supplyVendorsJson from "../data/supply_vendors.json";
 import { loadDataset, loadMarketHistory, loadMarketPrices, rawDataset } from "../core/data";
 import type { MarketHistoryFile } from "../core/market-history";
 import { createLivePrices } from "./market-live";
+import { createKakaoLookup, type PlaceLookup } from "./kakao-local";
 import type { MarketPricesFile } from "../core/market-prices";
 import { type PublicStoresFile, validatePublicStores } from "../core/public-stores";
 import { type SupplyVendorsFile, validateSupplyVendors } from "../core/supply-vendors";
@@ -21,7 +22,7 @@ import { noopLogger } from "./log/noop";
 import { createSupabaseLogger } from "./log/supabase";
 
 // 배포·개발 서버에서 쓰는 기본 의존성. 테스트는 핸들러에 직접 주입한다.
-type Base = { data: Dataset; prices: MarketPricesFile; loadPrices: () => Promise<MarketPricesFile>; history: MarketHistoryFile; env: ServerEnv; log: Logger; dataVersion: string; live: AiClient; stored: AiClient; liveVision: VisionClient; storedVision: VisionClient };
+type Base = { lookupPlace?: PlaceLookup; data: Dataset; prices: MarketPricesFile; loadPrices: () => Promise<MarketPricesFile>; history: MarketHistoryFile; env: ServerEnv; log: Logger; dataVersion: string; live: AiClient; stored: AiClient; liveVision: VisionClient; storedVision: VisionClient };
 let cached: Base | null = null;
 
 // 데이터 버전: 데이터 파일 4개 내용의 sha256 앞 12자(consistency-report U3). 세션 기록에 남겨 evals 비교에 쓴다.
@@ -35,7 +36,7 @@ function base(): Base {
     const log = env.supabaseUrl && env.supabaseServiceRoleKey ? createSupabaseLogger(env.supabaseUrl, env.supabaseServiceRoleKey) : noopLogger;
     if (!log.enabled) console.warn("SUPABASE_URL·SUPABASE_SERVICE_ROLE_KEY가 없어 기록을 건너뜁니다");
     const prices = loadMarketPrices();
-    cached = { data: loadDataset(), prices, loadPrices: createLivePrices({ bundled: prices, key: env.dataGoKrKey }), history: loadMarketHistory(), env, log, dataVersion: dataVersionOf(rawDataset), live: createClaudeAi(env), stored: createStoredAi(), liveVision: createClaudeVision(env), storedVision: createStoredVision() };
+    cached = { lookupPlace: createKakaoLookup(env.kakaoRestKey), data: loadDataset(), prices, loadPrices: createLivePrices({ bundled: prices, key: env.dataGoKrKey }), history: loadMarketHistory(), env, log, dataVersion: dataVersionOf(rawDataset), live: createClaudeAi(env), stored: createStoredAi(), liveVision: createClaudeVision(env), storedVision: createStoredVision() };
   }
   return cached;
 }
@@ -54,10 +55,10 @@ export function storesDeps(): StoresDeps {
     if (!v.ok) throw new Error(`식자재 납품업체 형식 오류:\n${v.errors.join("\n")}`);
     supplyVendors = v.data;
   }
-  const { data, env } = base();
+  const { data, env, lookupPlace } = base();
   const { supabaseUrl, supabaseServiceRoleKey } = env;
   return {
-    data, env, publicStores, supplyVendors,
+    data, env, publicStores, supplyVendors, lookupPlace,
     async loadActivity(locationId) {
       if (!supabaseUrl || !supabaseServiceRoleKey) return null;
       const db = createClient(supabaseUrl, supabaseServiceRoleKey, {
@@ -69,11 +70,11 @@ export function storesDeps(): StoresDeps {
   };
 }
 
-export function defaultDeps(): { data: Dataset; prices: MarketPricesFile; loadPrices: () => Promise<MarketPricesFile>; history: MarketHistoryFile; env: ServerEnv; log: Logger; dataVersion: string; publicStores: PublicStoresFile; supplyVendors?: SupplyVendorsFile } {
-  const { data, prices, loadPrices, history, env, log, dataVersion } = base();
+export function defaultDeps(): { data: Dataset; prices: MarketPricesFile; loadPrices: () => Promise<MarketPricesFile>; history: MarketHistoryFile; env: ServerEnv; log: Logger; dataVersion: string; publicStores: PublicStoresFile; supplyVendors?: SupplyVendorsFile; lookupPlace?: PlaceLookup } {
+  const { data, prices, loadPrices, history, env, log, dataVersion, lookupPlace } = base();
   // v3(ADR-013 검토안): AI 도우미 추천에 동네 가게·납품업체를 쓴다
   const { publicStores, supplyVendors } = storesDeps();
-  return { data, prices, loadPrices, history, env, log, dataVersion, publicStores, supplyVendors };
+  return { data, prices, loadPrices, history, env, log, dataVersion, publicStores, supplyVendors, lookupPlace };
 }
 
 // AI_MODE(또는 허용된 경우 X-AI-Mode 헤더)에 따라 실시간·저장된 응답을 고른다

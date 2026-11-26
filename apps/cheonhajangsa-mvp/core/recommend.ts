@@ -27,6 +27,8 @@ export type Place = {
   distance_m: number;
   distance_text: string;
   phone: string | null;
+  place_url?: string | null; // 카카오맵 장소 페이지(영업시간·사진). 서버가 보는 순간 조회해 붙인다
+  contact_source?: string | null; // 전화·장소 링크 출처(공공 업체에 붙일 때 출처를 밝힌다, 앱 AC-13)
 };
 
 export type Recommendation = {

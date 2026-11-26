@@ -8,6 +8,7 @@ import { hoursSummary, seoulNow } from "../../core/time";
 import type { Dataset } from "../../core/types";
 import type { ServerEnv } from "../env";
 import { handle, HttpError, json, requestNow, requireDevice } from "../http";
+import type { PlaceLookup } from "../kakao-local";
 
 // API-18 지도용 가게: GET /api/v1/stores?location_id=&item_id=&bbox=minLng,minLat,maxLng,maxLat (v2 4절)
 // 판매처(예시·확인)는 결과 카드와 같은 카드를 붙이고, 공공데이터 가게는 공개 정보만(R-22). 거리순.
@@ -34,7 +35,7 @@ export type Store = {
 };
 
 // 중간 시연용 가상 업체(Supabase chj_demo_stores)는 앱에서 뺐다(2026-11-25 사용자 결정). 표는 팀 확인 전까지 그대로 둔다.
-export type StoresDeps = { data: Dataset; publicStores: PublicStoresFile; supplyVendors?: SupplyVendorsFile; env: ServerEnv; clock?: () => Date; loadActivity?: (locationId: string) => Promise<{ vendor_id: string; used_count: number; saved_count: number }[] | null> };
+export type StoresDeps = { lookupPlace?: PlaceLookup; data: Dataset; publicStores: PublicStoresFile; supplyVendors?: SupplyVendorsFile; env: ServerEnv; clock?: () => Date; loadActivity?: (locationId: string) => Promise<{ vendor_id: string; used_count: number; saved_count: number }[] | null> };
 
 function parseBbox(v: string | null): [number, number, number, number] | null {
   if (!v) return null;
@@ -47,6 +48,15 @@ export function handleStores(req: Request, deps: StoresDeps): Promise<Response> 
   return handle(async () => {
     requireDevice(req);
     const q = new URL(req.url).searchParams;
+    // 업체 상세의 연락처: GET /api/v1/stores?store_id= → 카카오 로컬로 전화·장소 링크를 보는 순간 조회(저장 안 함).
+    // Vercel 함수 수 제한(12개) 때문에 새 함수를 만들지 않고 이 함수에 붙였다
+    const contactId = q.get("store_id");
+    if (contactId) {
+      const place = deps.publicStores.stores.find((s) => s.store_id === contactId) ?? deps.supplyVendors?.stores.find((s) => s.store_id === contactId);
+      if (!place) throw new HttpError("NOT_FOUND", "업체를 찾지 못했어요.");
+      const found = deps.lookupPlace ? await deps.lookupPlace({ name: place.name, lat: place.lat, lng: place.lng }) : null;
+      return json(200, { store_id: contactId, phone: found?.phone ?? null, place_url: found?.place_url ?? null, source: found ? "카카오맵" : null });
+    }
     const here = withHere(deps.data, req); // 실시간 위치가 있으면 거리 기준을 바꾼다(R-25)
     const loc = here.locations.find((l) => l.id === q.get("location_id")) ?? here.locations.find((l) => l.is_default)!;
     const itemId = q.get("item_id") ?? deps.data.items.find((i) => i.active)!.id;

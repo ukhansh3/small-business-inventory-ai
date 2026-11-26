@@ -80,7 +80,7 @@
 
 Node.js 24를 사용합니다. `apps/cheonhajangsa-mvp/`에서 `npm ci`를 실행하고 [환경 변수](apps/cheonhajangsa-mvp/README.md#2-환경-변수)를 준비하세요. 터미널 두 개에서 각각 `npm run dev:api`, `npm run web`을 실행한 뒤 `http://localhost:8081`을 엽니다.
 
-필요한 환경 변수 이름(값은 `apps/cheonhajangsa-mvp/.env.local`에만, 커밋하지 않음): `ANTHROPIC_API_KEY`, `AI_MODE`(`live`/`stored`), `AI_MODEL`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `DATA_GO_KR_KEY`(시세 자동 갱신, 없으면 저장본), `EXPO_PUBLIC_KAKAO_JS_KEY`. 키 없이도 `AI_MODE=stored`로 저장된 응답 시나리오를 돌릴 수 있습니다.
+필요한 환경 변수 이름(값은 `apps/cheonhajangsa-mvp/.env.local`에만, 커밋하지 않음): `ANTHROPIC_API_KEY`, `AI_MODE`(`live`/`stored`), `AI_MODEL`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `DATA_GO_KR_KEY`(시세 자동 갱신, 없으면 저장본), `KAKAO_REST_KEY`(동네 가게 전화·영업시간 링크 조회, 없으면 생략), `EXPO_PUBLIC_KAKAO_JS_KEY`. 키 없이도 `AI_MODE=stored`로 저장된 응답 시나리오를 돌릴 수 있습니다.
 
 ## 운영 기록과 평가(최종평가)
 
