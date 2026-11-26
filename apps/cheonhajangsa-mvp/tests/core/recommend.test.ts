@@ -58,6 +58,16 @@ describe("추천 한 곳", () => {
     expect(r.reasons).toHaveLength(2); // 없는 정보를 알리는 문구는 넣지 않는다
     expect(r.others.map((o) => o.id)).toEqual(["ps_far"]);
   });
+  it("급한 소량: 카카오맵에서 확인된 가게가 300m 안쪽이면 먼저 고른다", () => {
+    const stores = [store("ps_near", "럭키;과일;야채", 0.001), store("ps_ok", "확인된가게", 0.003), store("ps_far", "먼가게", 0.01)];
+    const r = recommend(input({ qty_kg: 2, stores, confirmed: new Set(["ps_ok"]) }))!;
+    expect(r.primary.id).toBe("ps_ok");
+    expect(r.reasons[0]).toMatch(/^가까운 동네 채소 가게예요/); // 가장 가까운 곳이 아니므로
+    expect(r.others.map((o) => o.id)).toEqual(["ps_near", "ps_far"]);
+    // 300m 넘게 더 멀면 거리순 그대로
+    const far = recommend(input({ qty_kg: 2, stores, confirmed: new Set(["ps_far"]) }))!;
+    expect(far.primary.id).toBe("ps_near");
+  });
   it("정해 두고 대량: 전화번호 있는 납품업체 중 가장 가까운 곳 + 적정 값 기준선 + 새벽 도매시장 한 줄", () => {
     const r = recommend(input({ qty_kg: 15, urgency: "today", fulfillment: "delivery" }))!;
     expect(r.situation).toBe("bulk_delivery");

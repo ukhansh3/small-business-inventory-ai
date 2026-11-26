@@ -78,7 +78,12 @@ export type RecommendInput = {
   supply: SupplyVendor[];
   wholesale: Vendor[]; // 도매시장 중도매인(같은 자리)
   ladder: Ladder | null;
+  // 카카오맵에서 확인되고 전화가 있는 동네 가게 id(서버가 보는 순간 조회). 있으면 급할 때 이 가게를 먼저 고른다
+  confirmed?: ReadonlySet<string>;
 };
+
+// 확인된 가게가 가장 가까운 곳보다 이만큼 안쪽으로 더 멀면 먼저 고른다(걸어서 약 5분)
+export const CONFIRMED_DETOUR_M = 300;
 
 function place(p: { id: string; name: string; kind: string; address: string; lat: number; lng: number; phone: string | null }, here: { lat: number; lng: number }): Place {
   const d = Math.round(distanceMeters(here, p));
@@ -116,7 +121,13 @@ export function recommend(i: RecommendInput): Recommendation | null {
     : null;
 
   if (situation === "urgent_small") {
-    const picks = nearest(i.stores, i.here, 3).map((s) => place({ id: s.store_id, name: cleanName(s.name), kind: STORE_KIND[s.category] ?? s.category, address: s.address, lat: s.lat, lng: s.lng, phone: null }, i.here));
+    // 2026-11-26 사용자 결정: 카카오맵에서 확인되고 전화가 있는 가게를 먼저(없어진 가게로 보내지 않게). 단 가장 가까운 곳보다 300m 넘게 멀면 거리순
+    const sorted = nearest(i.stores, i.here, 10);
+    const limit = sorted[0] ? distanceMeters(i.here, sorted[0]) + CONFIRMED_DETOUR_M : 0;
+    const preferred = i.confirmed?.size ? sorted.find((s) => i.confirmed!.has(s.store_id) && distanceMeters(i.here, s) <= limit) : undefined;
+    const ordered = preferred ? [preferred, ...sorted.filter((s) => s !== preferred)] : sorted;
+    const isNearest = !preferred || preferred === sorted[0];
+    const picks = ordered.slice(0, 3).map((s) => place({ id: s.store_id, name: cleanName(s.name), kind: STORE_KIND[s.category] ?? s.category, address: s.address, lat: s.lat, lng: s.lng, phone: null }, i.here));
     if (picks.length === 0) return null;
     const p = picks[0]!;
     return {
@@ -124,7 +135,7 @@ export function recommend(i: RecommendInput): Recommendation | null {
       label: "급할 때 가까운 곳",
       headline: `${p.name}에서 바로 사세요`,
       reasons: [
-        `가장 가까운 ${p.kind}예요 · ${p.distance_text}`,
+        `${isNearest ? "가장 가까운" : "가까운"} ${p.kind}예요 · ${p.distance_text}`,
         retail ? `값은 마트·시장 수준이에요 · ${amountWord} 약 ${scale(retail.low, retail.high)}` : "값은 마트·시장 수준이에요",
       ],
       primary: p,
