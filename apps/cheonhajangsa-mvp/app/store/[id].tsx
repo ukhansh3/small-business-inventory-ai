@@ -69,9 +69,7 @@ export default function StoreDetail() {
                 <InfoRow label="영업" value={[store.vendor_card?.open_status.display, store.hours].filter(Boolean).join(" · ")} />
               )}
               {!!phone && <InfoRow label="전화" value={phone} />}
-              {!!store.vendor_card && (
-                <InfoRow label="가격" value={store.vendor_card.price.has_price ? store.vendor_card.price.display : "가격 미등록 · 전화로 확인"} />
-              )}
+              {!!store.vendor_card?.price.has_price && <InfoRow label="가격" value={store.vendor_card.price.display} />}
               {!!store.address && <InfoRow label="주소" value={store.address} />}
               {!!store.source && <InfoRow label="출처" value={store.source + (store.source_date ? ` (${store.source_date} 기준)` : "")} muted />}
             </View>

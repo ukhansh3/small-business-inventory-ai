@@ -50,7 +50,7 @@ function MarketGroup({ row, location }: { row: Extract<Row<StoreRowInput>, { typ
             <Text style={styles.meta}>{t.label} {row.items.length}곳 · {distance}</Text>
           </View>
           {!!first.hours && <Text style={styles.meta}>{first.hours}</Text>}
-          {!!first.vendor_card && <Text style={styles.meta}>{first.vendor_card.open_status.display} · 가격은 전화로 확인</Text>}
+          {!!first.vendor_card && <Text style={styles.meta}>{first.vendor_card.open_status.display}</Text>}
         </View>
         <View style={styles.arrow}><AppIcon name="chevron" size={15} color={color.sub} /></View>
       </Pressable>

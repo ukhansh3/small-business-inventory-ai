@@ -13,6 +13,7 @@ import { wonRange } from "./won-range";
 //  - 정해 두고 대량(bulk_delivery): 그 밖 → 배달 거래처(식자재 납품업체 먼저) + 적정 값 기준선
 //  - 직접 가서 대량(bulk_pickup): 사장님이 직접 가겠다고 한 대량 → 도매시장
 // 공공 업체에 가격을 지어 붙이지 않는다. 값은 경로별 시세(소매·상회)로만 말한다.
+// 없는 정보(영업시간·배달 조건 등)를 "없다"고 알리는 문구는 넣지 않는다(2026-11-26 사용자 결정). 채울 방법은 docs/data-sources/store-hours-phone-plan.md
 
 export type Situation = "urgent_small" | "bulk_delivery" | "bulk_pickup";
 
@@ -123,7 +124,6 @@ export function recommend(i: RecommendInput): Recommendation | null {
       reasons: [
         `가장 가까운 ${p.kind}예요 · ${p.distance_text}`,
         retail ? `값은 마트·시장 수준이에요 · ${amountWord} 약 ${scale(retail.low, retail.high)}` : "값은 마트·시장 수준이에요",
-        "영업시간은 공공데이터에 없어요 · 문 닫았으면 다음 가까운 곳으로",
       ],
       primary: p,
       others: picks.slice(1),
@@ -165,7 +165,6 @@ export function recommend(i: RecommendInput): Recommendation | null {
     headline: `배달은 ${p.name}에 맡기세요`,
     reasons: [
       `가까운 식자재 납품업체예요 · ${p.distance_text}`,
-      "배달 지역·최소 주문은 전화로 확인해요",
     ],
     primary: p,
     others: picks.slice(1),

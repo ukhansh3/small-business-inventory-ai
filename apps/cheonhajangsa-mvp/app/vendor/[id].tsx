@@ -93,14 +93,14 @@ export default function VendorScreen() {
               ))}
             </Section>
 
-            <Section title="입고">
+            {(!!c.restock.display || !!detail.restock_days?.length) && <Section title="입고">
               {c.restock.display && <Text style={[styles.value, c.restock.state === "restocked_today" && styles.open]}>{c.restock.display}</Text>}
-              <Text style={styles.value}>
-                {detail.restock_days && detail.restock_days.length > 0
-                  ? `${detail.restock_days.map((d) => DAY_LABEL[d as keyof typeof DAY_LABEL] ?? d).join("·")}${detail.restock_time ? ` ${detail.restock_time}` : ""}`
-                  : "입고 일정 정보 없음"}
-              </Text>
-            </Section>
+              {!!detail.restock_days?.length && (
+                <Text style={styles.value}>
+                  {`${detail.restock_days.map((d) => DAY_LABEL[d as keyof typeof DAY_LABEL] ?? d).join("·")}${detail.restock_time ? ` ${detail.restock_time}` : ""}`}
+                </Text>
+              )}
+            </Section>}
 
             <Section title="배달">
               <Text style={styles.value}>{detail.delivery_dongs?.length ? detail.delivery_dongs.join(", ")
@@ -109,13 +109,15 @@ export default function VendorScreen() {
               {detail.delivery_note && <Text style={styles.sub}>{detail.delivery_note}</Text>}
             </Section>
 
-            <Section title="가격·최소 판매량">
-              <Text style={styles.value}>
-                {c.price.display}
-                {c.price.per_kg_display ? ` ${c.price.per_kg_display}` : ""}
-              </Text>
-              <Text style={styles.value}>{c.min_sale.display}</Text>
-            </Section>
+            {(c.price.has_price || c.min_sale.kg !== null) && <Section title="가격·최소 판매량">
+              {c.price.has_price && (
+                <Text style={styles.value}>
+                  {c.price.display}
+                  {c.price.per_kg_display ? ` ${c.price.per_kg_display}` : ""}
+                </Text>
+              )}
+              {c.min_sale.kg !== null && <Text style={styles.value}>{c.min_sale.display}</Text>}
+            </Section>}
 
             <Section title="정보 출처">
               <Text style={styles.value}>

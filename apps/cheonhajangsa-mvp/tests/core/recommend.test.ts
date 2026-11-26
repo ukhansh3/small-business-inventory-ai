@@ -55,7 +55,7 @@ describe("추천 한 곳", () => {
     expect(r.headline).toBe("럭키 과일 야채에서 바로 사세요");
     expect(r.reasons[0]).toMatch(/^가장 가까운 동네 채소 가게예요 · 걸어서 \d+분/);
     expect(r.reasons[1]).toBe("값은 마트·시장 수준이에요 · 2kg 약 2,400~4,600원");
-    expect(r.reasons[2]).toMatch(/영업시간은 공공데이터에 없어요/);
+    expect(r.reasons).toHaveLength(2); // 없는 정보를 알리는 문구는 넣지 않는다
     expect(r.others.map((o) => o.id)).toEqual(["ps_far"]);
   });
   it("정해 두고 대량: 전화번호 있는 납품업체 중 가장 가까운 곳 + 적정 값 기준선 + 새벽 도매시장 한 줄", () => {
