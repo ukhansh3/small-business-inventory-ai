@@ -36,11 +36,20 @@ export function createKakaoLookup(key: string | null, opts: { fetchImpl?: typeof
   if (!key) return undefined;
   const fetchImpl = opts.fetchImpl ?? fetch;
   const timeoutMs = opts.timeoutMs ?? 1500;
+  let warned = false;
   return async ({ name, lat, lng }) => {
     try {
-      const url = `${ENDPOINT}?${new URLSearchParams({ query: name, x: String(lng), y: String(lat), radius: String(MAX_DISTANCE_M * 2), sort: "distance", size: "5" })}`;
+      const query = name.replace(/\s*[;|]\s*/g, " ").trim(); // 공공데이터 이름에 섞인 구분자(럭키;과일;야채)
+      const url = `${ENDPOINT}?${new URLSearchParams({ query, x: String(lng), y: String(lat), radius: String(MAX_DISTANCE_M * 2), sort: "distance", size: "5" })}`;
       const res = await fetchImpl(url, { headers: { Authorization: `KakaoAK ${key}` }, signal: AbortSignal.timeout(timeoutMs) });
-      if (!res.ok) return null;
+      if (!res.ok) {
+        // 키가 틀리거나 로컬 API가 꺼져 있으면 매번 조용히 빠지므로 서버 로그에 한 번 알린다(키 값은 남기지 않음)
+        if ((res.status === 401 || res.status === 403) && !warned) {
+          warned = true;
+          console.warn(`카카오 로컬 조회 거절(${res.status}): KAKAO_REST_KEY가 REST API 키인지, 카카오맵(로컬) 사용 설정이 켜져 있는지 확인`);
+        }
+        return null;
+      }
       const body = (await res.json()) as { documents?: KakaoDoc[] };
       const doc = pickMatch(name, body.documents ?? []);
       if (!doc) return null;

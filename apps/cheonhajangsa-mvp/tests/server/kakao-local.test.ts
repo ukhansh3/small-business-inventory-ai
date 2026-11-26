@@ -32,6 +32,8 @@ describe("카카오 로컬 조회", () => {
     const url = String((ok.mock.calls[0] as unknown[])[0]);
     expect(url).toContain("x=127.04");
     expect(url).toContain("y=37.28");
+    await lookup({ name: "럭키;과일;야채", lat: 37.28, lng: 127.04 });
+    expect(decodeURIComponent(String((ok.mock.calls[1] as unknown[])[0])).replace(/\+/g, " ")).toContain("query=럭키 과일 야채");
 
     const fail = createKakaoLookup("k", { fetchImpl: (async () => { throw new Error("net"); }) as typeof fetch })!;
     await expect(fail({ name: "럭키 과일 야채", lat: 37.28, lng: 127.04 })).resolves.toBeNull();
