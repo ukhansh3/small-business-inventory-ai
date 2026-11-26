@@ -24,7 +24,7 @@ export function MarketLine({ market, mine }: { market: Market; mine?: PriceLine 
 const md = (iso: string) => `${Number(iso.slice(5, 7))}/${Number(iso.slice(8, 10))}`;
 
 const TONE = {
-  cheaper: { bg: color.greenSoft, ink: "#9a3412" },
+  cheaper: { bg: color.greenSoft, ink: color.green },
   normal: { bg: color.soft, ink: color.ink },
   pricier: { bg: color.redSoft, ink: color.red },
 } as const;

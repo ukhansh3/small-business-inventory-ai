@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import type { Chip } from "../lib/api-types";
 import type { EditorState } from "../lib/assist-state";
-import { color, font } from "./theme";
+import { color, font, itemColor } from "./theme";
 
 // S-02 조건 요약 칩. 칩을 누르면 그 조건만 고친다(WF-08).
 // 위치 칩은 위치 고르기 화면(S-06)으로 간다.
@@ -12,8 +12,10 @@ export function ConditionChips({
   disabled,
   onEdit,
   onLocation,
+  itemId,
 }: {
   chips: Chip[];
+  itemId?: string | null; // 품목 칩 앞 색 점
   disabled: boolean;
   onEdit: (e: EditorState) => void;
   onLocation: () => void;
@@ -38,6 +40,7 @@ export function ConditionChips({
             onPress={() => (editor === "location" ? onLocation() : onEdit(editor))}
             style={({ pressed }) => [styles.chip, pressed && styles.pressed]}
           >
+            {c.slot === "item_id" && <View style={[styles.itemDot, { backgroundColor: (itemId && itemColor[itemId]) || color.green }]} />}
             <Text style={styles.label}>{c.label} ▾</Text>
           </Pressable>
         );
@@ -48,9 +51,10 @@ export function ConditionChips({
 
 const styles = StyleSheet.create({
   row: { flexDirection: "row", flexWrap: "wrap", gap: 6 },
-  chip: { borderRadius: 999, paddingVertical: 7, paddingHorizontal: 12, backgroundColor: color.greenSoft, borderWidth: 1, borderColor: color.green },
+  chip: { flexDirection: "row", alignItems: "center", gap: 6, borderRadius: 8, paddingVertical: 8, paddingHorizontal: 12, backgroundColor: color.surface, borderWidth: 1.5, borderColor: color.line },
+  itemDot: { width: 10, height: 10, borderRadius: 5 },
   pressed: { opacity: 0.6 },
-  label: { fontSize: font.body, color: color.green, fontWeight: "600" },
+  label: { fontSize: font.body, color: color.ink, fontWeight: "700" },
   fixed: { backgroundColor: color.surface, borderColor: color.line },
   fixedLabel: { fontSize: font.body, color: color.sub },
 });

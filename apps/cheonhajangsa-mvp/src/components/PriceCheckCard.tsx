@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
   lineSub: { fontSize: font.body, color: color.sub },
   badge: { alignSelf: "flex-start", fontSize: font.body, fontWeight: "700", paddingVertical: 4, paddingHorizontal: 8, borderRadius: 6, overflow: "hidden" },
   pricier: { color: color.red, backgroundColor: color.redSoft },
-  cheaper: { color: color.green, backgroundColor: color.greenSoft },
+  cheaper: { color: "#065f46", backgroundColor: "#d1fae5" },
   normal: { color: color.ink, backgroundColor: color.bg },
   reason: { fontSize: font.small, color: color.faint },
   actions: { flexDirection: "row", flexWrap: "wrap", gap: 8 },

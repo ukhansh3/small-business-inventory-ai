@@ -245,7 +245,7 @@ export default function HomeScreen() {
                 chipsY.current = event.nativeEvent.layout.y;
                 if (answerPending.current && s.results) scroll.current?.scrollTo({ y: Math.max(chipsY.current - 12, 0), animated: true });
               }}>
-                {s.chips && <ConditionChips chips={s.chips} disabled={s.loading} onEdit={a.openEditor} onLocation={openLocation} />}
+                {s.chips && <ConditionChips chips={s.chips} itemId={s.condition.item_id} disabled={s.loading} onEdit={a.openEditor} onLocation={openLocation} />}
                 {s.editor !== "closed" && <ChipEditor key={s.editor} editor={s.editor} condition={s.condition} disabled={s.loading} onSubmit={a.editCondition} onClose={() => a.openEditor("closed")} />}
               </View>
               {s.recommendation && s.results && <RecommendationCard rec={s.recommendation} />}
@@ -298,8 +298,8 @@ const styles = StyleSheet.create({
   categoryFilters: { flexDirection: "row", flexWrap: "wrap", gap: 6, paddingHorizontal: 16, paddingBottom: 8 },
   mapStage:{flex:1,position:"relative",overflow:"hidden"},
   mapTools:{paddingHorizontal:18,paddingBottom:14,backgroundColor:color.surface,zIndex:2},
-  searchBar:{height:50,flexDirection:"row",alignItems:"center",gap:9,paddingHorizontal:14,borderWidth:1,borderColor:color.line,borderRadius:16,backgroundColor:"#ffffff",shadowColor:"#14181f",shadowOpacity:0.12,shadowRadius:16,shadowOffset:{width:0,height:5},elevation:4},
-  searchInput:{flex:1,fontSize:15,color:color.ink,paddingVertical:12},
+  searchBar:{height:52,flexDirection:"row",alignItems:"center",gap:9,paddingHorizontal:14,borderWidth:2,borderColor:color.ink,borderRadius:12,backgroundColor:"#ffffff"},
+  searchInput:{flex:1,fontSize:16,color:color.ink,paddingVertical:12},
   filterRow:{flexDirection:"row",gap:8,marginTop:12},
   filterChip:{height:36,paddingHorizontal:12,justifyContent:"center",borderRadius:20,borderWidth:1,borderColor:color.line,backgroundColor:"#ffffff"},filterOn:{backgroundColor:color.green,borderColor:color.green},filterText:{fontSize:12,color:color.ink,fontWeight:"500"},filterTextOn:{color:"#ffffff"},
   sheet:{position:"absolute",bottom:0,left:0,right:0,borderTopLeftRadius:24,borderTopRightRadius:24,backgroundColor:"#ffffff",shadowColor:"#14181f",shadowOpacity:0.16,shadowRadius:22,shadowOffset:{width:0,height:-5},elevation:10,overflow:"hidden"},
@@ -307,8 +307,8 @@ const styles = StyleSheet.create({
   pending:{flex:1,alignItems:"center",justifyContent:"center",padding:24,gap:12},pendingIcon:{width:82,height:82,borderRadius:28,backgroundColor:color.greenSoft,alignItems:"center",justifyContent:"center",marginBottom:8},pendingTitle:{fontSize:20,fontWeight:"700",color:color.ink},pendingSub:{fontSize:13,color:color.sub},pendingNote:{fontSize:11,color:color.green,paddingHorizontal:12,paddingVertical:5,borderRadius:12,backgroundColor:color.greenSoft},pendingAction:{marginTop:18,padding:16},
   safe: { flex: 1, backgroundColor: color.surface }, screen: { flex: 1, backgroundColor: color.bg },
   header: { minHeight: 60, flexDirection: "row", alignItems: "center", gap: 9, paddingHorizontal: 18, paddingTop:14,paddingBottom:8, backgroundColor: color.surface },
-  brandMark: { width: 36, height: 36, borderRadius: 12, alignItems: "center", justifyContent: "center", backgroundColor: color.green, shadowColor: color.green, shadowOpacity: 0.25, shadowRadius: 8, shadowOffset: { width: 0, height: 4 }, elevation: 2 },
-  brandIcon: { color: "#ffffff", fontSize: 18, fontWeight: "800" }, brand: { fontSize:20, fontWeight: "600", letterSpacing: -0.6, color: color.ink }, brandSub: { marginTop: 1, color: color.sub, fontSize: 10 }, spacer: { flex: 1 },
+  brandMark: { width: 36, height: 36, borderRadius: 10, alignItems: "center", justifyContent: "center", backgroundColor: color.green },
+  brandIcon: { color: "#ffffff", fontSize: 18, fontWeight: "800" }, brand: { fontSize:21, fontWeight: "900", letterSpacing: -0.6, color: color.ink }, brandSub: { marginTop: 1, color: color.sub, fontSize: 10 }, spacer: { flex: 1 },
   status: { paddingHorizontal: 7, paddingVertical: 3, overflow: "hidden", borderRadius: 8, backgroundColor: color.soft, color: color.sub, fontSize: 10, fontWeight: "700" }, iconButton: { width: 38, height: 38, borderRadius: 19, alignItems: "center", justifyContent: "center", backgroundColor: color.soft }, iconButtonText: { color: color.ink, fontSize: 23 },
   locationBar: { flexDirection: "row", alignItems: "center",alignSelf:"flex-start", gap: 5, paddingTop:5,paddingBottom:13, backgroundColor: 'transparent' }, locationPin: { color: color.green, fontSize: 11 }, locationText: { color: color.ink, fontSize: 13, fontWeight: "500" }, chevron: { color: color.sub, fontSize: 15 },
   mapWrap: { position: "relative", overflow: "hidden", backgroundColor: "#e9efe7" }, mapWait: { width: "100%", backgroundColor: "#e9efe7" }, mapBadge: { position: "absolute", top: 14, alignSelf: "center", paddingHorizontal: 14, paddingVertical: 9, borderRadius: 20, backgroundColor: color.surface, shadowColor: "#14181f", shadowOpacity: 0.15, shadowRadius: 10, elevation: 3 }, mapBadgeText: { color: color.green, fontSize: 12, fontWeight: "700" },
