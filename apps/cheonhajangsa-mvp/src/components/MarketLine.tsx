@@ -50,11 +50,11 @@ function LadderCard({ ladder, mine, weeks }: { ladder: Ladder; mine: PriceLine |
         {judged ? ` · ${judged.box_won!.toLocaleString("ko-KR")}원` : " 시세"}
       </Text>
       {!judged && (
-        <Text style={styles.summary}>
-          {trader ? `도매시장 상회 ${wonRange(trader.low, trader.high)}` : ""}
-          {trader && retail ? " · " : ""}
-          {retail ? `마트·시장 ${wonRange(retail.low, retail.high)}` : ""}
-        </Text>
+        // 경로별 값을 줄마다 나눈다(한 문장으로 이으면 "4만 / ~5만원"처럼 금액 범위가 끊긴다)
+        <View style={styles.rows}>
+          {trader && <View style={styles.row}><Text style={styles.rowLabel}>도매시장 상회</Text><Text style={styles.rowValue} numberOfLines={1}>{wonRange(trader.low, trader.high)}</Text></View>}
+          {retail && <View style={styles.row}><Text style={styles.rowLabel}>마트·시장</Text><Text style={styles.rowValue} numberOfLines={1}>{wonRange(retail.low, retail.high)}</Text></View>}
+        </View>
       )}
       {chips.length > 0 && (
         <View style={styles.chips}>
@@ -153,7 +153,7 @@ function WeekBars({ weeks }: { weeks: { week_start: string; per_kg: number }[] }
 
 const styles = StyleSheet.create({
   box: { gap: 2, paddingVertical: 10, paddingHorizontal: 12, borderRadius: radius, backgroundColor: color.surface, borderWidth: 1, borderColor: color.line },
-  label: { fontSize: 12, fontWeight: "700", color: color.sub },
+  label: { fontSize: 13, fontWeight: "700", color: color.sub },
   text: { fontSize: font.body, color: color.ink, lineHeight: 22 },
   trend: { fontSize: font.body, color: color.ink, fontWeight: "700", lineHeight: 22 },
 
@@ -163,10 +163,13 @@ const styles = StyleSheet.create({
   verdictTitle: { fontSize: 20, fontWeight: "800" },
   verdictSub: { fontSize: font.body },
   headline: { fontSize: font.large, fontWeight: "700", color: color.ink },
-  summary: { fontSize: font.body, color: color.sub, lineHeight: 22 },
+  rows: { gap: 6 },
+  row: { flexDirection: "row", justifyContent: "space-between", alignItems: "baseline", gap: 12 },
+  rowLabel: { fontSize: font.body, color: color.sub },
+  rowValue: { fontSize: 18, fontWeight: "800", color: color.ink },
   chips: { flexDirection: "row", flexWrap: "wrap", gap: 6 },
   chipBox: { backgroundColor: color.soft, paddingHorizontal: 10, paddingVertical: 5, borderRadius: 999 },
-  chip: { fontSize: 13, color: color.ink },
+  chip: { fontSize: 14, color: color.ink },
   toggle: { alignSelf: "flex-start", minHeight: 44, justifyContent: "center", paddingHorizontal: 2 },
   toggleText: { fontSize: font.body, fontWeight: "700", color: color.green },
 
@@ -182,15 +185,15 @@ const styles = StyleSheet.create({
   mineRow: { flexDirection: "row", alignItems: "center", gap: 12, paddingHorizontal: 8, paddingVertical: 4 },
   mineDot: { width: 12, height: 12, borderRadius: 6, backgroundColor: color.green },
   minePill: { alignSelf: "flex-start", overflow: "hidden", marginTop: 4, fontSize: font.body, fontWeight: "700", color: "#ffffff", backgroundColor: color.green, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 },
-  source: { fontSize: 12, color: color.faint, lineHeight: 17 },
+  source: { fontSize: 13, color: color.faint, lineHeight: 17 },
 
   chart: { marginTop: 4, gap: 6 },
-  chartTitle: { fontSize: 12, color: color.sub },
+  chartTitle: { fontSize: 13, color: color.sub },
   bars: { flexDirection: "row", alignItems: "flex-end", gap: 8 },
   col: { flex: 1, alignItems: "center", gap: 3 },
-  value: { fontSize: 11, color: color.faint },
+  value: { fontSize: 12, color: color.faint },
   valueNow: { color: color.ink, fontWeight: "700" },
   bar: { width: "70%", borderRadius: 4, backgroundColor: color.line },
   barNow: { backgroundColor: color.green },
-  week: { fontSize: 11, color: color.sub },
+  week: { fontSize: 12, color: color.sub },
 });

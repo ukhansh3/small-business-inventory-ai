@@ -59,7 +59,7 @@ const styles = StyleSheet.create({
   name: { flexShrink: 1, fontSize: 16, fontWeight: "700", color: color.ink },
   metaRow: { flexDirection: "row", alignItems: "center", gap: 6 },
   dot: { width: 8, height: 8, borderRadius: 4 },
-  meta: { flexShrink: 1, fontSize: 13, color: color.sub },
-  activity: { fontSize: 12, color: color.faint },
+  meta: { flexShrink: 1, fontSize: 14, color: color.sub },
+  activity: { fontSize: 13, color: color.faint },
   arrow: { width: 20, alignItems: "center", justifyContent: "center" },
 });

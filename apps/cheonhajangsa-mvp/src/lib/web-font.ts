@@ -13,6 +13,7 @@ export function installWebFont(): void {
   link.href = HREF;
   document.head.appendChild(link);
   const style = document.createElement("style");
-  style.textContent = `body, input, textarea, button, div, span { font-family: "Noto Sans KR", -apple-system, "Apple SD Gothic Neo", sans-serif !important; }`;
+  // keep-all: 한글이 단어 중간("2.5만원" → "2.5만 / 원")에서 끊기지 않게. 긴 주소·링크는 anywhere로 넘침 방지
+  style.textContent = `body, input, textarea, button, div, span { font-family: "Noto Sans KR", -apple-system, "Apple SD Gothic Neo", sans-serif !important; word-break: keep-all; overflow-wrap: anywhere; }`;
   document.head.appendChild(style);
 }

@@ -17,6 +17,9 @@ describe("출처 구분과 이름", () => {
   it("원천 구분자를 공백으로 바꾼다", () => {
     expect(displayName("럭키;과일;야채")).toBe("럭키 과일 야채");
     expect(displayName("의림상회 · 경기청과")).toBe("의림상회 · 경기청과");
+    expect(displayName("농업회사법인주식회사대화농산")).toBe("대화농산");
+    expect(displayName("(주)다인에프에스")).toBe("다인에프에스");
+    expect(displayName("주식회사")).toBe("주식회사"); // 다 지워지면 원래 이름
   });
   it("0인 사용·저장 수는 보여 주지 않는다", () => {
     expect(activityText(0, 0)).toBeNull();

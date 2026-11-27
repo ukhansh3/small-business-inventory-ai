@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
   bubble: { maxWidth: "85%", paddingVertical: 11, paddingHorizontal: 14, borderRadius: 18 },
   owner: { alignSelf: "flex-end", backgroundColor: color.ownerBubble, borderBottomRightRadius: 5 },
   ai: { alignSelf: "flex-start", backgroundColor: color.soft, borderBottomLeftRadius: 5 },
-  text: { fontSize: 14, color: color.ink, lineHeight: 22 },
+  text: { fontSize: 16, color: color.ink, lineHeight: 24 },
   ownerText: { color: "#ffffff" },
   muted: { color: color.faint },
 });

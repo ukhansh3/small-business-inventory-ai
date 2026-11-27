@@ -91,7 +91,8 @@ export default function StoreDetail() {
               )}
               {!!store.vendor_card?.price.has_price && <InfoRow label="가격" value={store.vendor_card.price.display} />}
               {!!store.address && <InfoRow label="주소" value={store.address} />}
-              {!!store.source && <InfoRow label="출처" value={store.source + (store.source_date ? ` (${store.source_date} 기준)` : "") + (!ownPhone && kakao?.source && (kakao.phone || kakao.place_url) ? ` · 전화·영업시간 ${kakao.source}` : "")} muted />}
+              {/* 출처는 자료마다 한 줄씩(한 문장으로 이으면 "…영업시간 / 카카오맵"처럼 끊긴다) */}
+              {!!store.source && <InfoRow label="출처" value={store.source + (store.source_date ? `\n${store.source_date} 기준` : "") + (!ownPhone && kakao?.source && (kakao.phone || kakao.place_url) ? `\n전화·영업시간: ${kakao.source}` : "")} muted />}
             </View>
 
             {/* 바로 할 일(2026-11-26): 전화가 있으면 전화, 없으면 길찾기가 주 버튼. AI 도우미 추천 카드와 같은 말·같은 동작 */}
@@ -110,7 +111,7 @@ export default function StoreDetail() {
                   <Text style={styles.secondaryText}>{opening ? "대화 여는 중…" : "메시지로 문의"}</Text>
                 </Pressable>
               )}
-              {canInquire && <Text style={styles.note}>견적·이용 시간을 물어볼 수 있어요. 답장은 내 정보 › 대화에서 봐요.</Text>}
+              {canInquire && <Text style={styles.note}>{"견적·이용 시간을 물어볼 수 있어요. 답장은 내\u00a0정보\u00a0›\u00a0대화에서 봐요."}</Text>}
               {!!notice && <Text accessibilityLiveRegion="polite" style={styles.body}>{notice}</Text>}
             </View>
 
@@ -144,13 +145,13 @@ const styles = StyleSheet.create({
   infoRow: { flexDirection: "row", gap: 12, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: color.soft },
   infoLabel: { width: 36, fontSize: 14, color: color.sub },
   infoValue: { flex: 1, fontSize: 15, lineHeight: 22, color: color.ink },
-  infoMuted: { fontSize: 13, lineHeight: 19, color: color.sub },
+  infoMuted: { fontSize: 14, lineHeight: 19, color: color.sub },
   actions: { gap: 8 },
   primary: { minHeight: 48, borderRadius: 12, alignItems: "center", justifyContent: "center", backgroundColor: color.green },
   primaryText: { color: "#fff", fontSize: 16, fontWeight: "700" },
   secondary: { minHeight: 48, borderRadius: 12, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: color.line, backgroundColor: color.surface },
   secondaryText: { color: color.ink, fontSize: 15, fontWeight: "600" },
-  note: { fontSize: 13, lineHeight: 19, color: color.sub },
+  note: { fontSize: 14, lineHeight: 19, color: color.sub },
   page: { padding: 24, gap: 14 },
   title: { fontSize: 25, fontWeight: "700", color: color.ink },
   body: { fontSize: 15, lineHeight: 22, color: color.ink },

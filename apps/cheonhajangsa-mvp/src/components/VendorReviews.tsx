@@ -72,11 +72,11 @@ const styles = StyleSheet.create({
   section: { gap: 12, paddingTop: 14, borderTopWidth: 1, borderTopColor: color.line },
   title: { fontSize: 19, fontWeight: "700", color: color.ink },
   stars: { flexDirection: "row", gap: 8 },
-  star: { fontSize: 28, color: "#b54708", paddingHorizontal: 4 },
+  star: { fontSize: 28, color: color.accent, paddingHorizontal: 4 },
   input: { minHeight: 80, padding: 12, borderWidth: 1, borderColor: color.line, borderRadius: 12, color: color.ink, textAlignVertical: "top" },
   button: { alignSelf: "flex-start", padding: 12, borderRadius: 10, backgroundColor: color.greenSoft },
   label: { fontWeight: "700", color: color.green },
   review: { gap: 5, padding: 12, borderRadius: 12, backgroundColor: color.soft },
-  score: { color: "#9a3412", fontWeight: "700" },
+  score: { color: color.amber, fontWeight: "700" },
   body: { color: color.ink, lineHeight: 21 },
 });

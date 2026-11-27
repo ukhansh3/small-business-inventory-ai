@@ -34,5 +34,5 @@ export const itemColor: Record<string, string> = {
   item_potato: "#a16207",
 };
 
-export const font = { small: 13, body: 15, large: 18, title: 22 };
+export const font = { small: 14, body: 16, large: 19, title: 24 }; // 40~60대 사장님 기준: 본문 16 이상
 export const radius = 12;

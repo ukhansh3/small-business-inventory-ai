@@ -21,9 +21,12 @@ export function toneOf(s: Pick<Store, "category">): StoreTone {
   return "shop";
 }
 
-// 원천 자료 이름의 구분자를 화면용으로 정리한다. 예: "럭키;과일;야채" → "럭키 과일 야채"
+// 원천 자료 이름을 화면용으로 정리한다. 예: "럭키;과일;야채" → "럭키 과일 야채"
+// 법인 표기(주식회사·농업회사법인·(주) 등)는 이름을 가려 읽기 어려워 화면에서만 뺀다
+const LEGAL = /(주식회사|농업회사법인|영농조합법인|유한회사|합자회사|\((주|유|합)\)|㈜)\s*/g;
 export function displayName(name: string): string {
-  return name.replace(/\s*[;|]\s*/g, " ").replace(/\s{2,}/g, " ").trim();
+  const plain = name.replace(/\s*[;|]\s*/g, " ").replace(LEGAL, " ").replace(/\s{2,}/g, " ").trim();
+  return plain || name.trim();
 }
 
 // "사용 3 · 저장 1"처럼 0이 아닌 값만. 둘 다 없으면 null

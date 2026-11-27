@@ -122,5 +122,5 @@ const styles = StyleSheet.create({
   primaryLabel: { color: "#ffffff" },
   shareMsg: { fontSize: font.body, color: color.green },
   fail: { color: color.red },
-  note: { fontSize: 12, color: color.faint },
+  note: { fontSize: 13, color: color.faint },
 });
