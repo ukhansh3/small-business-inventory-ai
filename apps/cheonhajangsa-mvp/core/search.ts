@@ -104,7 +104,7 @@ function validate(data: Dataset, c: SearchCondition): Location {
   }
   const item = data.items.find((i) => i.id === c.item_id);
   if (!item) throw new SearchInputError("INVALID_INPUT", "알 수 없는 품목이에요.");
-  if (!item.active) throw new SearchInputError("ITEM_NOT_ACTIVE", `아직 ${data.items.filter((i) => i.active).map((i) => i.name).join("·")}만 준비돼 있어요.`);
+  if (!item.active) throw new SearchInputError("ITEM_NOT_ACTIVE", `아직 ${data.items.filter((i) => i.active).map((i) => i.name).join("·")}만 준비됐어요.`);
   const loc = data.locations.find((l) => l.id === c.location_id);
   if (!loc) throw new SearchInputError("NOT_FOUND", "위치를 찾을 수 없어요.");
   return loc;

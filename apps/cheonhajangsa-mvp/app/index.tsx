@@ -19,7 +19,7 @@ import { NoticeCard } from "../src/components/NoticeCard";
 import { PriceCheckCard } from "../src/components/PriceCheckCard";
 import { RecommendationCard } from "../src/components/RecommendationCard";
 import { ResultList } from "../src/components/ResultList";
-import { color, font, radius } from "../src/components/theme";
+import { color, font, itemColor, radius } from "../src/components/theme";
 import type { Store } from "../src/lib/api-types";
 import { useAssist } from "../src/hooks/useAssist";
 import { useStores } from "../src/hooks/useStores";
@@ -250,8 +250,8 @@ export default function HomeScreen() {
               </View>
               {s.recommendation && s.results && <RecommendationCard rec={s.recommendation} />}
               {s.market && s.results && <MarketLine market={s.market} />}
-              {s.results && <><Pressable accessibilityRole="button" onPress={() => { setSelectedId(null); setShowAiResults(true); setSheetMode("list"); setTab("map"); }} style={styles.exampleChip}><Text style={styles.sheetLink}>{s.recommendation ? "⌖ 추천한 곳 지도에서 보기" : "⌖ 검색 결과 지도에서 보기"}</Text></Pressable>{!s.recommendation && <ResultList results={s.results} stores={st.stores} location={me?.location_id} />}</>}
-              {s.priceCheck && !s.loading && <View key={s.priceCheck.check_id} onLayout={(event) => { priceY.current = event.nativeEvent.layout.y; scroll.current?.scrollTo({ y: Math.max(priceY.current - 80, 0), animated: true }); }}><PriceCheckCard check={s.priceCheck} share={s.share} disabled={s.loading} onShare={a.sharePrice} onSearch={a.searchItem} onCall={onCall} onDetail={openDetail} /></View>}
+              {s.results && <><Pressable accessibilityRole="button" onPress={() => { setSelectedId(null); setShowAiResults(true); setSheetMode("list"); setTab("map"); }} style={({ pressed }) => [styles.mapLink, pressed && styles.examplePressed]}><AppIcon name="map" size={20} color={color.green}/><Text style={styles.mapLinkText}>{s.recommendation ? "추천한 곳 지도에서 보기" : "검색 결과 지도에서 보기"}</Text></Pressable>{!s.recommendation && <ResultList results={s.results} stores={st.stores} location={me?.location_id} />}</>}
+              {s.priceCheck && !s.loading && <View key={s.priceCheck.check_id} onLayout={(event) => { priceY.current = event.nativeEvent.layout.y; scroll.current?.scrollTo({ y: Math.max(priceY.current - 8, 0), animated: true }); }}><PriceCheckCard check={s.priceCheck} share={s.share} disabled={s.loading} onShare={a.sharePrice} onSearch={a.searchItem} onCall={onCall} onDetail={openDetail} /></View>}
             </ScrollView>
             <ChatInput disabled={s.loading} error={s.inputError} onSend={sendAssistantText} onPhoto={a.sendPhoto} />
           </>
@@ -265,9 +265,33 @@ export default function HomeScreen() {
   );
 }
 
+// AI 도우미 첫 화면: 무엇을 하는지 한 줄, 지원 품목(색 점), 상황별 예시(누르면 바로 보냄)
 function Welcome({ onExample }: { onExample: (text: string) => void }) {
-  const examples = ["상추 2키로 급해요", "상추 5키로 오늘 배달", "상추 2키로 만원 부르던데"];
-  return <View style={styles.welcome}><Text style={styles.welcomeTitle}>무엇을 찾아드릴까요?</Text><Text style={styles.welcomeSub}>상추·양파·대파·감자의 수원 시세와 근처 판매처를 찾아 드려요. 가격을 적으면 비싼지도 알려 드려요.</Text><View style={styles.examples}>{examples.map((text) => <Pressable key={text} onPress={() => onExample(text)} style={styles.exampleChip}><Text style={styles.exampleText}>{text}</Text></Pressable>)}</View></View>;
+  const items = [["item_lettuce", "상추"], ["item_green_onion", "대파"], ["item_onion", "양파"], ["item_potato", "감자"]] as const;
+  const examples = [
+    { when: "급할 때", text: "상추 2키로 급해요" },
+    { when: "배달받을 때", text: "상추 5키로 오늘 배달" },
+    { when: "값이 맞는지", text: "상추 2키로 만원 부르던데" },
+  ];
+  return (
+    <View style={styles.welcome}>
+      <Text style={styles.welcomeTitle}>무엇을 찾아드릴까요?</Text>
+      <Text style={styles.welcomeSub}>살 곳과 적정 값을 골라 드려요</Text>
+      <View style={styles.welcomeItems}>
+        {items.map(([id, name]) => (
+          <View key={id} style={styles.welcomeItem}><View style={[styles.welcomeDot, { backgroundColor: itemColor[id] }]} /><Text style={styles.welcomeItemText}>{name}</Text></View>
+        ))}
+      </View>
+      <View style={styles.examples}>
+        {examples.map((e) => (
+          <Pressable key={e.text} accessibilityRole="button" onPress={() => onExample(e.text)} style={({ pressed }) => [styles.exampleChip, pressed && styles.examplePressed]}>
+            <Text style={styles.exampleWhen}>{e.when}</Text>
+            <Text style={styles.exampleText}>{e.text}</Text>
+          </Pressable>
+        ))}
+      </View>
+    </View>
+  );
 }
 
 function Header({ tab, test, stored, started, loading, onRestart, onBack }: { tab: ActiveTab; test: boolean; stored: boolean; started: boolean; loading: boolean; onRestart: () => void; onBack: () => void }) {
@@ -314,7 +338,7 @@ const styles = StyleSheet.create({
   mapWrap: { position: "relative", overflow: "hidden", backgroundColor: "#e9efe7" }, mapWait: { width: "100%", backgroundColor: "#e9efe7" }, mapBadge: { position: "absolute", top: 14, alignSelf: "center", paddingHorizontal: 14, paddingVertical: 9, borderRadius: 20, backgroundColor: color.surface, shadowColor: "#14181f", shadowOpacity: 0.15, shadowRadius: 10, elevation: 3 }, mapBadgeText: { color: color.green, fontSize: 12, fontWeight: "700" },
   handle: { paddingTop: 8, paddingHorizontal: 18, paddingBottom: 8,backgroundColor:color.surface }, grip: { width: 38, height: 4, alignSelf: "center", marginBottom: 12, borderRadius: 2, backgroundColor: color.line }, sheetHeading: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" }, sheetTitle: { fontSize: 16, fontWeight: "600", color: color.ink }, sheetSub: { marginTop: 3, fontSize: 13, color: color.sub }, sheetLink: { color: color.green, fontSize: 14, fontWeight: "500" },
   body: { flex: 1 }, mapContent: { paddingHorizontal: 16, paddingTop: 6, paddingBottom: 24, gap: 12 }, aiContent: { paddingHorizontal: 16, paddingTop: 10, paddingBottom: 24, gap: 14 }, selected: { gap: 8 }, selectedHead: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" }, selectedTitle: { color: color.sub, fontSize: font.small, fontWeight: "700" }, close: { color: color.green, fontSize: font.small, fontWeight: "700" },
-  welcome: { paddingTop: 20, paddingBottom: 8, gap: 8 }, welcomeTitle: { color: color.ink, fontSize: 22, fontWeight: "800", letterSpacing: -0.5 }, welcomeSub: { color: color.sub, fontSize: 14, lineHeight: 21 }, examples: { width: "100%", marginTop: 10, gap: 8 }, exampleChip: { minHeight: 42, justifyContent: "center", paddingHorizontal: 14, borderRadius: 14, backgroundColor: color.soft }, exampleText: { color: color.ink, fontSize: 15 }, conditions: { gap: 10 },
+  welcome: { paddingTop: 20, paddingBottom: 8, gap: 8 }, welcomeTitle: { color: color.ink, fontSize: 22, fontWeight: "800", letterSpacing: -0.5 }, welcomeSub: { color: color.sub, fontSize: 16, lineHeight: 24 }, welcomeItems: { flexDirection: "row", flexWrap: "wrap", gap: 8, marginTop: 4 }, welcomeItem: { flexDirection: "row", alignItems: "center", gap: 6, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8, backgroundColor: color.soft }, welcomeDot: { width: 10, height: 10, borderRadius: 5 }, welcomeItemText: { fontSize: 15, fontWeight: "700", color: color.ink }, examples: { width: "100%", marginTop: 10, gap: 8 }, exampleChip: { minHeight: 64, justifyContent: "center", gap: 2, paddingHorizontal: 16, paddingVertical: 10, borderRadius: 12, borderWidth: 1.5, borderColor: color.line, backgroundColor: color.surface }, examplePressed: { backgroundColor: color.greenSoft, borderColor: color.green }, exampleWhen: { fontSize: 13, fontWeight: "800", color: color.green }, exampleText: { color: color.ink, fontSize: 17, fontWeight: "700" }, conditions: { gap: 10 }, mapLink: { minHeight: 52, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, borderRadius: 12, borderWidth: 1.5, borderColor: color.green, backgroundColor: color.surface }, mapLinkText: { fontSize: 16, fontWeight: "800", color: color.green },
   nav: { height: 72, flexDirection: "row", paddingHorizontal: 4, paddingTop: 6, paddingBottom: 8, borderTopWidth: 1, borderTopColor: color.line, backgroundColor: color.surface }, navItem: { flex: 1, alignItems: "center", justifyContent: "center", gap: 2 }, navIcon: { color: color.sub, fontSize: 20, lineHeight: 23 }, navLabel: { color: color.sub, fontSize: 13, fontWeight: "600" }, navOn: { color: color.green }, navDot: { width: 4, height: 4, borderRadius: 2, backgroundColor: "transparent" }, navDotOn: { backgroundColor: color.green },
   back: { width: 28, height: 36, alignItems: "center", justifyContent: "center", marginLeft: -6 }, backText: { fontSize: 30, lineHeight: 32, color: color.ink },
   menu: { marginHorizontal: 18, marginTop: 8, borderTopWidth: 1, borderTopColor: color.line }, menuRow: { minHeight: 60, flexDirection: "row", alignItems: "center", gap: 12, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: color.line }, menuCopy: { flex: 1, gap: 2 }, menuTitle: { fontSize: 16, fontWeight: "600", color: color.ink }, menuSub: { fontSize: 14, color: color.sub },

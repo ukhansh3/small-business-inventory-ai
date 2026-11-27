@@ -130,9 +130,6 @@ export function LoginGate({ children, intro = DEFAULT_INTRO }: { children: React
   };
   return (
     <ScrollView contentContainerStyle={s.login}>
-      <View style={s.emptyIcon}>
-        <AppIcon name="user" size={32} color={color.green} />
-      </View>
       <Text style={s.title}>{signup ? "회원가입" : intro.title}</Text>
       <Text style={s.sub}>{intro.body}</Text>
       {!signup && intro.points.length > 0 && (
@@ -274,7 +271,7 @@ function PostCard({
 
 export function CommunityScreen() {
   return (
-    <LoginGate intro={{ title: "로그인하고 함께 나눠요", body: "근처 사장님들과 구매처 정보를 나누는 곳이에요. 로그인하면 글을 보고 쓸 수 있어요.", points: ["어디서 사는지 묻는 구매처 질문", "산 가격을 알려 주는 가격 제보", "거래해 본 경험 후기"] }}>
+    <LoginGate intro={{ title: "로그인하고 함께 나눠요", body: "근처 사장님들과 구매처 정보를 나누는 곳이에요.\n로그인하면 글을 보고 쓸 수 있어요.", points: ["어디서 사는지 묻는 구매처 질문", "산 가격을 알려 주는 가격 제보", "거래해 본 경험 후기"] }}>
       <CommunityContent />
     </LoginGate>
   );
@@ -755,7 +752,7 @@ export function ProfileScreen({
   location: string;
 }) {
   return (
-    <LoginGate intro={{ title: "로그인", body: "계정이 있으면 글쓰기·업체 저장·문의를 쓸 수 있어요. 지도와 AI 도우미는 로그인 없이도 쓸 수 있어요.", points: [] }}>
+    <LoginGate intro={{ title: "로그인", body: "로그인하면 글쓰기·저장·문의를 써요.\n지도와 AI 도우미는 로그인 없이 써요.", points: [] }}>
       <ProfileContent
         onSaved={onSaved}
         onLocation={onLocation}
@@ -894,7 +891,7 @@ const s = StyleSheet.create({
   page: { padding: 18, paddingBottom: 32, gap: 14 },
   login: { padding: 24, paddingTop: 45, gap: 14 },
   points: { gap: 4, marginTop: -4, marginBottom: 6 },
-  point: { fontSize: 14, color: color.ink, lineHeight: 21 },
+  point: { fontSize: 16, color: color.ink, lineHeight: 21 },
   fieldLabel: { fontSize: 13, fontWeight: "600", color: color.ink, marginBottom: -8 },
   title: {
     fontSize: 22,
@@ -902,7 +899,7 @@ const s = StyleSheet.create({
     color: color.ink,
     letterSpacing: -0.5,
   },
-  sub: { fontSize: 13, color: color.sub, lineHeight: 20 },
+  sub: { fontSize: 16, color: color.sub, lineHeight: 24 },
   muted: { fontSize: 11, color: color.sub, lineHeight: 17 },
   copy: { fontSize: 14, color: color.ink, lineHeight: 23 },
   passwordRow: { position: "relative", justifyContent: "center" },

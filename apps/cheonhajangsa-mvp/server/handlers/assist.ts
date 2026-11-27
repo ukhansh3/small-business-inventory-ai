@@ -155,7 +155,7 @@ export function handleAssistTurn(req: Request, deps: AssistDeps): Promise<Respon
               }
             : {
                 kind: "out_of_scope_item",
-                message: name ? `아직 ${activeNames}만 준비돼 있어요. ${name} 요청을 남겨 주시면 먼저 준비할게요.` : `아직 ${activeNames}만 준비돼 있어요.`,
+                message: name ? `아직 ${activeNames}만 준비됐어요. ${name} 요청을 남겨 주시면 먼저 준비할게요.` : `아직 ${activeNames}만 준비됐어요.`,
                 recognized_item: name ? { item_id: known?.id ?? null, name } : null,
                 actions: ["request_item", "search_lettuce"],
               };
